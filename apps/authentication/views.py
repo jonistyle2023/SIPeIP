@@ -12,7 +12,6 @@ from django.contrib.auth.hashers import check_password
 from .serializers import UsuarioSerializer, RegistroAuditoriaSerializer
 from .models import Usuario, RegistroAuditoria
 
-
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
@@ -59,61 +58,78 @@ class LoginView(APIView):
     BLOQUEO_MINUTOS = 5
 
     def post(self, request):
-        nombre_usuario = request.data.get('nombre_usuario')
-        clave = request.data.get('clave')
+        data = request.data
+
+        nombre_usuario = data.get("nombre_usuario")
+        clave = data.get("clave")
 
         try:
             usuario = Usuario.objects.get(nombre_usuario=nombre_usuario)
         except Usuario.DoesNotExist:
-            return Response({'error': 'Usuario no encontrado'}, status=404)
+            return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
 
         # Verificar si está bloqueado
         if usuario.esta_bloqueado:
-            if usuario.puede_intentar_nuevamente and timezone.now() < usuario.puede_intentar_nuevamente:
-                return Response({'error': 'Usuario bloqueado temporalmente. Intente más tarde.'}, status=403)
+            tiempo_transcurrido = timezone.now() - usuario.fecha_bloqueo if usuario.fecha_bloqueo else timedelta(minutes=0)
+            if tiempo_transcurrido < timedelta(minutes=self.BLOQUEO_MINUTOS):
+                return Response({"error": "Cuenta bloqueada. Intente nuevamente más tarde."}, status=status.HTTP_403_FORBIDDEN)
             else:
+                # Desbloquear automáticamente después del tiempo
                 usuario.esta_bloqueado = False
                 usuario.intentos_fallidos = 0
-                usuario.puede_intentar_nuevamente = None
                 usuario.fecha_bloqueo = None
                 usuario.save()
 
-        # Verificación de clave usando check_password
+        # Validar contraseña
         if not check_password(clave, usuario.clave):
             usuario.intentos_fallidos += 1
 
-            RegistroAuditoria.objects.create(
+            # Registrar intento fallido
+            RegistroAuditoriaViewSet.registrar_evento(
                 usuario=usuario,
-                accion="Intento fallido",
-                funcionalidad="Login",
-                detalles="Contraseña incorrecta"
+                funcionalidad='Login',
+                accion='Intento fallido'
             )
 
             if usuario.intentos_fallidos >= self.MAX_INTENTOS:
                 usuario.esta_bloqueado = True
                 usuario.fecha_bloqueo = timezone.now()
-                usuario.puede_intentar_nuevamente = timezone.now() + timedelta(minutes=self.BLOQUEO_MINUTOS)
                 usuario.save()
-                return Response({'error': 'Usuario bloqueado por múltiples intentos fallidos.'}, status=403)
+
+                # Registrar cuenta bloqueada
+                RegistroAuditoriaViewSet.registrar_evento(
+                    usuario=usuario,
+                    funcionalidad='Login',
+                    accion='Cuenta bloqueada'
+                )
+
+                return Response({"error": "Cuenta bloqueada por múltiples intentos fallidos."}, status=status.HTTP_403_FORBIDDEN)
 
             usuario.save()
-            return Response({'error': 'Contraseña incorrecta.'}, status=401)
+            return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Login exitoso
+        # Si la contraseña es correcta:
         usuario.intentos_fallidos = 0
         usuario.ultimo_acceso = timezone.now()
         usuario.save()
 
-        RegistroAuditoria.objects.create(
-            usuario=usuario,
-            accion="Login exitoso",
-            funcionalidad="Login",
-            detalles="Acceso correcto"
-        )
-
-        return Response({'mensaje': 'Inicio de sesión exitoso'})
+        # Aquí deberías generar token o sesión
+        return Response({"mensaje": "Inicio de sesión exitoso"}, status=status.HTTP_200_OK)
 
 
 class RegistroAuditoriaViewSet(viewsets.ModelViewSet):
     queryset = RegistroAuditoria.objects.all()
     serializer_class = RegistroAuditoriaSerializer
+
+    @staticmethod
+    def registrar_evento(usuario, funcionalidad, accion, detalles=None, modulo='Autenticacion', entidad_tipo=None, entidad_id=None):
+        RegistroAuditoria.objects.create(
+            usuario=usuario,
+            funcionalidad=funcionalidad,
+            accion=accion,
+            detalles=detalles,
+            modulo=modulo,
+            entidad_afectada_tipo=entidad_tipo,
+            entidad_afectada_id=entidad_id
+        )
+
