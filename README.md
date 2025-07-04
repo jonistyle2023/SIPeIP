@@ -1,16 +1,28 @@
-# Sistema integral de Planificación e Inversión Pública (SIPeIP)
+# Nuevo Sistema integral de Planificación e Inversión Pública (SIPeIP 2.0) de la Secretaría Nacional de Planificación
 
->[!note] 
+> [!WARNING]
 > 
-> Esta es una propuesta de código abierto para un sistema integral de planificación e inversión pública, que busca mejorar la transparencia y eficiencia en la gestión de proyectos públicos.
+> Este proyecto es una propuesta como caso de estudio de **Examen complexivo 2025** para estudiantes de la carrera de 
+> **_Tecnologías de la información_** de la **Universidad Técnica Particular de Loja**.
+> No pretende ser aprobado o supervisado por alguna entidad pública del pais, solo se realiza con fines académicos.
 
---
+>[!IMPORTANT] 
+> 
+> Esta propuesta busca mejorar la transparencia y eficiencia en la gestión de proyectos públicos.
+
+> [!NOTE]
+> 
+> Detalles de la propuesta:
+> - **Título:** Nuevo Sistema Integral de Planificación e Inversión Pública - **SIPeIP 2.0**
+> - **Desarrollado por:** Jonathan David Panchana Rodríguez.
+
+---
 
 ## Estructura del Proyecto
 
-```plaintext
-sip_prototype_django/
-├── venv/                      # Entorno virtual de Python
+```
+SIPeIP/
+├── venv/                      # Entorno virtual de Python (configurado de manera local)
 ├── manage.py                  # Utilidad de línea de comandos de Django
 ├── sip_core_project/          # Directorio principal del proyecto Django
 │   ├── __init__.py

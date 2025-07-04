@@ -1,3 +1,56 @@
-from django.shortcuts import render
+# ==============================================================================
+# ARCHIVO: apps/institutional_config/views.py
+# OBJETIVO: Definir la lógica de la API (qué hacer para cada petición).
+# ==============================================================================
+from rest_framework import viewsets, permissions
+from .models import Catalogo, ItemCatalogo, Entidad, UnidadOrganizacional, PeriodoPlanificacion
+from .serializers import (
+    CatalogoSerializer, ItemCatalogoSerializer, EntidadSerializer, UnidadOrganizacionalSerializer, \
+    PeriodoPlanificacionSerializer
+)
 
-# Create your views here.
+# Usamos ModelViewSet porque nos provee el CRUD completo (GET, POST, PUT, DELETE)
+# de forma automática, sin necesidad de escribir cada función por separado.
+
+class CatalogoViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint que permite ver, crear, editar y eliminar Catálogos.
+    Un catálogo agrupa ítems (ej. Catálogo 'SECTORES' agrupa ítems como 'Salud', 'Educación').
+    """
+    queryset = Catalogo.objects.all().prefetch_related('items') # prefetch_related optimiza la consulta anidada
+    serializer_class = CatalogoSerializer
+    # permission_classes = [permissions.IsAdminUser] # Podríamos restringir esto solo a administradores
+
+class ItemCatalogoViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint que permite ver, crear, editar y eliminar los Ítems de un Catálogo.
+    """
+    queryset = ItemCatalogo.objects.all()
+    serializer_class = ItemCatalogoSerializer
+    # permission_classes = [permissions.IsAdminUser] # Igualmente, restringir a administradores
+
+class EntidadViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para la gestión de Entidades del Estado.
+    """
+    # Usamos select_related para optimizar la consulta a la BD, trayendo los datos
+    # de las tablas relacionadas (ItemCatalogo) en una sola consulta.
+    queryset = Entidad.objects.select_related('nivel_gobierno', 'sector').all()
+    serializer_class = EntidadSerializer
+    # permission_classes = [permissions.IsAdminUser]
+
+class UnidadOrganizacionalViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para la gestión de Unidades Organizacionales dentro de una Entidad.
+    """
+    queryset = UnidadOrganizacional.objects.select_related('entidad', 'padre').all()
+    serializer_class = UnidadOrganizacionalSerializer
+    # permission_classes = [permissions.IsAdminUser]
+
+class PeriodoPlanificacionViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para la gestión de los Períodos de Planificación.
+    """
+    queryset = PeriodoPlanificacion.objects.all()
+    serializer_class = PeriodoPlanificacionSerializer
+    # permission_classes = [permissions.IsAdminUser]
