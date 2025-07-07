@@ -157,3 +157,27 @@ class Alineacion(models.Model):
                            'instrumento_destino_id')
     def __str__(self):
         return f"{self.instrumento_origen} -> {self.instrumento_destino}"
+
+class ProgramaInstitucional(models.Model):
+    programa_id = models.AutoField(primary_key=True)
+    entidad = models.ForeignKey(Entidad, on_delete=models.CASCADE, related_name='programas')
+    nombre = models.CharField(max_length=255)
+
+    # Un programa se alinea con uno o varios OEI
+    oei_alineados = models.ManyToManyField(
+        'ObjetivoEstrategicoInstitucional',
+        related_name='programas_alineados',
+        blank=True
+    )
+
+    version_actual = models.PositiveIntegerField(default=1)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_ultima_actualizacion = models.DateTimeField(auto_now=True)
+    creador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = "Programa Institucional"
+        verbose_name_plural = "Programas Institucionales"

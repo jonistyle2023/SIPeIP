@@ -1,10 +1,11 @@
-# Nuevo Sistema integral de Planificación e Inversión Pública (SIPeIP 2.0) de la Secretaría Nacional de Planificación
+# Nuevo Sistema Integral de Planificación e Inversión Pública (SIPeIP 2.0), de la Secretaría Nacional de Planificación
 
 > [!WARNING]
 > 
-> Este proyecto es una propuesta como caso de estudio de **Examen complexivo 2025** para estudiantes de la carrera de 
+> Este proyecto es una propuesta como caso de estudio de **Examen complexivo del periodo ABRIl - AGOSTO 2025** para estudiantes de la carrera de 
 > **_Tecnologías de la información_** de la **Universidad Técnica Particular de Loja**.
-> No pretende ser aprobado o supervisado por alguna entidad pública del pais, solo se realiza con fines académicos.
+> 
+> No pretende ser aprobado o supervisado por alguna entidad pública del pais, solo se realiza para fines académicos.
 
 >[!IMPORTANT] 
 > 
@@ -12,8 +13,10 @@
 
 > [!NOTE]
 > 
-> Detalles de la propuesta:
-> - **Título:** Nuevo Sistema Integral de Planificación e Inversión Pública - **SIPeIP 2.0**
+> Información General:
+> - **Nombre del Proyecto:** Nuevo Sistema Integral de Planificación e Inversión Pública - **SIPeIP 2.0**
+> - **Versión del Software:** v1.
+> - **Tiempo de planificación y desarrollo:** 4 meses.
 > - **Desarrollado por:** Jonathan David Panchana Rodríguez.
 
 ---
