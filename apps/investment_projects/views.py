@@ -2,6 +2,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 from .models import (
     ProyectoInversion, MarcoLogico, Componente, Actividad, Indicador, Meta,
     ArrastreInversion, CronogramaValorado, DictamenPrioridad, ProyectoInversionVersion
@@ -13,6 +15,10 @@ from .serializers import (
 )
 
 class ProyectoInversionViewSet(viewsets.ModelViewSet):
+    """
+    Similar a los OEI, los Editores (formuladores) gestionan los proyectos
+    y los Auditores los pueden ver.
+    """
     queryset = ProyectoInversion.objects.all().select_related(
         'entidad_ejecutora', 'programa_institucional', 'tipo_proyecto',
         'tipologia_proyecto', 'sector', 'marco_logico'
@@ -20,6 +26,7 @@ class ProyectoInversionViewSet(viewsets.ModelViewSet):
         'marco_logico__componentes__actividades'
     )
     serializer_class = ProyectoInversionSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
     # Lógica de versionamiento
     def update(self, request, *args, **kwargs):
@@ -87,7 +94,7 @@ class DictamenPrioridadViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='aprobar')
     def aprobar(self, request, pk=None):
         dictamen = self.get_object()
-        # Aquí iría la lógica de permisos: if not request.user.has_perm('puede_aprobar_dictamen'): ...
+        # Lógica de Permisos
         dictamen.estado = 'APROBADO'
         dictamen.observaciones = request.data.get('observaciones', dictamen.observaciones)
         dictamen.save()

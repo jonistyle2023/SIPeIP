@@ -24,8 +24,7 @@ class ProyectoInversion(models.Model):
     programa_institucional = models.ForeignKey(ProgramaInstitucional, on_delete=models.SET_NULL, null=True, blank=True,
                                                related_name='proyectos')
 
-    # Categorización (Criterio de Aceptación: Formulación)
-    # Estos campos se llenarán desde los catálogos del módulo de configuración
+    # Categorización (Formulación)
     tipo_proyecto = models.ForeignKey(ItemCatalogo, on_delete=models.PROTECT, related_name='proyectos_por_tipo',
                                       limit_choices_to={'catalogo__codigo': 'TIPO_PROYECTO'})
     tipologia_proyecto = models.ForeignKey(ItemCatalogo, on_delete=models.PROTECT,
@@ -35,9 +34,9 @@ class ProyectoInversion(models.Model):
                                limit_choices_to={'catalogo__codigo': 'SECTORES'})
 
     estado = models.CharField(max_length=50,
-                              default='EN_FORMULACION')  # Ej: EN_FORMULACION, PENDIENTE_DICTAMEN, APROBADO, EN_EJECUCION
+                              default='EN_FORMULACION')
 
-    # Campos para versionamiento
+    # Versionamiento
     version_actual = models.PositiveIntegerField(default=1)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_ultima_actualizacion = models.DateTimeField(auto_now=True)
@@ -92,7 +91,6 @@ class Actividad(models.Model):
         return self.descripcion[:100]
 
 # Modelos genéricos para Indicadores y Metas, adaptados de tu script
-# Usaremos GenericForeignKey para que puedan vincularse a Propósito, Componentes, etc.
 class Indicador(models.Model):
     indicador_id = models.AutoField(primary_key=True)
     descripcion = models.TextField()

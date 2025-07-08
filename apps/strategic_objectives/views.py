@@ -5,7 +5,9 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.contenttypes.models import ContentType
+from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 from .models import (
     PlanNacionalDesarrollo, ObjetivoPND, PoliticaPND, MetaPND, IndicadorPND,
     ObjetivoDesarrolloSostenible, EstrategiaODS, MetaODS,
@@ -97,8 +99,14 @@ class PlanInstitucionalVersionViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ['plan_institucional']
 
 class ObjetivoEstrategicoInstitucionalViewSet(viewsets.ModelViewSet):
+    """
+    - Los Editores pueden crear y modificar OEI.
+    - Los Auditores pueden verlos.
+    - Los Admins pueden hacer todo.
+    """
     queryset = ObjetivoEstrategicoInstitucional.objects.all()
     serializer_class = ObjetivoEstrategicoInstitucionalSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class PlanSectorialViewSet(viewsets.ModelViewSet):
     queryset = PlanSectorial.objects.all()

@@ -6,10 +6,9 @@ from .models import (
     Indicador, Meta, ArrastreInversion, CronogramaValorado,
     DictamenPrioridad
 )
-# Importamos el serializer genérico que ya creamos para reutilizarlo
 from apps.strategic_objectives.serializers import GenericRelatedObjectSerializer
 
-# --- Serializers para el Marco Lógico (de adentro hacia afuera) ---
+# --- Serializers para el Marco Lógico ---
 
 class MetaSerializer(serializers.ModelSerializer):
     class Meta:

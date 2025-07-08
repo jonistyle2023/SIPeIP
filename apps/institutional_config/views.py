@@ -16,10 +16,11 @@ class CatalogoViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite ver, crear, editar y eliminar Catálogos.
     Un catálogo agrupa ítems (ej. Catálogo 'SECTORES' agrupa ítems como 'Salud', 'Educación').
+    NOTA: Solo los administradores pueden gestionar los catálogos
     """
     queryset = Catalogo.objects.all().prefetch_related('items') # prefetch_related optimiza la consulta anidada
     serializer_class = CatalogoSerializer
-    # permission_classes = [permissions.IsAdminUser] # Podríamos restringir esto solo a administradores
+    permission_classes = [permissions.IsAdminUser] # RESTRICCIÓN
 
 class ItemCatalogoViewSet(viewsets.ModelViewSet):
     """
