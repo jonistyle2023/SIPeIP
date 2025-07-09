@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Usuario, RegistroAuditoria, Rol
-from rest_framework.authtoken.models import Token
 import re
 
 class RolSerializer(serializers.ModelSerializer):
@@ -15,7 +14,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
     )
     token = serializers.CharField(source='auth_token.key', read_only=True)
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-
     class Meta:
         model = Usuario
         fields = [
@@ -25,7 +23,8 @@ class UsuarioSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {'password': {'write_only': True}}
 
-    def validate_password(self, value):
+    @staticmethod
+    def validate_password(value):
         if not re.search(r'[A-Z]', value): raise serializers.ValidationError("La contraseña debe contener al menos una letra mayúscula.")
         if not re.search(r'[a-z]', value): raise serializers.ValidationError("La contraseña debe contener al menos una letra minúscula.")
         if not re.search(r'[0-9]', value): raise serializers.ValidationError("La contraseña debe contener al menos un número.")
@@ -43,10 +42,8 @@ class UsuarioSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if 'password' in validated_data:
             instance.set_password(validated_data.pop('password'))
-
         roles_data = validated_data.pop('roles', None)
         instance = super().update(instance, validated_data)
-
         if roles_data is not None:
             instance.roles.set(roles_data)
         return instance
@@ -55,3 +52,10 @@ class RegistroAuditoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistroAuditoria
         fields = '__all__'
+
+
+class ValidationError:
+    def __init__(self):
+        self.detail = None
+
+    pass

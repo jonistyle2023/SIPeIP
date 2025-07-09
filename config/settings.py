@@ -156,5 +156,5 @@ AUTH_USER_MODEL = 'authentication.Usuario'
 
 ALLOWED_HOSTS = ['kubernetes.docker.internal', 'localhost', '127.0.0.1']
 
-# Solo para el desarrollo dejamos abierto el puerto
+# Solo para el desarrollo dejaré abierto el puerto para facilitar la comunicación con el frontEnd
 CORS_ALLOW_ALL_ORIGINS = True

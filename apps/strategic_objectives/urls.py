@@ -1,8 +1,3 @@
-# ==============================================================================
-# ARCHIVO: apps/strategic_objectives/urls.py
-# OBJETIVO: Definir las rutas (URLs) para este módulo.
-# NOTA: Debes crear este archivo si no existe.
-# ==============================================================================
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
@@ -28,6 +23,5 @@ router.register(r'planes-institucionales-versiones', views.PlanInstitucionalVers
 
 urlpatterns = [
     path('', include(router.urls)),
-    # Ruta para la vista de ayuda
     path('list-alignable-types/', views.AlignableContentTypesListView.as_view(), name='list-alignable-types'),
 ]

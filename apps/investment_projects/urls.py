@@ -1,4 +1,3 @@
-# Propósito: Definir las rutas (URLs) para este módulo (Gestión de proyectos de inversión).
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views

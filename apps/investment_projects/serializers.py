@@ -8,7 +8,7 @@ from .models import (
 )
 from apps.strategic_objectives.serializers import GenericRelatedObjectSerializer
 
-# --- Serializers para el Marco Lógico ---
+# --- Marco Lógico ---
 
 class MetaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -71,15 +71,11 @@ class DictamenPrioridadSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('estado', 'fecha_solicitud') # El estado se maneja con acciones
 
-# --- SERIALIZER PRINCIPAL ACTUALIZADO ---
-
 class ProyectoInversionSerializer(serializers.ModelSerializer):
     tipo_proyecto_nombre = serializers.CharField(source='tipo_proyecto.nombre', read_only=True)
     tipologia_proyecto_nombre = serializers.CharField(source='tipologia_proyecto.nombre', read_only=True)
     sector_nombre = serializers.CharField(source='sector.nombre', read_only=True)
     marco_logico = MarcoLogicoSerializer(read_only=True)
-
-    # AÑADIMOS LOS NUEVOS MODELOS ANIDADOS
     dictamenes = DictamenPrioridadSerializer(many=True, read_only=True)
     arrastres = ArrastreInversionSerializer(many=True, read_only=True)
 

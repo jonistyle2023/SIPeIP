@@ -4,13 +4,10 @@ from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-
-# Importamos modelos de otros módulos con los que nos conectaremos
 from apps.institutional_config.models import Entidad, ItemCatalogo
 from apps.strategic_objectives.models import ProgramaInstitucional
 
 # --- Modelo Principal del Proyecto de Inversión ---
-
 class ProyectoInversion(models.Model):
     # El CUP se genera al final, por lo que no puede ser el PK.
     # Usamos un AutoField como PK y un campo aparte para el CUP.
@@ -19,11 +16,9 @@ class ProyectoInversion(models.Model):
                            help_text="Código Único de Proyecto, generado al final del proceso")
     nombre = models.CharField(max_length=500)
     entidad_ejecutora = models.ForeignKey(Entidad, on_delete=models.PROTECT, related_name='proyectos_ejecutados')
-
     # Vinculación con la planificación estratégica
     programa_institucional = models.ForeignKey(ProgramaInstitucional, on_delete=models.SET_NULL, null=True, blank=True,
                                                related_name='proyectos')
-
     # Categorización (Formulación)
     tipo_proyecto = models.ForeignKey(ItemCatalogo, on_delete=models.PROTECT, related_name='proyectos_por_tipo',
                                       limit_choices_to={'catalogo__codigo': 'TIPO_PROYECTO'})
@@ -32,16 +27,13 @@ class ProyectoInversion(models.Model):
                                            limit_choices_to={'catalogo__codigo': 'TIPOLOGIA_PROYECTO'})
     sector = models.ForeignKey(ItemCatalogo, on_delete=models.PROTECT, related_name='proyectos_por_sector',
                                limit_choices_to={'catalogo__codigo': 'SECTORES'})
-
     estado = models.CharField(max_length=50,
                               default='EN_FORMULACION')
-
     # Versionamiento
     version_actual = models.PositiveIntegerField(default=1)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_ultima_actualizacion = models.DateTimeField(auto_now=True)
     creador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-
     def __str__(self):
         return f"{self.cup or '[SIN CUP]'} - {self.nombre}"
 
@@ -64,7 +56,6 @@ class MarcoLogico(models.Model):
     proyecto = models.OneToOneField(ProyectoInversion, on_delete=models.CASCADE, related_name='marco_logico')
     fin = models.TextField(help_text="El objetivo de desarrollo al cual el proyecto contribuye.")
     proposito = models.TextField(help_text="El resultado directo o el efecto esperado al finalizar el proyecto.")
-
     def __str__(self):
         return f"Marco Lógico para {self.proyecto.nombre}"
 
@@ -75,7 +66,6 @@ class Componente(models.Model):
     nombre = models.CharField(max_length=500)
     descripcion = models.TextField(blank=True, null=True)
     ponderacion = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
-
     def __str__(self):
         return self.nombre
 
@@ -86,7 +76,6 @@ class Actividad(models.Model):
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-
     def __str__(self):
         return self.descripcion[:100]
 
@@ -96,12 +85,10 @@ class Indicador(models.Model):
     descripcion = models.TextField()
     formula = models.TextField(blank=True, null=True)
     unidad_medida = models.CharField(max_length=100)
-
     # Relación genérica para vincularse a cualquier otro modelo
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     objeto_asociado = GenericForeignKey('content_type', 'object_id')
-
     def __str__(self):
         return self.descripcion
 
@@ -111,7 +98,6 @@ class Meta(models.Model):
     linea_base = models.DecimalField(max_digits=15, decimal_places=2)
     valor_meta = models.DecimalField(max_digits=15, decimal_places=2)
     periodo_anualizado = models.CharField(max_length=50, help_text="Ej: 2025")
-
     def __str__(self):
         return f"Meta: {self.valor_meta} {self.indicador.unidad_medida}"
 
@@ -123,7 +109,6 @@ class CronogramaValorado(models.Model):
     actividad = models.ForeignKey(Actividad, on_delete=models.CASCADE, related_name='cronograma')
     periodo = models.CharField(max_length=7, help_text="Formato AAAA-MM")
     valor_programado = models.DecimalField(max_digits=15, decimal_places=2)
-
     def __str__(self):
         return f"{self.actividad.descripcion[:30]}... ({self.periodo}): {self.valor_programado}"
 

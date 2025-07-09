@@ -1,18 +1,16 @@
-# ==============================================================================
-# ARCHIVO: apps/institutional_config/serializers.py
 # OBJETIVO: Convertir los modelos de Python a JSON para la API.
-# ==============================================================================
+
 from rest_framework import serializers
 from .models import Catalogo, ItemCatalogo, Entidad, UnidadOrganizacional, PeriodoPlanificacion
 
-# Serializer para el modelo ItemCatalogo
+# ItemCatalogo
 # Este serializer se usará para el CRUD completo de los ítems.
 class ItemCatalogoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemCatalogo
         fields = ['id', 'catalogo', 'nombre', 'codigo', 'activo']
 
-# Serializer para el modelo Catalogo
+# Catálogo
 # Incluye una vista anidada y de solo lectura de sus ítems para dar más contexto.
 class CatalogoSerializer(serializers.ModelSerializer):
     # Usamos el 'related_name' que definimos en el modelo ItemCatalogo ('items')
@@ -24,7 +22,7 @@ class CatalogoSerializer(serializers.ModelSerializer):
         model = Catalogo
         fields = ['id', 'nombre', 'codigo', 'descripcion', 'items']
 
-# Serializer para Entidad
+# Entidad
 class EntidadSerializer(serializers.ModelSerializer):
     # Para la LECTURA (GET), mostramos el nombre del ítem del catálogo, no solo su ID.
     # Esto hace la API mucho más legible para el frontend.
@@ -48,7 +46,7 @@ class EntidadSerializer(serializers.ModelSerializer):
             'sector': {'write_only': True, 'required': False, 'allow_null': True},
         }
 
-# Serializer para UnidadOrganizacional
+# UnidadOrganizacional
 class UnidadOrganizacionalSerializer(serializers.ModelSerializer):
     entidad_nombre = serializers.CharField(source='entidad.nombre', read_only=True)
     padre_nombre = serializers.CharField(source='padre.nombre', read_only=True, allow_null=True)
@@ -64,7 +62,7 @@ class UnidadOrganizacionalSerializer(serializers.ModelSerializer):
             'padre': {'write_only': True, 'required': False, 'allow_null': True},
         }
 
-# Serializer para PeriodoPlanificacion
+# PeriodoPlanificacion
 class PeriodoPlanificacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PeriodoPlanificacion

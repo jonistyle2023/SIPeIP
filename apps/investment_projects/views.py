@@ -43,7 +43,7 @@ class ProyectoInversionViewSet(viewsets.ModelViewSet):
 
     # Acción personalizada para generar el CUP
     @action(detail=True, methods=['post'], url_path='generar-cup')
-    def generar_cup(self, request, pk=None):
+    def generar_cup(self, request):
         proyecto = self.get_object()
         if proyecto.cup:
             return Response({'error': 'Este proyecto ya tiene un CUP asignado.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -92,16 +92,15 @@ class DictamenPrioridadViewSet(viewsets.ModelViewSet):
     serializer_class = DictamenPrioridadSerializer
 
     @action(detail=True, methods=['post'], url_path='aprobar')
-    def aprobar(self, request, pk=None):
+    def aprobar(self, request):
         dictamen = self.get_object()
-        # Lógica de Permisos
         dictamen.estado = 'APROBADO'
         dictamen.observaciones = request.data.get('observaciones', dictamen.observaciones)
         dictamen.save()
         return Response({'status': 'Dictamen aprobado'})
 
     @action(detail=True, methods=['post'], url_path='rechazar')
-    def rechazar(self, request, pk=None):
+    def rechazar(self, request):
         dictamen = self.get_object()
         dictamen.estado = 'RECHAZADO'
         dictamen.observaciones = request.data.get('observaciones', 'Rechazado sin observaciones.')

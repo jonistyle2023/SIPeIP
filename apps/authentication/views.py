@@ -30,7 +30,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] # Cambiar a permisos más restrictivos
 
     @action(detail=True, methods=['patch'], url_path='desactivar')
-    def desactivar_usuario(self, request, pk=None):
+    def desactivar_usuario(self, request):
         usuario = self.get_object()
         if not usuario.is_active:
             return Response({"mensaje": "El usuario ya está desactivado."}, status=status.HTTP_400_BAD_REQUEST)
@@ -40,7 +40,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         return Response({"mensaje": "Usuario desactivado correctamente."}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['patch'], url_path='activar')
-    def activar_usuario(self, request, pk=None):
+    def activar_usuario(self, request):
         usuario = self.get_object()
         if usuario.is_active:
             return Response({"mensaje": "El usuario ya está activo."}, status=status.HTTP_400_BAD_REQUEST)
@@ -50,18 +50,15 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         return Response({"mensaje": "Usuario activado correctamente."}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'], url_path='ultimo-acceso')
-    def obtener_ultimo_acceso(self, request, pk=None):
+    def obtener_ultimo_acceso(self, request):
         usuario = self.get_object()
         return Response({"nombre_usuario": usuario.nombre_usuario, "ultimo_acceso": usuario.ultimo_acceso})
-
     def perform_create(self, serializer):
         usuario = serializer.save()
         RegistroAuditoria.objects.create(usuario=usuario, accion='Crear', funcionalidad='Gestión de Usuarios', entidad_afectada_id=usuario.id)
-
     def perform_update(self, serializer):
         usuario = serializer.save()
         RegistroAuditoria.objects.create(usuario=usuario, accion='Actualizar', funcionalidad='Gestión de Usuarios', entidad_afectada_id=usuario.id)
-
     def perform_destroy(self, instance):
         RegistroAuditoria.objects.create(usuario=instance, accion='Eliminar', funcionalidad='Gestión de Usuarios', entidad_afectada_id=instance.id)
         super().perform_destroy(instance)
@@ -77,15 +74,12 @@ class LoginView(APIView):
     def post(self, request):
         nombre_usuario = request.data.get("nombre_usuario")
         password = request.data.get("clave") # Aceptamos 'clave' del frontend
-
         try:
             usuario = Usuario.objects.get(nombre_usuario=nombre_usuario)
         except Usuario.DoesNotExist:
             return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
-
         if not usuario.is_active:
             return Response({"error": "Usuario desactivado. Contacte con un administrador."}, status=status.HTTP_403_FORBIDDEN)
-
         if usuario.esta_bloqueado:
             tiempo_bloqueo = timezone.now() - usuario.fecha_bloqueo
             if tiempo_bloqueo < timedelta(minutes=self.BLOQUEO_MINUTOS):
@@ -117,13 +111,15 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
-    def post(self, request):
+    @staticmethod
+    def post(request):
         Token.objects.filter(user=request.user).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CambioClaveView(APIView):
     permission_classes = [IsAuthenticated]
-    def post(self, request):
+    @staticmethod
+    def post(request):
         usuario = request.user
         clave_actual = request.data.get("clave_actual")
         nueva_clave = request.data.get("nueva_clave")

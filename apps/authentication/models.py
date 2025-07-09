@@ -1,12 +1,12 @@
 from django.db import models
+from django.db.models.signals import post_save
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
-# MODELO PARA ROLES
+# ROLES
 class Rol(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField(blank=True, null=True)
@@ -14,7 +14,7 @@ class Rol(models.Model):
     def __str__(self):
         return self.nombre
 
-# MODELO DE USUARIO PERSONALIZADO
+# USUARIO PERSONALIZADO
 class UsuarioManager(BaseUserManager):
     def create_user(self, nombre_usuario, password=None, **extra_fields):
         if not nombre_usuario:
@@ -29,7 +29,7 @@ class UsuarioManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(nombre_usuario, password, **extra_fields)
 
-# MODELO DE USUARIO MODIFICADO PARA HEREDAR DE DJANGO
+# USUARIO PARA HEREDAR DE DJANGO
 class Usuario(AbstractBaseUser, PermissionsMixin):
     nombre_usuario = models.CharField(max_length=150, unique=True)
     entidad_codigo = models.CharField(max_length=50, null=True, blank=True)

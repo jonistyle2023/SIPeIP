@@ -1,11 +1,10 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-# --- Clases de Permisos Basadas en Roles ---
+# --- Permisos Basados en Roles ---
 
 class IsAdmin(BasePermission):
     """
     Permite acceso solo a usuarios con el rol 'Administrador (Admin)' o 'Super Administrador'.
-    Asumimos que estos roles se llaman así en la base de datos.
     """
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
@@ -32,7 +31,7 @@ class IsAuditor(BasePermission):
 class IsEditor(BasePermission):
     """
     Permite acceso a cualquier usuario que tenga uno de los roles de "Editor".
-    Esta es una clase genérica. Se pueden crear clases más específicas si es necesario.
+    De momento es una clase genérica. Se pueden crear clases más específicas si es necesario.
     """
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
@@ -48,7 +47,7 @@ class IsEditor(BasePermission):
         ]
         return request.user.roles.filter(nombre__in=roles_editor).exists()
 
-# --- Ejemplo de Permiso a Nivel de Objeto ---
+# --- Permiso a Nivel de Objeto ---
 
 class IsOwnerOfPlan(BasePermission):
     """
@@ -58,12 +57,9 @@ class IsOwnerOfPlan(BasePermission):
         # Permisos de lectura para todos los autenticados
         if request.method in SAFE_METHODS:
             return True
-
         # El creador del objeto puede editarlo
         # Asumimos que el objeto (ej. PlanInstitucional) tiene un campo 'creador'
         is_owner = obj.creador == request.user
-
         # Un admin también puede editarlo
         is_admin = request.user.roles.filter(nombre="Administrador (Admin)").exists()
-
         return is_owner or is_admin

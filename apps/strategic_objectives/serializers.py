@@ -1,7 +1,3 @@
-# ==============================================================================
-# ARCHIVO: apps/strategic_objectives/serializers.py
-# OBJETIVO: Convertir los modelos de PND y ODS a formato JSON.
-# ==============================================================================
 from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
 from .models import (
@@ -10,55 +6,57 @@ from .models import (
     PlanInstitucional, ObjetivoEstrategicoInstitucional, PlanSectorial, Alineacion, PlanInstitucionalVersion
 )
 
-# --- Serializers para el Plan Nacional de Desarrollo (PND) ---
+# --- Plan Nacional de Desarrollo (PND) ---
+
 class IndicadorPNDSerializer(serializers.ModelSerializer):
     class Meta:
         model = IndicadorPND
-        fields = '__all__'
+        fields = {'indicador_id', 'meta', 'codigo', 'descripcion', 'unidad_medida', 'activo'}
 
 class MetaPNDSerializer(serializers.ModelSerializer):
     indicadores = IndicadorPNDSerializer(many=True, read_only=True)
     class Meta:
         model = MetaPND
-        fields = '__all__'
+        fields = {'meta_id', 'politica', 'codigo', 'descripcion', 'activo', 'indicadores'}
 
 class PoliticaPNDSerializer(serializers.ModelSerializer):
     metas = MetaPNDSerializer(many=True, read_only=True)
     class Meta:
         model = PoliticaPND
-        fields = '__all__'
+        fields = {'politica_id', 'objetivo', 'codigo', 'descripcion', 'activo', 'metas'}
 
 class ObjetivoPNDSerializer(serializers.ModelSerializer):
     politicas = PoliticaPNDSerializer(many=True, read_only=True)
     class Meta:
         model = ObjetivoPND
-        fields = '__all__'
+        fields = {'objetivo_id', 'plan', 'codigo', 'descripcion', 'activo', 'politicas'}
 
 class PlanNacionalDesarrolloSerializer(serializers.ModelSerializer):
     objetivos = ObjetivoPNDSerializer(many=True, read_only=True)
     class Meta:
         model = PlanNacionalDesarrollo
-        fields = '__all__'
+        fields = {'plan_id', 'nombre', 'periodo', 'estado', 'fecha_creacion', 'objetivos'}
 
-# --- Serializers para los Objetivos de Desarrollo Sostenible (ODS) ---
+# --- Objetivos de Desarrollo Sostenible (ODS) ---
+
 class MetaODSSerializer(serializers.ModelSerializer):
     class Meta:
         model = MetaODS
-        fields = '__all__'
+        fields = {'meta_id', 'estrategia', 'codigo', 'descripcion', 'activo'}
 
 class EstrategiaODSSerializer(serializers.ModelSerializer):
     metas = MetaODSSerializer(many=True, read_only=True)
     class Meta:
         model = EstrategiaODS
-        fields = '__all__'
+        fields = {'estrategia_id', 'objetivo', 'codigo', 'descripcion', 'activo', 'metas'}
 
 class ObjetivoDesarrolloSostenibleSerializer(serializers.ModelSerializer):
     estrategias = EstrategiaODSSerializer(many=True, read_only=True)
     class Meta:
         model = ObjetivoDesarrolloSostenible
-        fields = '__all__'
+        fields = {'ods_id', 'codigo', 'descripcion', 'activo', 'estrategias'}
 
-# --- SERIALIZERS PARA PLANES INSTITUCIONALES Y ALINEACIÓN
+# --- PLANES INSTITUCIONALES Y ALINEACIÓN
 
 class ObjetivoEstrategicoInstitucionalSerializer(serializers.ModelSerializer):
     class Meta:
@@ -66,23 +64,22 @@ class ObjetivoEstrategicoInstitucionalSerializer(serializers.ModelSerializer):
         fields = ['oei_id', 'plan_institucional', 'codigo', 'descripcion', 'activo']
 
 class PlanInstitucionalSerializer(serializers.ModelSerializer):
-    # Anidamos los OEI para verlos al consultar un plan
     objetivos_estrategicos = ObjetivoEstrategicoInstitucionalSerializer(many=True, read_only=True)
 
     class Meta:
         model = PlanInstitucional
         fields = [
             'plan_institucional_id', 'entidad', 'periodo', 'estado',
-            'fecha_creacion', 'fecha_ultima_actualizacion', 'creador',
-            'objetivos_estrategicos'
+            'version_actual', 'fecha_creacion', 'fecha_ultima_actualizacion',
+            'creador', 'objetivos_estrategicos'
         ]
 
 class PlanSectorialSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanSectorial
-        fields = '__all__'
+        fields = {'plan_sectorial_id', 'nombre', 'sector', 'periodo', 'estado', 'fecha_creacion'}
 
-# Serializer para representar un objeto genérico de forma legible
+# Representar un objeto genérico de forma legible
 class GenericRelatedObjectSerializer(serializers.Field):
     def to_representation(self, value):
         return {
@@ -95,7 +92,6 @@ class AlineacionSerializer(serializers.ModelSerializer):
     # Para LECTURA, usamos el serializer personalizado para dar una respuesta clara
     instrumento_origen = GenericRelatedObjectSerializer(read_only=True)
     instrumento_destino = GenericRelatedObjectSerializer(read_only=True)
-
     # Para ESCRITURA, esperamos los IDs de ContentType y los IDs de los objetos
     instrumento_origen_tipo = serializers.PrimaryKeyRelatedField(
         queryset=ContentType.objects.all(), write_only=True
@@ -119,21 +115,8 @@ class AlineacionSerializer(serializers.ModelSerializer):
             'usuario_creacion'
         ]
 
-# AÑADIMOS EL CAMPO DE VERSIÓN AL SERIALIZER DEL PLAN
-class PlanInstitucionalSerializer(serializers.ModelSerializer):
-    objetivos_estrategicos = ObjetivoEstrategicoInstitucionalSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = PlanInstitucional
-        fields = [
-            'plan_institucional_id', 'entidad', 'periodo', 'estado',
-            'version_actual', # <-- AÑADIDO
-            'fecha_creacion', 'fecha_ultima_actualizacion', 'creador',
-            'objetivos_estrategicos'
-        ]
-
-# NUEVO SERIALIZER PARA LAS VERSIONES HISTÓRICAS
 class PlanInstitucionalVersionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanInstitucionalVersion
-        fields = '__all__'
+        fields = {'version_id', 'plan_institucional', 'numero_version', 'fecha_version', 'usuario_version',
+                  'cambios_realizados'}

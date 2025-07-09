@@ -1,7 +1,5 @@
-# ==============================================================================
-# ARCHIVO: apps/institutional_config/views.py
 # OBJETIVO: Definir la lógica de la API (qué hacer para cada petición).
-# ==============================================================================
+
 from rest_framework import viewsets, permissions
 from .models import Catalogo, ItemCatalogo, Entidad, UnidadOrganizacional, PeriodoPlanificacion
 from .serializers import (
@@ -9,7 +7,7 @@ from .serializers import (
     PeriodoPlanificacionSerializer
 )
 
-# Usamos ModelViewSet porque nos provee el CRUD completo (GET, POST, PUT, DELETE)
+# ModelViewSet porque provee el CRUD completo (GET, POST, PUT, DELETE)
 # de forma automática, sin necesidad de escribir cada función por separado.
 
 class CatalogoViewSet(viewsets.ModelViewSet):
@@ -34,7 +32,7 @@ class EntidadViewSet(viewsets.ModelViewSet):
     """
     API endpoint para la gestión de Entidades del Estado.
     """
-    # Usamos select_related para optimizar la consulta a la BD, trayendo los datos
+    # select_related para optimizar la consulta a la BD, trayendo los datos
     # de las tablas relacionadas (ItemCatalogo) en una sola consulta.
     queryset = Entidad.objects.select_related('nivel_gobierno', 'sector').all()
     serializer_class = EntidadSerializer

@@ -1,14 +1,12 @@
-# ==============================================================================
-# ARCHIVO: apps/strategic_objectives/models.py
 # OBJETIVO: Modelos adaptados para reflejar el script de la base de datos existente.
-# ==============================================================================
+
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from apps.institutional_config.models import Entidad, PeriodoPlanificacion
 
-# --- Modelos para el Plan Nacional de Desarrollo (PND) ---
+# --- Plan Nacional de Desarrollo (PND) ---
 
 class PlanNacionalDesarrollo(models.Model):
     pnd_id = models.AutoField(primary_key=True)
@@ -50,7 +48,7 @@ class IndicadorPND(models.Model):
     def __str__(self):
         return self.codigo
 
-# --- Modelos para los Objetivos de Desarrollo Sostenible (ODS) ---
+# --- Objetivos de Desarrollo Sostenible (ODS) ---
 
 class ObjetivoDesarrolloSostenible(models.Model):
     ods_id = models.AutoField(primary_key=True)
@@ -76,31 +74,28 @@ class MetaODS(models.Model):
     def __str__(self):
         return self.codigo
 
-# --- Modelos para Planes Institucionales y Sectoriales ---
+# --- Planes Institucionales y Sectoriales ---
+
 class PlanInstitucional(models.Model):
     ESTADO_CHOICES = [('BORRADOR', 'Borrador'), ('VALIDADO', 'Validado'), ('APROBADO', 'Aprobado')]
     plan_institucional_id = models.AutoField(primary_key=True)
     entidad = models.ForeignKey(Entidad, on_delete=models.PROTECT)
     periodo = models.ForeignKey(PeriodoPlanificacion, on_delete=models.PROTECT)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='BORRADOR')
-
-    # CAMPO AÑADIDO PARA VERSIONAMIENTO
     version_actual = models.PositiveIntegerField(default=1, help_text="La versión actual del plan")
-
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_ultima_actualizacion = models.DateTimeField(auto_now=True)
     creador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='planes_creados')
     def __str__(self):
         return f"Plan de {self.entidad.nombre} ({self.periodo.nombre}) v{self.version_actual}"
 
-# NUEVO MODELO PARA HISTÓRICO DE VERSIONES
+# HISTÓRICO DE VERSIONES
 class PlanInstitucionalVersion(models.Model):
     version_id = models.AutoField(primary_key=True)
     plan_institucional = models.ForeignKey(PlanInstitucional, on_delete=models.CASCADE, related_name='versiones')
     numero_version = models.PositiveIntegerField()
     fecha_version = models.DateTimeField(auto_now_add=True)
     usuario_responsable = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-
     # Usamos JSONField para guardar una "foto" flexible de los datos del plan.
     datos = models.JSONField(help_text="Snapshot de los datos del plan en esta versión")
     class Meta:
@@ -162,7 +157,6 @@ class ProgramaInstitucional(models.Model):
     programa_id = models.AutoField(primary_key=True)
     entidad = models.ForeignKey(Entidad, on_delete=models.CASCADE, related_name='programas')
     nombre = models.CharField(max_length=255)
-
     # Un programa se alinea con uno o varios OEI
     oei_alineados = models.ManyToManyField(
         'ObjetivoEstrategicoInstitucional',
@@ -174,7 +168,6 @@ class ProgramaInstitucional(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_ultima_actualizacion = models.DateTimeField(auto_now=True)
     creador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-
     def __str__(self):
         return self.nombre
 
