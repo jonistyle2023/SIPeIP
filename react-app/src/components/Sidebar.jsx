@@ -20,8 +20,8 @@ export default function Sidebar({ activePage, setActivePage }) {
 
     return (
         <div className="w-64 bg-white shadow-md flex flex-col">
-            <div className="p-4 border-b flex items-center">
-                <div className="w-10 h-10 bg-blue-500 rounded-full mr-3"></div>
+            <div className="p-4 flex items-center">
+                <img src="./src/assets/images/logo.png" alt="Logo SIPeIP" className="w-10 h-10 rounded-full mr-3 object-cover" />
                 <div>
                     <h1 className="text-xl font-bold text-gray-800">SIPeIP</h1>
                     <p className="text-xs text-gray-500">Sistema de Planificación</p>

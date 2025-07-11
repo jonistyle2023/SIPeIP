@@ -11,20 +11,23 @@ export default function App() {
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
-        if (token) {
-            setUser({ nombre_usuario: 'j.doe', roles: ['Administrador (Admin)'] });
+        const usuario = localStorage.getItem('usuario');
+        if (token && usuario) {
+            setUser(JSON.parse(usuario));
             setIsAuthenticated(true);
         }
     }, []);
 
     const handleLoginSuccess = (userData) => {
         localStorage.setItem('authToken', userData.token);
+        localStorage.setItem('usuario', JSON.stringify(userData.usuario)); // Guarda el usuario
         setUser(userData.usuario);
         setIsAuthenticated(true);
     };
 
     const handleLogout = () => {
         localStorage.removeItem('authToken');
+        localStorage.removeItem('usuario'); // Elimina el usuario
         setUser(null);
         setIsAuthenticated(false);
         setCurrentPage('home');

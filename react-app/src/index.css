@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+:root {
+    --tw-font-sans: 'Roboto', ui-sans-serif, system-ui;
+}
