@@ -18,7 +18,7 @@ class CatalogoViewSet(viewsets.ModelViewSet):
     """
     queryset = Catalogo.objects.all().prefetch_related('items') # prefetch_related optimiza la consulta anidada
     serializer_class = CatalogoSerializer
-    permission_classes = [permissions.IsAdminUser] # RESTRICCIÓN
+    # permission_classes = [permissions.IsAdminUser] # RESTRICCIÓN
 
 class ItemCatalogoViewSet(viewsets.ModelViewSet):
     """

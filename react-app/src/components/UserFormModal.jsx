@@ -98,7 +98,7 @@ export default function UserFormModal({user, onClose, onSave}) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">{user ? 'Editar Usuario' : 'Nuevo Usuario'}</h3>

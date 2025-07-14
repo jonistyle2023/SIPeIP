@@ -13,6 +13,7 @@ class PlanNacionalDesarrollo(models.Model):
     nombre = models.CharField(max_length=255)
     periodo = models.CharField(max_length=50)
     fecha_publicacion = models.DateField()
+
     def __str__(self):
         return self.nombre
 
@@ -21,32 +22,40 @@ class ObjetivoPND(models.Model):
     pnd = models.ForeignKey(PlanNacionalDesarrollo, on_delete=models.CASCADE, related_name='objetivos')
     codigo = models.CharField(max_length=50)
     descripcion = models.TextField()
+
     def __str__(self):
         return f"{self.codigo} - {self.pnd.nombre}"
+
 
 class PoliticaPND(models.Model):
     politica_pnd_id = models.AutoField(primary_key=True)
     objetivo_pnd = models.ForeignKey(ObjetivoPND, on_delete=models.CASCADE, related_name='politicas')
     codigo = models.CharField(max_length=50)
     descripcion = models.TextField()
+
     def __str__(self):
         return self.codigo
+
 
 class MetaPND(models.Model):
     meta_pnd_id = models.AutoField(primary_key=True)
     politica_pnd = models.ForeignKey(PoliticaPND, on_delete=models.CASCADE, related_name='metas')
     codigo = models.CharField(max_length=50)
     descripcion = models.TextField()
+
     def __str__(self):
         return self.codigo
+
 
 class IndicadorPND(models.Model):
     indicador_pnd_id = models.AutoField(primary_key=True)
     meta_pnd = models.ForeignKey(MetaPND, on_delete=models.CASCADE, related_name='indicadores')
     codigo = models.CharField(max_length=50)
     descripcion = models.TextField()
+
     def __str__(self):
         return self.codigo
+
 
 # --- Objetivos de Desarrollo Sostenible (ODS) ---
 
@@ -55,24 +64,30 @@ class ObjetivoDesarrolloSostenible(models.Model):
     numero = models.IntegerField()
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
+
     def __str__(self):
         return f"ODS {self.numero}: {self.nombre}"
+
 
 class EstrategiaODS(models.Model):
     estrategia_ods_id = models.AutoField(primary_key=True)
     ods = models.ForeignKey(ObjetivoDesarrolloSostenible, on_delete=models.CASCADE, related_name='estrategias')
     codigo = models.CharField(max_length=50)
     descripcion = models.TextField()
+
     def __str__(self):
         return self.codigo
+
 
 class MetaODS(models.Model):
     meta_ods_id = models.AutoField(primary_key=True)
     estrategia_ods = models.ForeignKey(EstrategiaODS, on_delete=models.CASCADE, related_name='metas')
     codigo = models.CharField(max_length=50)
     descripcion = models.TextField()
+
     def __str__(self):
         return self.codigo
+
 
 # --- Planes Institucionales y Sectoriales ---
 
@@ -85,9 +100,12 @@ class PlanInstitucional(models.Model):
     version_actual = models.PositiveIntegerField(default=1, help_text="La versión actual del plan")
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_ultima_actualizacion = models.DateTimeField(auto_now=True)
-    creador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='planes_creados')
+    creador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
+                                related_name='planes_creados')
+
     def __str__(self):
         return f"Plan de {self.entidad.nombre} ({self.periodo.nombre}) v{self.version_actual}"
+
 
 # HISTÓRICO DE VERSIONES
 class PlanInstitucionalVersion(models.Model):
@@ -98,10 +116,13 @@ class PlanInstitucionalVersion(models.Model):
     usuario_responsable = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     # Usamos JSONField para guardar una "foto" flexible de los datos del plan.
     datos = models.JSONField(help_text="Snapshot de los datos del plan en esta versión")
+
     class Meta:
         ordering = ['-fecha_version']
+
     def __str__(self):
         return f"Versión {self.numero_version} de {self.plan_institucional.plan_institucional_id}"
+
 
 class ObjetivoEstrategicoInstitucional(models.Model):
     oei_id = models.AutoField(primary_key=True)
@@ -110,8 +131,10 @@ class ObjetivoEstrategicoInstitucional(models.Model):
     codigo = models.CharField(max_length=50)
     descripcion = models.TextField()
     activo = models.BooleanField(default=True)
+
     def __str__(self):
         return f"OEI {self.codigo} - {self.plan_institucional.entidad.nombre}"
+
 
 class PlanSectorial(models.Model):
     plan_sectorial_id = models.AutoField(primary_key=True)
@@ -119,8 +142,10 @@ class PlanSectorial(models.Model):
     periodo = models.CharField(max_length=50)
     entidad_responsable = models.ForeignKey(Entidad, on_delete=models.PROTECT)
     fecha_publicacion = models.DateField()
+
     def __str__(self):
         return self.nombre
+
 
 # --- Modelo de Alineación Genérica ---
 # Implementa la tabla 'alineacion' usando ContentType de Django para máxima flexibilidad.
@@ -150,8 +175,10 @@ class Alineacion(models.Model):
         # Evita duplicados en la alineación
         unique_together = ('instrumento_origen_tipo', 'instrumento_origen_id', 'instrumento_destino_tipo',
                            'instrumento_destino_id')
+
     def __str__(self):
         return f"{self.instrumento_origen} -> {self.instrumento_destino}"
+
 
 class ProgramaInstitucional(models.Model):
     programa_id = models.AutoField(primary_key=True)
@@ -168,9 +195,20 @@ class ProgramaInstitucional(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_ultima_actualizacion = models.DateTimeField(auto_now=True)
     creador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+
     def __str__(self):
         return self.nombre
 
     class Meta:
         verbose_name = "Programa Institucional"
         verbose_name_plural = "Programas Institucionales"
+
+
+class ObjetivoSectorial(models.Model):
+    objetivo_sectorial_id = models.AutoField(primary_key=True)
+    plan_sectorial = models.ForeignKey(PlanSectorial, on_delete=models.CASCADE, related_name='objetivos')
+    codigo = models.CharField(max_length=50)
+    descripcion = models.TextField()
+
+    def __str__(self):
+        return f"{self.codigo} - {self.plan_sectorial.nombre}"

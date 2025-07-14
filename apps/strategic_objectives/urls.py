@@ -11,6 +11,9 @@ router.register(r'pnd-politicas', views.PoliticaPNDViewSet, basename='pnd-politi
 router.register(r'pnd-metas', views.MetaPNDViewSet, basename='pnd-meta')
 router.register(r'pnd-indicadores', views.IndicadorPNDViewSet, basename='pnd-indicador')
 
+# Ruta de Plan Sectorial
+router.register(r'objetivos-sectoriales', views.ObjetivoSectorialViewSet, basename='objetivo-sectorial')
+
 # Rutas para ODS
 router.register(r'ods', views.ObjetivoDesarrolloSostenibleViewSet, basename='ods')
 router.register(r'ods-estrategias', views.EstrategiaODSViewSet, basename='ods-estrategia')
