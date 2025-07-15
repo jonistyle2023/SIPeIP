@@ -94,6 +94,7 @@ class MetaODS(models.Model):
 class PlanInstitucional(models.Model):
     ESTADO_CHOICES = [('BORRADOR', 'Borrador'), ('VALIDADO', 'Validado'), ('APROBADO', 'Aprobado')]
     plan_institucional_id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=255, default='', blank=True)
     entidad = models.ForeignKey(Entidad, on_delete=models.PROTECT)
     periodo = models.ForeignKey(PeriodoPlanificacion, on_delete=models.PROTECT)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='BORRADOR')
@@ -133,7 +134,7 @@ class ObjetivoEstrategicoInstitucional(models.Model):
     activo = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"OEI {self.codigo} - {self.plan_institucional.entidad.nombre}"
+        return f"OEI {self.codigo}: {self.descripcion[:50]}"
 
 
 class PlanSectorial(models.Model):
@@ -171,6 +172,11 @@ class Alineacion(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     usuario_creacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
+    ods_vinculados = models.ManyToManyField(
+        ObjetivoDesarrolloSostenible,
+        related_name='alineaciones',
+        blank=True
+    )
     class Meta:
         # Evita duplicados en la alineación
         unique_together = ('instrumento_origen_tipo', 'instrumento_origen_id', 'instrumento_destino_tipo',
@@ -211,4 +217,4 @@ class ObjetivoSectorial(models.Model):
     descripcion = models.TextField()
 
     def __str__(self):
-        return f"{self.codigo} - {self.plan_sectorial.nombre}"
+        return f"Sectorial {self.codigo}: {self.descripcion[:50]}"

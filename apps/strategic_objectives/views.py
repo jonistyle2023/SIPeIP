@@ -117,6 +117,18 @@ class AlineacionViewSet(viewsets.ModelViewSet):
     queryset = Alineacion.objects.all().select_related('instrumento_origen_tipo', 'instrumento_destino_tipo')
     serializer_class = AlineacionSerializer
 
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        ods_ids = self.request.data.get('ods_vinculados', [])
+        if ods_ids:
+            instance.ods_vinculados.set(ods_ids)
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        ods_ids = self.request.data.get('ods_vinculados', [])
+        if ods_ids is not None:
+            instance.ods_vinculados.set(ods_ids)
+
 
 class ObjetivoSectorialViewSet(viewsets.ModelViewSet):
     queryset = ObjetivoSectorial.objects.all()

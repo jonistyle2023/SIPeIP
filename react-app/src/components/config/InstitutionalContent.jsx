@@ -4,8 +4,8 @@ import {
     Database, CheckCircle, CalendarDays, Network
 } from 'lucide-react';
 import EntityFormModal from '../EntityFormModal';
-import CatalogManager from '../CatalogManager'; // <-- Se importa el CatalogManager mejorado
-import PeriodsManager from './PeriodsManager';
+import CatalogManager from '../CatalogManager';
+import {PeriodsManager} from './PeriodsManager';
 import UnitManager from './UnitManager';
 
 // --- Sub-componentes para la UI ---
@@ -17,6 +17,23 @@ const WorkflowStep = ({ number, title, description, color }) => ( <div className
 const EntityTable = ({ onEdit, refreshKey }) => {
     const [entities, setEntities] = useState([]);
     const [loading, setLoading] = useState(true);
+    // ...dentro de EntityTable...
+
+    const handleDelete = async (entityId) => {
+        if (!window.confirm('¿Está seguro de eliminar la entidad? Esta acción no se puede deshacer.')) return;
+        const token = localStorage.getItem('authToken');
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/entidades/${entityId}/`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Token ${token}` }
+            });
+            if (!response.ok) throw new Error("No se pudo eliminar la entidad");
+            setEntities(prev => prev.filter(e => e.id !== entityId));
+        } catch (error) {
+            alert("Error al eliminar la entidad.");
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
         const fetchEntities = async () => {
@@ -53,10 +70,18 @@ const EntityTable = ({ onEdit, refreshKey }) => {
                         <td className="p-3 font-medium text-gray-800">{entity.nombre}</td>
                         <td className="p-3">{entity.codigo_unico}</td>
                         <td className="p-3">{entity.nivel_gobierno_nombre}</td>
-                        <td className="p-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${entity.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{entity.activo ? 'Activo' : 'Inactivo'}</span></td>
+                        <td className="p-3"><span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${entity.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{entity.activo ? 'Activo' : 'Inactivo'}</span>
+                        </td>
                         <td className="p-3 flex items-center space-x-2">
-                            <button onClick={() => onEdit(entity)} className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16} /></button>
-                            <button className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16} /></button>
+                            <button onClick={() => onEdit(entity)} className="p-1 text-blue-500 hover:text-blue-700">
+                                <Edit size={16}/></button>
+                            <button
+                                onClick={() => handleDelete(entity.id)}
+                                className="p-1 text-red-500 hover:text-red-700"
+                            >
+                                <Trash2 size={16}/>
+                            </button>
                         </td>
                     </tr>
                 ))}

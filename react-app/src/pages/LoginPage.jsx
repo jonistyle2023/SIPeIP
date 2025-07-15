@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {HiEye, HiEyeOff} from 'react-icons/hi';
 import logoEcuador from '../assets/images/logo-ecuador.png';
 
 const EcuadorLogo = () => (
@@ -10,6 +11,7 @@ export default function LoginPage({onLoginSuccess}) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -64,11 +66,27 @@ export default function LoginPage({onLoginSuccess}) {
                                 type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)}
                                 className="w-2/3 p-2 border border-blue-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"/>
                             </div>
-                            <div className="flex items-center"><label htmlFor="password"
-                                                                      className="w-1/3 text-sm font-semibold text-gray-600">CONTRASEÑA:</label><input
-                                type="password" id="password" value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-2/3 p-2 border border-blue-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"/>
+                            <div className="flex items-center">
+                                <label htmlFor="password"
+                                       className="w-1/3 text-sm font-semibold text-gray-600">CONTRASEÑA:</label>
+                                <div className="w-2/3 relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        id="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full p-2 border border-blue-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-2 top-2 text-gray-500 focus:outline-none"
+                                        tabIndex={-1}
+                                        aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                                    >
+                                        {showPassword ? <HiEyeOff size={22}/> : <HiEye size={22}/>}
+                                    </button>
+                                </div>
                             </div>
                             {error && <p className="text-red-500 text-sm text-center">{error}</p>}
                             <div className="text-center pt-4">

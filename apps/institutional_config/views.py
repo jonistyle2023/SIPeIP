@@ -38,12 +38,19 @@ class EntidadViewSet(viewsets.ModelViewSet):
     serializer_class = EntidadSerializer
     # permission_classes = [permissions.IsAdminUser]
 
+
 class UnidadOrganizacionalViewSet(viewsets.ModelViewSet):
+    queryset = UnidadOrganizacional.objects.select_related('entidad', 'padre').all()
+    serializer_class = UnidadOrganizacionalSerializer
     """
     API endpoint para la gestión de Unidades Organizacionales dentro de una Entidad.
     """
-    queryset = UnidadOrganizacional.objects.select_related('entidad', 'padre').all()
-    serializer_class = UnidadOrganizacionalSerializer
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        entidad_id = self.request.query_params.get('entidad')
+        if entidad_id:
+            queryset = queryset.filter(entidad_id=entidad_id)
+        return queryset
     # permission_classes = [permissions.IsAdminUser]
 
 class PeriodoPlanificacionViewSet(viewsets.ModelViewSet):

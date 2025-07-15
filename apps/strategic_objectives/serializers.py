@@ -88,7 +88,7 @@ class PlanInstitucionalSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanInstitucional
         fields = [
-            'plan_institucional_id', 'entidad', 'periodo', 'estado',
+            'plan_institucional_id', 'nombre', 'entidad', 'periodo', 'estado',
             'version_actual', 'fecha_creacion', 'fecha_ultima_actualizacion',
             'creador', 'objetivos_estrategicos'
         ]
@@ -111,31 +111,31 @@ class GenericRelatedObjectSerializer(serializers.Field):
 
 
 class AlineacionSerializer(serializers.ModelSerializer):
-    # Para LECTURA, usamos el serializer personalizado para dar una respuesta clara
     instrumento_origen = GenericRelatedObjectSerializer(read_only=True)
     instrumento_destino = GenericRelatedObjectSerializer(read_only=True)
-    # Para ESCRITURA, esperamos los IDs de ContentType y los IDs de los objetos
     instrumento_origen_tipo = serializers.PrimaryKeyRelatedField(
         queryset=ContentType.objects.all(), write_only=True
     )
     instrumento_destino_tipo = serializers.PrimaryKeyRelatedField(
         queryset=ContentType.objects.all(), write_only=True
     )
+    ods_vinculados = ObjetivoDesarrolloSostenibleSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Alineacion
-        fields = [
-            'alineacion_id',
-            'instrumento_origen',
-            'instrumento_destino',
-            'instrumento_origen_tipo',  # Campo de escritura
-            'instrumento_origen_id',  # Campo de escritura
-            'instrumento_destino_tipo',  # Campo de escritura
-            'instrumento_destino_id',  # Campo de escritura
-            'contribucion_porcentaje',
-            'fecha_creacion',
-            'usuario_creacion'
-        ]
+            model = Alineacion
+            fields = [
+                'alineacion_id',
+                'instrumento_origen',
+                'instrumento_destino',
+                'instrumento_origen_tipo',  # Campo de escritura
+                'instrumento_origen_id',  # Campo de escritura
+                'instrumento_destino_tipo',  # Campo de escritura
+                'instrumento_destino_id',  # Campo de escritura
+                'contribucion_porcentaje',
+                'fecha_creacion',
+                'usuario_creacion',
+                'ods_vinculados',
+            ]
 
 
 class PlanInstitucionalVersionSerializer(serializers.ModelSerializer):

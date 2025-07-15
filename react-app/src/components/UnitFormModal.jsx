@@ -52,7 +52,7 @@ export default function UnitFormModal({ unit, entityId, parentUnits, onClose, on
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
                 <div className="p-4 border-b flex justify-between items-center"><h3 className="text-lg font-semibold">{unit ? 'Editar Unidad' : 'Nueva Unidad'}</h3><button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full"><X size={20} /></button></div>
                 <form onSubmit={handleSubmit}>

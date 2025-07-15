@@ -1,16 +1,22 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {api} from '../../api/api';
-import {Plus} from 'lucide-react';
 
-// Este componente recibe:
-// - planId: El ID del plan al que pertenece el nuevo OEI.
-// - onClose: Una función para cerrar el modal.
-// - onSave: Una función para refrescar la lista de OEI en la página principal.
-export default function OeiFormModal({planId, onClose, onSave}) {
+export default function OeiFormModal({planId, oei, onClose, onSave}) {
     const [codigo, setCodigo] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [error, setError] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+
+    // Precarga datos si es edición
+    useEffect(() => {
+        if (oei) {
+            setCodigo(oei.codigo || '');
+            setDescripcion(oei.descripcion || '');
+        } else {
+            setCodigo('');
+            setDescripcion('');
+        }
+    }, [oei]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,11 +24,10 @@ export default function OeiFormModal({planId, onClose, onSave}) {
             setError('El código y la descripción son obligatorios.');
             return;
         }
-
         setIsSaving(true);
         setError(null);
 
-        const newOeiData = {
+        const oeiData = {
             plan_institucional: planId,
             codigo,
             descripcion,
@@ -30,7 +35,11 @@ export default function OeiFormModal({planId, onClose, onSave}) {
         };
 
         try {
-            await api.post('/strategic-planning/oei/', newOeiData);
+            if (oei && oei.oei_id) {
+                await api.put(`/strategic-planning/oei/${oei.oei_id}/`, oeiData);
+            } else {
+                await api.post('/strategic-planning/oei/', oeiData);
+            }
             onSave();
             onClose();
         } catch (err) {
@@ -43,7 +52,9 @@ export default function OeiFormModal({planId, onClose, onSave}) {
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-                <h2 className="text-lg font-bold mb-4">Crear Nuevo Objetivo Estratégico (OEI)</h2>
+                <h2 className="text-lg font-bold mb-4">
+                    {oei ? 'Editar Objetivo Estratégico (OEI)' : 'Crear Nuevo Objetivo Estratégico (OEI)'}
+                </h2>
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-4">
                         <div>
@@ -78,7 +89,7 @@ export default function OeiFormModal({planId, onClose, onSave}) {
                         </button>
                         <button type="submit" disabled={isSaving}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 flex items-center">
-                            {isSaving ? 'Guardando...' : 'Guardar Objetivo'}
+                            {isSaving ? 'Guardando...' : (oei ? 'Guardar Cambios' : 'Guardar Objetivo')}
                         </button>
                     </div>
                 </form>

@@ -37,7 +37,7 @@ export default function DashboardLayout({user, onLogout}) {
                         setSidebarOpen(false);
                     }}/>
                 </div>
-                <div className="flex-1 bg-black bg-opacity-50" onClick={() => setSidebarOpen(false)}/>
+                <div className="flex-1" onClick={() => setSidebarOpen(false)}/>
             </div>
 
             <div className="flex-1 flex flex-col overflow-hidden">

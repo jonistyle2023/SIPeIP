@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
-import CatalogItemFormModal from './CatalogItemFormModal'; // Nuevo modal
+import CatalogItemFormModal from './CatalogItemFormModal';
 
 export default function CatalogManager() {
     const [catalogs, setCatalogs] = useState([]);
@@ -50,7 +50,23 @@ export default function CatalogManager() {
 
     const handleSave = () => {
         handleCloseModal();
-        fetchCatalogs(); // Recarga todo para reflejar los cambios
+        fetchCatalogs();
+    };
+
+    const handleDeleteItem = async (itemId) => {
+        if (!window.confirm('¿Está seguro de eliminar este ítem? Esta acción no se puede deshacer.')) return;
+        const token = localStorage.getItem('authToken');
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/items-catalogo/${itemId}/`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Token ${token}` }
+            });
+            if (!response.ok) throw new Error("No se pudo eliminar el ítem");
+            fetchCatalogs();
+        } catch (error) {
+            alert("Error al eliminar el ítem.");
+            console.error(error);
+        }
     };
 
     return (
@@ -88,8 +104,12 @@ export default function CatalogManager() {
                                         <td className="p-2">{item.codigo || '-'}</td>
                                         <td className="p-2 flex space-x-2">
                                             <button onClick={() => handleOpenModal(item)} className="p-1 text-blue-500 hover:text-blue-700"><Edit size={14} /></button>
-                                            <button className="p-1 text-red-500 hover:text-red-700"><Trash2 size={14} /></button>
-                                        </td>
+                                            <button
+                                                onClick={() => handleDeleteItem(item.id)}
+                                                className="p-1 text-red-500 hover:text-red-700"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
