@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import DashboardPage from '../pages/DashboardPage';
 import ConfigurationPage from '../pages/ConfigurationPage';
 import StrategicObjectivesPage from '../pages/StrategicObjectivesPage';
+import InvestmentProjectsPage from '../pages/InvestmentProjectsPage';
 
 export default function DashboardLayout({user, onLogout}) {
     const [activePage, setActivePage] = useState('Panel Principal');
@@ -15,6 +16,8 @@ export default function DashboardLayout({user, onLogout}) {
                 return <DashboardPage/>;
             case 'Planificación':
                 return <StrategicObjectivesPage/>;
+            case 'Inversión':
+                return <InvestmentProjectsPage/>;
             case 'Usuarios':
             case 'Institucional':
                 return <ConfigurationPage initialTab={activePage} setActivePage={setActivePage}/>;
