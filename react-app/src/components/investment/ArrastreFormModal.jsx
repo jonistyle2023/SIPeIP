@@ -52,7 +52,7 @@ export default function ArrastreFormModal({ projectId, onClose, onSave }) {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Monto Devengado (Bs.)</label>
+                                <label className="block text-sm font-medium text-gray-700">Monto Devengado ($)</label>
                                 <input
                                     type="number"
                                     name="monto_devengado"
@@ -65,7 +65,7 @@ export default function ArrastreFormModal({ projectId, onClose, onSave }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Monto por Devengar (Bs.)</label>
+                                <label className="block text-sm font-medium text-gray-700">Monto por Devengar ($)</label>
                                 <input
                                     type="number"
                                     name="monto_por_devengar"

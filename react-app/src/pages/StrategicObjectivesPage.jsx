@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
-import {BookOpen, Link2, Layers, Settings, FilePlus, BarChart, History, AlertCircle} from 'lucide-react';
+import React, { useState } from 'react';
+import { BookOpen, Link2, Layers, Settings, FilePlus, BarChart, History, AlertCircle } from 'lucide-react';
 import MasterData from '../components/strategic/MasterData';
 import InstitutionalPlans from '../components/strategic/InstitutionalPlans';
 import AlignmentMatrix from '../components/strategic/AlignmentMatrix';
 import SectoralPlansPage from '../components/strategic/SectoralPlansPage';
+import ProgramasManager from '../components/strategic/ProgramasManager';
 
 // Tarjeta para acciones rápidas
 const ActionCard = ({title, subtitle, icon: Icon, onClick}) => (
@@ -32,20 +33,22 @@ const StatsCard = ({title, value, icon: Icon}) => (
 
 
 export default function StrategicObjectivesPage() {
-    const [activeTab, setActiveTab] = useState('sectoriales');
+    const [activeTab, setActiveTab] = useState('planes');
 
     const renderActiveTab = () => {
         switch (activeTab) {
             case 'planes':
-                return <InstitutionalPlans/>;
-            case 'sectoriales': // 3. Añadimos el nuevo caso
-                return <SectoralPlansPage/>;
+                return <InstitutionalPlans />;
+            case 'programas':
+                return <ProgramasManager />;
+            case 'sectoriales':
+                return <SectoralPlansPage />;
             case 'alineacion':
-                return <AlignmentMatrix/>;
+                return <AlignmentMatrix />;
             case 'maestros':
-                return <MasterData/>;
+                return <MasterData />;
             default:
-                return <InstitutionalPlans/>;
+                return <InstitutionalPlans />;
         }
     };
 
@@ -74,23 +77,17 @@ export default function StrategicObjectivesPage() {
                 <div className="lg:col-span-2">
                     <div className="flex border-b mb-4">
                         <button onClick={() => setActiveTab('planes')}
-                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'planes' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Planes
-                            y OEI
-                        </button>
+                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'planes' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Planes y OEI</button>
+                        {/* --- Botón de la nueva pestaña --- */}
+                        <button onClick={() => setActiveTab('programas')}
+                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'programas' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Programas</button>
                         <button onClick={() => setActiveTab('sectoriales')}
-                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'sectoriales' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Planes
-                            Sectoriales
-                        </button>
+                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'sectoriales' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Planes Sectoriales</button>
                         <button onClick={() => setActiveTab('alineacion')}
-                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'alineacion' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Matriz
-                            de Alineación
-                        </button>
+                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'alineacion' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Matriz de Alineación</button>
                         <button onClick={() => setActiveTab('maestros')}
-                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'maestros' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Datos
-                            Maestros
-                        </button>
+                                className={`px-4 py-2 text-sm font-medium ${activeTab === 'maestros' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Datos Maestros</button>
                     </div>
-
                     <div className="space-y-6">
                         {renderActiveTab()}
                     </div>

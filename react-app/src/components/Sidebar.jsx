@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, FileText, DollarSign, BarChart2, Settings, Shield, ChevronDown, ChevronRight, Dot } from 'lucide-react';
+import { LayoutDashboard, FileText, DollarSign, BarChart2, Settings, Shield, ChevronDown, ChevronRight, Dot, CheckSquare } from 'lucide-react';
 
 export default function Sidebar({ activePage, setActivePage }) {
     const [openSubmenus, setOpenSubmenus] = useState({ 'Configuración': true }); // Dejar abierto por defecto
@@ -12,6 +12,8 @@ export default function Sidebar({ activePage, setActivePage }) {
         { name: 'Panel Principal', icon: LayoutDashboard },
         { name: 'Planificación', icon: FileText },
         { name: 'Inversión', icon: DollarSign },
+        // --- Ítem añadido ---
+        { name: 'Priorización PAI', icon: CheckSquare },
         { name: 'Seguimiento', icon: BarChart2, subItems: ['Seguimiento a la Planificación', 'Seguimiento a la Inversión', 'Seguimiento a obras', 'Seguimiento a Cierre y Baja de Proyectos'], },
         { name: 'Reportería', icon: FileText },
         { name: 'Configuración', icon: Settings, subItems: ['Usuarios', 'Institucional'], },
@@ -29,7 +31,6 @@ export default function Sidebar({ activePage, setActivePage }) {
             </div>
             <nav className="flex-1 p-4 space-y-2">
                 {menuItems.map((item) => {
-                    // Lógica para resaltar el menú padre 'Configuración' si una de sus hijas está activa
                     const isParentActive = item.name === 'Configuración' && (activePage === 'Usuarios' || activePage === 'Institucional');
                     return (
                         <div key={item.name}>

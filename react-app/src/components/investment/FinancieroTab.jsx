@@ -34,7 +34,7 @@ export default function FinancieroTab({ marcoLogico, onDataChange }) {
 
             <div className="p-4 bg-blue-50 rounded-lg flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-blue-800">Costo Total Programado del Proyecto</h3>
-                <p className="text-2xl font-bold text-blue-900">Bs. {totalProgramado.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <p className="text-2xl font-bold text-blue-900">$ {totalProgramado.toLocaleString('es-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
 
             <div className="overflow-x-auto">
@@ -54,7 +54,7 @@ export default function FinancieroTab({ marcoLogico, onDataChange }) {
                                 <div className="flex flex-wrap gap-2">
                                     {act.cronograma.length > 0 ? act.cronograma.map(item => (
                                         <span key={item.cronograma_id} className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">
-                                                {item.periodo}: Bs. {parseFloat(item.valor_programado).toLocaleString('es-BO')}
+                                                {item.periodo}: $ {parseFloat(item.valor_programado).toLocaleString('es-US')}
                                             </span>
                                     )) : <span className="text-xs text-gray-500 italic">Sin programación</span>}
                                 </div>

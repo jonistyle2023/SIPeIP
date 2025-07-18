@@ -37,7 +37,7 @@ const ProjectCard = ({project, onEdit, onViewDetail}) => {
                     <span
                         className={`px-2 py-1 text-xs font-semibold rounded-full ${statusStyles[project.estado] || 'bg-gray-100 text-gray-800'}`}>{project.estado.replace('_', ' ')}</span>
                     <span
-                        className="text-sm font-semibold text-gray-700">Bs. {Number(project.monto || 0).toLocaleString('es-BO')}</span>
+                        className="text-sm font-semibold text-gray-700">$ {Number(project.monto || 0).toLocaleString('es-US')}</span>
                 </div>
             </div>
             <div className="flex items-center space-x-2">

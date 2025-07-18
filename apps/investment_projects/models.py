@@ -16,9 +16,6 @@ class ProyectoInversion(models.Model):
                            help_text="Código Único de Proyecto, generado al final del proceso")
     nombre = models.CharField(max_length=500)
     entidad_ejecutora = models.ForeignKey(Entidad, on_delete=models.PROTECT, related_name='proyectos_ejecutados')
-    # Vinculación con la planificación estratégica
-    programa_institucional = models.ForeignKey(ProgramaInstitucional, on_delete=models.SET_NULL, null=True, blank=True,
-                                               related_name='proyectos')
     # Categorización (Formulación)
     tipo_proyecto = models.ForeignKey(ItemCatalogo, on_delete=models.PROTECT, related_name='proyectos_por_tipo',
                                       limit_choices_to={'catalogo__codigo': 'TIPO_PROYECTO'})
@@ -37,7 +34,29 @@ class ProyectoInversion(models.Model):
     def __str__(self):
         return f"{self.cup or '[SIN CUP]'} - {self.nombre}"
 
+    programa_institucional = models.ForeignKey(
+        ProgramaInstitucional,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='proyectos'
+    )
+
+    contribucion_programa = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Porcentaje de contribución del proyecto al Programa Institucional vinculado."
+    )
+
 class ProyectoInversionVersion(models.Model):
+    ESTADO_CHOICES = [
+        ('EN_FORMULACION', 'En Formulación'),
+        ('POSTULADO', 'Postulado'),
+        ('PRIORIZADO', 'Priorizado'),  # <-- Añadido
+        # ... otros estados
+    ]
     version_id = models.AutoField(primary_key=True)
     proyecto = models.ForeignKey(ProyectoInversion, on_delete=models.CASCADE, related_name='versiones')
     numero_version = models.PositiveIntegerField()

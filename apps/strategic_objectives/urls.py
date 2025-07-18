@@ -24,6 +24,9 @@ router.register(r'planes-sectoriales', views.PlanSectorialViewSet, basename='pla
 router.register(r'alineaciones', views.AlineacionViewSet, basename='alineacion')
 router.register(r'planes-institucionales-versiones', views.PlanInstitucionalVersionViewSet, basename='plan-institucional-version')
 
+# Ruta de alineación
+router.register(r'programas', views.ProgramaInstitucionalViewSet, basename='programas')
+
 urlpatterns = [
     path('', include(router.urls)),
     path('list-alignable-types/', views.AlignableContentTypesListView.as_view(), name='list-alignable-types'),

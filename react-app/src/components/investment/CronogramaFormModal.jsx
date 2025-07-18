@@ -54,7 +54,7 @@ export default function CronogramaFormModal({ actividad, onClose, onSave }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Valor Programado (Bs.)</label>
+                                <label className="block text-sm font-medium text-gray-700">Valor Programado ($)</label>
                                 <input
                                     type="number"
                                     name="valor_programado"

@@ -1,4 +1,6 @@
 # OBJETIVO: Definir la lógica de la API para la formulación de proyectos.
+import decimal
+
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -16,29 +18,76 @@ from .serializers import (
 from ..institutional_config.models import Catalogo
 from ..institutional_config.serializers import CatalogoSerializer
 
+def convert_decimals(obj):
+    if isinstance(obj, list):
+        return [convert_decimals(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: convert_decimals(v) for k, v in obj.items()}
+    elif isinstance(obj, decimal.Decimal):
+        return float(obj)
+    return obj
 
 class ProyectoInversionViewSet(viewsets.ModelViewSet):
     """
-    Similar a los OEI, los Editores (formuladores) gestionan los proyectos
-    y los Auditores los pueden ver.
+    ViewSet para los Proyectos de Inversión.
     """
-    queryset = ProyectoInversion.objects.all().select_related(
-        'entidad_ejecutora', 'programa_institucional', 'tipo_proyecto',
-        'tipologia_proyecto', 'sector', 'marco_logico'
-    ).prefetch_related(
-        'marco_logico__componentes__actividades'
-    )
     serializer_class = ProyectoInversionSerializer
     # permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
+    queryset = ProyectoInversion.objects.select_related(
+        'programa_institucional'
+    ).prefetch_related(
+        'marco_logico__componentes__actividades__cronograma',
+        'arrastres',
+        'dictamenes'
+    )
+
+    def get_queryset(self):
+        """
+        Filtra el queryset base. Si se proporciona un 'estado' en la URL,
+        filtra los proyectos para que coincidan con ese estado.
+        """
+        queryset = super().get_queryset()
+        estado = self.request.query_params.get('estado')
+        if estado:
+            queryset = queryset.filter(estado=estado)
+        return queryset
+
+    @action(detail=True, methods=['post'])
+    def postular(self, request, pk=None):
+        """
+        Acción para cambiar el estado de un proyecto a 'POSTULADO'.
+        Verifica que el proyecto tenga un dictamen aprobado.
+        """
+        proyecto = self.get_object()
+
+        if not proyecto.dictamenes.filter(estado='APROBADO').exists():
+            return Response(
+                {'error': 'El proyecto debe tener un dictamen de prioridad APROBADO para ser postulado.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if proyecto.estado == 'POSTULADO':
+            return Response(
+                {'error': 'Este proyecto ya ha sido postulado.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        proyecto.estado = 'POSTULADO'
+        proyecto.save()
+
+        serializer = self.get_serializer(proyecto)
+        return Response(serializer.data)
 
     # Lógica de versionamiento
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
+        data = self.get_serializer(instance).data
+        data = convert_decimals(data)  # <-- Conversión aquí
         ProyectoInversionVersion.objects.create(
             proyecto=instance,
             numero_version=instance.version_actual,
             usuario_responsable=request.user if request.user.is_authenticated else None,
-            datos=self.get_serializer(instance).data
+            datos=data
         )
         instance.version_actual += 1
         instance.save(update_fields=['version_actual'])
@@ -61,6 +110,47 @@ class ProyectoInversionViewSet(viewsets.ModelViewSet):
         proyecto.save()
 
         return Response({'status': 'CUP generado exitosamente', 'cup': nuevo_cup})
+
+    @action(detail=True, methods=['post'], url_path='priorizar')
+    def priorizar(self, request, pk=None):
+        """
+        Acción para cambiar el estado de un proyecto a 'PRIORIZADO'.
+        """
+        proyecto = self.get_object()
+        if proyecto.estado != 'POSTULADO':
+            return Response(
+                {'error': 'Solo se pueden priorizar proyectos que han sido postulados.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        proyecto.estado = 'PRIORIZADO'
+        proyecto.save()
+        serializer = self.get_serializer(proyecto)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], url_path='devolver')
+    def devolver(self, request, pk=None):
+        """
+        Acción para devolver un proyecto a 'EN_FORMULACION' con observaciones.
+        """
+        proyecto = self.get_object()
+        observaciones = request.data.get('observaciones')
+
+        if not observaciones:
+            return Response(
+                {'error': 'Se requieren observaciones para devolver un proyecto.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        proyecto.estado = 'EN_FORMULACION'
+        # Aquí podrías guardar las observaciones en un campo o modelo de historial si lo tuvieras.
+        # Por ahora, simplemente cambiamos el estado.
+        proyecto.save()
+
+        # Lógica futura: enviar una notificación a la entidad formuladora.
+
+        serializer = self.get_serializer(proyecto)
+        return Response(serializer.data)
 
 class MarcoLogicoViewSet(viewsets.ModelViewSet):
     """

@@ -1,4 +1,5 @@
 # OBJETIVO: Convertir los modelos de Proyectos de Inversión a formato JSON.
+from django.db.models import Sum
 from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
 from .models import (
@@ -182,23 +183,33 @@ class ProyectoInversionSerializer(serializers.ModelSerializer):
     tipo_proyecto_nombre = serializers.CharField(source='tipo_proyecto.nombre', read_only=True)
     tipologia_proyecto_nombre = serializers.CharField(source='tipologia_proyecto.nombre', read_only=True)
     sector_nombre = serializers.CharField(source='sector.nombre', read_only=True)
+    monto_total_programado = serializers.SerializerMethodField()
+
+# --- CORRECCIÓN CLAVE ---
+    # Se añade 'allow_null=True' para evitar el error 500 si un proyecto no tiene programa asignado.
+    programa_institucional_nombre = serializers.CharField(
+        source='programa_institucional.nombre',
+        read_only=True,
+        allow_null=True
+    )
+
     marco_logico = MarcoLogicoSerializer(read_only=True)
-    dictamenes = DictamenPrioridadSerializer(many=True, read_only=True)
     arrastres = ArrastreInversionSerializer(many=True, read_only=True)
+    dictamenes = DictamenPrioridadSerializer(many=True, read_only=True)
 
     class Meta:
         model = ProyectoInversion
         fields = [
-            'proyecto_id', 'cup', 'nombre', 'entidad_ejecutora', 'programa_institucional',
-            'tipo_proyecto', 'tipo_proyecto_nombre',
-            'tipologia_proyecto', 'tipologia_proyecto_nombre',
-            'sector', 'sector_nombre',
-            'estado', 'version_actual', 'creador', 'marco_logico',
-            'dictamenes', 'arrastres' # <-- AÑADIDOS
+            'proyecto_id', 'cup', 'nombre', 'entidad_ejecutora',
+            'tipo_proyecto', 'tipologia_proyecto', 'sector',
+            'tipo_proyecto_nombre', 'tipologia_proyecto_nombre', 'sector_nombre',
+            'estado', 'version_actual', 'creador',
+            'marco_logico', 'arrastres', 'dictamenes',
+            'programa_institucional', 'contribucion_programa', 'programa_institucional_nombre',
+            'monto_total_programado'
         ]
-        extra_kwargs = {
-            'tipo_proyecto': {'write_only': True},
-            'tipologia_proyecto': {'write_only': True},
-            'sector': {'write_only': True},
-            'cup': {'read_only': True}, # El CUP no se puede editar directamente
-        }
+
+    def get_monto_total_programado(self, obj):
+        total = obj.marco_logico.componentes.all() \
+            .aggregate(total=Sum('actividades__cronograma__valor_programado'))['total']
+        return total if total is not None else 0.00

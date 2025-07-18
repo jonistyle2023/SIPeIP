@@ -9,7 +9,7 @@ from .models import (
     PlanNacionalDesarrollo, ObjetivoPND, PoliticaPND, MetaPND, IndicadorPND,
     ObjetivoDesarrolloSostenible, EstrategiaODS, MetaODS,
     PlanInstitucional, ObjetivoEstrategicoInstitucional, PlanSectorial, ObjetivoSectorial, Alineacion,
-    PlanInstitucionalVersion
+    PlanInstitucionalVersion, ProgramaInstitucional
 )
 from .serializers import (
     PlanNacionalDesarrolloSerializer, ObjetivoPNDSerializer, PoliticaPNDSerializer,
@@ -17,7 +17,7 @@ from .serializers import (
     EstrategiaODSSerializer, MetaODSSerializer, PlanInstitucionalSerializer,
     ObjetivoEstrategicoInstitucionalSerializer, PlanSectorialSerializer, ObjetivoSectorialSerializer,
     AlineacionSerializer,
-    PlanInstitucionalVersionSerializer
+    PlanInstitucionalVersionSerializer, ProgramaInstitucionalSerializer
 )
 
 
@@ -160,3 +160,10 @@ class AlignableContentTypesListView(APIView):
             for ct in content_types
         ]
         return Response(data)
+
+class ProgramaInstitucionalViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para gestionar los Programas Institucionales.
+    """
+    queryset = ProgramaInstitucional.objects.all()
+    serializer_class = ProgramaInstitucionalSerializer

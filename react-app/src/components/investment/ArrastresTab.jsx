@@ -28,8 +28,8 @@ export default function ArrastresTab({ project, onDataChange }) {
                     <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
                     <tr>
                         <th className="p-3">Información del Contrato</th>
-                        <th className="p-3 text-right">Monto Devengado (Bs.)</th>
-                        <th className="p-3 text-right">Monto por Devengar (Bs.)</th>
+                        <th className="p-3 text-right">Monto Devengado ($)</th>
+                        <th className="p-3 text-right">Monto por Devengar ($)</th>
                         <th className="p-3 text-right">Acciones</th>
                     </tr>
                     </thead>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { api } from '../../api/api';
-import { ArrowLeft, HardHat, FileText, Anchor, Target, Plus } from 'lucide-react';
+import { ArrowLeft, HardHat, FileText, Anchor, Target, Plus, Link2, Send } from 'lucide-react';
 import IndicadorList from './IndicadorList';
 import IndicadorFormModal from './IndicadorFormModal';
 import MarcoLogicoFormModal from './MarcoLogicoFormModal';
@@ -8,6 +8,7 @@ import FinancieroTab from './FinancieroTab';
 import ActividadFormModal from './ActividadFormModal';
 import ComponenteFormModal from './ComponenteFormModal';
 import ArrastresTab from './ArrastresTab';
+import AlineacionTab from './AlineacionTab';
 
 const CONTENT_TYPE_IDS = {
     MARCO_LOGICO: 32,
@@ -40,8 +41,6 @@ export default function ProjectDetail({ project, onReturnToList }) {
     const [activeTab, setActiveTab] = useState('marco_logico');
     const [marcoLogico, setMarcoLogico] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    // Estado para los detalles actualizados del proyecto
     const [projectDetails, setProjectDetails] = useState(project);
 
     const [isIndicadorModalOpen, setIsIndicadorModalOpen] = useState(false);
@@ -52,7 +51,6 @@ export default function ProjectDetail({ project, onReturnToList }) {
     const [selectedComponent, setSelectedComponent] = useState(null);
     const [editIndicador, setEditIndicador] = useState(null);
 
-    // Solo depende del ID del proyecto
     const fetchData = useCallback(async () => {
         if (!project?.proyecto_id) return;
         setLoading(true);
@@ -154,6 +152,21 @@ export default function ProjectDetail({ project, onReturnToList }) {
         fetchData();
     };
 
+    const handlePostular = async () => {
+        if (window.confirm('¿Está seguro de que desea postular este proyecto al Plan Anual de Inversiones? Esta acción no se puede deshacer.')) {
+            try {
+                const updatedProject = await api.post(`/investment-projects/proyectos/${projectDetails.proyecto_id}/postular/`, {});
+                setProjectDetails(updatedProject);
+                alert('¡Proyecto postulado con éxito!');
+            } catch (error) {
+                alert('Error al postular el proyecto: ' + (error.message || ''));
+            }
+        }
+    };
+
+    const canPostulate = projectDetails.estado === 'EN_FORMULACION' &&
+        projectDetails.dictamenes?.some(d => d.estado === 'APROBADO');
+
     const renderContent = () => {
         if (loading) return <p className="text-center p-4">Cargando...</p>;
 
@@ -242,6 +255,8 @@ export default function ProjectDetail({ project, onReturnToList }) {
                 return marcoLogico ?
                     <FinancieroTab marcoLogico={marcoLogico} onDataChange={fetchData} /> :
                     <PlaceholderContent tabName="Financiero" />;
+            case 'alineacion':
+                return <AlineacionTab project={projectDetails} onDataChange={fetchData} />;
             case 'arrastres':
                 return <ArrastresTab project={projectDetails} onDataChange={fetchData} />;
             case 'documentos':
@@ -279,13 +294,30 @@ export default function ProjectDetail({ project, onReturnToList }) {
                 Volver al Pipeline
             </button>
             <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-800">{projectDetails.nombre}</h2>
-                <p className="text-sm text-gray-500">CUP: {projectDetails.cup || 'N/A'} • {projectDetails.sector_nombre}</p>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800">{projectDetails.nombre}</h2>
+                        <p className="text-sm text-gray-500">CUP: {projectDetails.cup || 'N/A'} • {projectDetails.sector_nombre}</p>
+                        <span className={`mt-2 inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800`}>
+                            {projectDetails.estado?.replace('_', ' ')}
+                        </span>
+                    </div>
+                    {canPostulate && (
+                        <button
+                            onClick={handlePostular}
+                            className="flex items-center px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            <Send size={18} className="mr-2" />
+                            Postular al PAI
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="border-b flex">
                 <TabButton label="Marco Lógico" icon={Target} isActive={activeTab === 'marco_logico'} onClick={() => setActiveTab('marco_logico')} />
                 <TabButton label="Financiero" icon={HardHat} isActive={activeTab === 'financiero'} onClick={() => setActiveTab('financiero')} />
+                <TabButton label="Alineación" icon={Link2} isActive={activeTab === 'alineacion'} onClick={() => setActiveTab('alineacion')} />
                 <TabButton label="Arrastres" icon={Anchor} isActive={activeTab === 'arrastres'} onClick={() => setActiveTab('arrastres')} />
                 <TabButton label="Documentos" icon={FileText} isActive={activeTab === 'documentos'} onClick={() => setActiveTab('documentos')} />
             </div>
