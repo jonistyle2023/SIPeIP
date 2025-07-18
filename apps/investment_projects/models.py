@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.conf import settings
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from apps.institutional_config.models import Entidad, ItemCatalogo
 from apps.strategic_objectives.models import ProgramaInstitucional
@@ -56,6 +56,9 @@ class MarcoLogico(models.Model):
     proyecto = models.OneToOneField(ProyectoInversion, on_delete=models.CASCADE, related_name='marco_logico')
     fin = models.TextField(help_text="El objetivo de desarrollo al cual el proyecto contribuye.")
     proposito = models.TextField(help_text="El resultado directo o el efecto esperado al finalizar el proyecto.")
+    # AÑADIR ESTA LÍNEA
+    indicadores = GenericRelation('Indicador')
+
     def __str__(self):
         return f"Marco Lógico para {self.proyecto.nombre}"
 
@@ -66,6 +69,9 @@ class Componente(models.Model):
     nombre = models.CharField(max_length=500)
     descripcion = models.TextField(blank=True, null=True)
     ponderacion = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    # AÑADIR ESTA LÍNEA
+    indicadores = GenericRelation('Indicador')
+
     def __str__(self):
         return self.nombre
 

@@ -18,20 +18,25 @@ export default function ProjectFormModal({ project, onClose, onSave }) {
     useEffect(() => {
         const loadCatalogs = async () => {
             try {
+                // --- CORRECCIÓN ---
+                // Cada llamada a la API ahora pide explícitamente el 'codigo' del catálogo correcto.
                 const [tiposData, tipologiasData, sectoresData, entitiesData] = await Promise.all([
-                    api.get('/config/catalogos/?codigo=TIPO_PROYECTO'),
-                    api.get('/config/catalogos/?codigo=TIPOLOGIA_PROYECTO'),
-                    api.get('/config/catalogos/?codigo=SECTORES'),
-                    api.get('/config/entidades/')
+                    api.get('/config/catalogos/?codigo=TIPO_PROYECTO'),      // Pide el catálogo de Tipos de Proyecto
+                    api.get('/config/catalogos/?codigo=TIPOLOGIA_PROYECTO'), // Pide el catálogo de Tipologías
+                    api.get('/config/catalogos/?codigo=SECTORES'),           // Pide el catálogo de Sectores
+                    api.get('/config/entidades/')                            // Pide la lista de entidades
                 ]);
+
                 setCatalogs({
                     tipos: tiposData[0]?.items || [],
                     tipologias: tipologiasData[0]?.items || [],
                     sectores: sectoresData[0]?.items || [],
                 });
                 setEntities(entitiesData);
+
             } catch (err) {
-                setError('No se pudieron cargar los datos necesarios.');
+                setError('No se pudieron cargar los datos necesarios para el formulario.');
+                console.error(err);
             }
         };
         loadCatalogs();
@@ -54,6 +59,7 @@ export default function ProjectFormModal({ project, onClose, onSave }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         try {
             if (project) {
                 await api.put(`/investment-projects/proyectos/${project.proyecto_id}/`, formData);
@@ -67,7 +73,7 @@ export default function ProjectFormModal({ project, onClose, onSave }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
                 <div className="p-4 border-b flex justify-between items-center"><h3 className="text-lg font-semibold">{project ? 'Editar Proyecto' : 'Nuevo Proyecto de Inversión'}</h3><button onClick={onClose}><X /></button></div>
                 <form onSubmit={handleSubmit}>

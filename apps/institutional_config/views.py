@@ -11,14 +11,16 @@ from .serializers import (
 # de forma automática, sin necesidad de escribir cada función por separado.
 
 class CatalogoViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint que permite ver, crear, editar y eliminar Catálogos.
-    Un catálogo agrupa ítems (ej. Catálogo 'SECTORES' agrupa ítems como 'Salud', 'Educación').
-    NOTA: Solo los administradores pueden gestionar los catálogos
-    """
-    queryset = Catalogo.objects.all().prefetch_related('items') # prefetch_related optimiza la consulta anidada
+    queryset = Catalogo.objects.all().prefetch_related('items')
     serializer_class = CatalogoSerializer
-    # permission_classes = [permissions.IsAdminUser] # RESTRICCIÓN
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        codigo = self.request.query_params.get('codigo')
+        if codigo:
+            queryset = queryset.filter(codigo=codigo)
+        return queryset
+        # permission_classes = [permissions.IsAdminUser] # RESTRICCIÓN
 
 class ItemCatalogoViewSet(viewsets.ModelViewSet):
     """
