@@ -21,7 +21,40 @@
 
 ---
 
+## Información Relevante del Proyecto
+
+### Patron de Diseño de Software Utilizado: MVC (Model-View-Controller)
+
+- **View (Vista):** Representada por el Frontend en React, que maneja la interfaz gráfica de usuario y componentes visuales.
+- **Controller (Controlador):** El API Integration con Axios/Fetch en el frontend actúa como intermediario que realiza peticiones al backend.
+  - En el Backend Django, las vistas (views) del Django REST Framework hacen de controladores al procesar las peticiones y decidir qué datos enviar.
+- **Model (Modelo):** Las aplicaciones Django y sus modelos representan los datos y lógica de negocio, conectados directamente con la base de datos MySQL.
+
+> [!NOTE]
+> 
+> Aunque React no implementa MVC puro, esta combinación de React + Django REST refleja claramente una separación de responsabilidades alineada con el patrón MVC distribuido.
+
+### Arquitectura de Software: Capas + Cliente-Servidor
+
+1. Arquitectura de Capas (Layered Architecture):
+   - Capa de presentación: `React Frontend`
+   - Capa de lógica de negocio: `Django Backend` (apps como proyectos, objetivos, auditoría, etc.)
+   - Capa de persistencia de datos: `Base de datos MySQL`
+
+2. Arquitectura Cliente-Servidor (Client-Server):
+   - Cliente (Frontend): React, consume la API vía HTTP (Axios/Fetch)
+   - Servidor (Backend): Django REST Framework que expone endpoints 
+   - Base de datos: MySQL, gestionada exclusivamente por el backend
+
+>[!IMPORTANT]
+>
+> Actualmente, esta estructura no es propia de **microservicios**, ya que todo el backend está en un solo monolito Django con múltiples apps. Sin embargo, la estructura modular de las app tiene las bases deseadas para migrar hacia microservicios en el futuro.
+
+---
+
 ## Estructura del Proyecto
+
+### BackEnd
 
 ```
 SIPeIP/
@@ -45,5 +78,38 @@ SIPeIP/
 ├── .env                       # Variables perzonalizadas
 └── .gitignore                 # archivos a ignorar por el repositorio
 
+```
+
+### FrontEnd
+
+```
+src/
+│
+├── app/                      # Configuración general de la app (App.jsx, rutas, layouts, etc.)
+├── shared/                   # Componentes reutilizables y utilidades comunes
+│   ├── components/
+│   ├── hooks/
+│   ├── utils/
+│   ├── api/
+│   └── styles/
+│
+├── features/                 # Módulos funcionales (features) de la app
+│
+│   ├── auth/                 # Autenticación
+│   │   └── LoginPage.jsx
+│   ├── dashboard/            # Dashboard principal
+│   │   └── DashboardPage.jsx
+│   ├── configuration/        # Configuración institucional
+│   ├── investment-projects/  # Gestión de proyectos de inversión
+│   ├── strategic-objectives/ # Objetivos estratégicos
+│   ├── pai-prioritization/   # Priorización PAI
+│   │   └── PaiPrioritizationPage.jsx
+│   ├── dictamenes/           # Gestión de dictámenes
+├── index.html
+├── vite.config.js
+├── eslint.config.js
+├── package.json
+├── package-lock.json
+└── README.md
 ```
 

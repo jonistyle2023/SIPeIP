@@ -210,6 +210,8 @@ class ProyectoInversionSerializer(serializers.ModelSerializer):
         ]
 
     def get_monto_total_programado(self, obj):
+        if not hasattr(obj, 'marco_logico') or obj.marco_logico is None:
+            return 0.00
         total = obj.marco_logico.componentes.all() \
             .aggregate(total=Sum('actividades__cronograma__valor_programado'))['total']
         return total if total is not None else 0.00

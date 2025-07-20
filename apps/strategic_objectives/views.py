@@ -148,6 +148,7 @@ class AlignableContentTypesListView(APIView):
         # Define aquí los modelos que quieres exponer para alineación
         models = [
             'objetivoestrategicoinstitucional', 'objetivopnd',
+            'objetivosectorial', 'Objetivo Sectorial',
             'politicapnd', 'metapnd', 'metaods', 'plansectorial'
         ]
         content_types = ContentType.objects.filter(model__in=models)
