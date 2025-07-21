@@ -2,3 +2,6 @@ Django~=5.2.3
 djangorestframework~=3.16.0
 python-decouple~=3.8
 django-filter~=25.1
+pandas~=2.3.1                   # Exportar Archivos en JSON
+weasyprint~=65.1                # Exportar Archivos en PDF y CSV (Requiere instalación de componentes locales)
+serializers~=0.2.4

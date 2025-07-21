@@ -4,6 +4,7 @@ import StrategicObjectivesPage from '../../features/strategic-objectives/Strateg
 import InvestmentProjectsPage from '../../features/investment-projects/InvestmentProjectsPage.jsx';
 import PaiPrioritizationPage from '../../features/pai-prioritization/PaiPrioritizationPage.jsx';
 import ConfigurationPage from '../../features/configuration/ConfigurationPage.jsx';
+import ReportsPage from '../../features/reports/ReportsPage';
 import Sidebar from '../../shared/components/Sidebar.jsx';
 import Header from '../../shared/components/Header.jsx';
 
@@ -21,6 +22,8 @@ export default function DashboardLayout({user, onLogout}) {
                 return <InvestmentProjectsPage />;
             case 'Priorización PAI':
                 return <PaiPrioritizationPage />;
+            case 'Reportería':
+                return <ReportsPage />;
             case 'Usuarios':
             case 'Institucional':
                 return <ConfigurationPage initialTab={activePage} setActivePage={setActivePage} />;
