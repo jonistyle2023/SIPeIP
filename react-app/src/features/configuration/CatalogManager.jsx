@@ -11,6 +11,45 @@ export default function CatalogManager() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
 
+    const fetchItemsForSelectedCatalog = async () => {
+        if (!selectedCatalog) return;
+        setLoadingItems(true);
+        const token = localStorage.getItem('authToken');
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/catalogos/${selectedCatalog.id}/items/`, {
+                headers: { 'Authorization': `Token ${token}` }
+            });
+            if (!response.ok) throw new Error("Error al cargar ítems del catálogo");
+            const data = await response.json();
+            setItems(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingItems(false);
+        }
+    };
+
+    const handleSave = async () => {
+        await fetchItemsForSelectedCatalog(); // Actualiza los ítems del catálogo seleccionado
+        handleCloseModal(); // Cierra el modal
+    };
+
+    const handleDeleteItem = async (itemId) => {
+        if (!window.confirm('¿Está seguro de eliminar este ítem? Esta acción no se puede deshacer.')) return;
+        const token = localStorage.getItem('authToken');
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/items-catalogo/${itemId}/`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Token ${token}` }
+            });
+            if (!response.ok) throw new Error("No se pudo eliminar el ítem");
+            await fetchItemsForSelectedCatalog(); // Actualiza solo los ítems del catálogo seleccionado
+        } catch (error) {
+            alert("Error al eliminar el ítem.");
+            console.error(error);
+        }
+    };
+
     const fetchCatalogs = async () => {
         setLoadingCatalogs(true);
         const token = localStorage.getItem('authToken');
@@ -46,27 +85,6 @@ export default function CatalogManager() {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setEditingItem(null);
-    };
-
-    const handleSave = () => {
-        handleCloseModal();
-        fetchCatalogs();
-    };
-
-    const handleDeleteItem = async (itemId) => {
-        if (!window.confirm('¿Está seguro de eliminar este ítem? Esta acción no se puede deshacer.')) return;
-        const token = localStorage.getItem('authToken');
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/items-catalogo/${itemId}/`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Token ${token}` }
-            });
-            if (!response.ok) throw new Error("No se pudo eliminar el ítem");
-            fetchCatalogs();
-        } catch (error) {
-            alert("Error al eliminar el ítem.");
-            console.error(error);
-        }
     };
 
     return (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardPage from '../../features/dashboard/DashboardPage.jsx';
 import StrategicObjectivesPage from '../../features/strategic-objectives/StrategicObjectivesPage.jsx';
 import InvestmentProjectsPage from '../../features/investment-projects/InvestmentProjectsPage.jsx';
@@ -8,9 +8,15 @@ import ReportsPage from '../../features/reports/ReportsPage';
 import Sidebar from '../../shared/components/Sidebar.jsx';
 import Header from '../../shared/components/Header.jsx';
 
-export default function DashboardLayout({user, onLogout}) {
-    const [activePage, setActivePage] = useState('Panel Principal');
+export default function DashboardLayout({ user, onLogout }) {
+    const [activePage, setActivePage] = useState(
+        localStorage.getItem('activePage') || 'Panel Principal'
+    );
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('activePage', activePage);
+    }, [activePage]);
 
     const renderContent = () => {
         switch (activePage) {
@@ -26,33 +32,27 @@ export default function DashboardLayout({user, onLogout}) {
                 return <ReportsPage />;
             case 'Usuarios':
             case 'Institucional':
-                return <ConfigurationPage initialTab={activePage} setActivePage={setActivePage} />;
+                return <ConfigurationPage />;
             default:
-                return <div>Página: {activePage} - En construcción...</div>;
+                return <DashboardPage />;
         }
     };
 
     return (
         <div className="flex h-screen bg-gray-100">
-            <div className="hidden lg:flex lg:flex-shrink-0">
-                <Sidebar activePage={activePage} setActivePage={setActivePage} />
-            </div>
-
-            <div
-                className={`fixed inset-0 z-40 flex transition-transform duration-300 ease-in-out lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className="w-64 bg-white shadow-md h-full">
-                    <Sidebar activePage={activePage} setActivePage={(page) => {
-                        setActivePage(page);
-                        setSidebarOpen(false);
-                    }} />
-                </div>
-                <div className="flex-1" onClick={() => setSidebarOpen(false)} />
-            </div>
-
+            <Sidebar
+                activePage={activePage}
+                setActivePage={setActivePage}
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+            />
             <div className="flex-1 flex flex-col overflow-hidden">
-                <Header user={user} onLogout={onLogout} pageTitle={activePage}
-                        onOpenSidebar={() => setSidebarOpen(true)} />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6">
+                <Header
+                    user={user}
+                    onLogout={onLogout}
+                    onOpenSidebar={() => setSidebarOpen(!sidebarOpen)} // Alterna el estado del Sidebar
+                />
+                <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
                     {renderContent()}
                 </main>
             </div>
