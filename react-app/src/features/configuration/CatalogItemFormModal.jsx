@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
-import { handleFormChange, handleFormSubmit } from '../../shared/utils/formUtils';
+import React, {useState, useEffect} from 'react';
+import {X} from 'lucide-react';
+import {handleFormChange, handleFormSubmit} from '../../shared/utils/formUtils';
 
-export default function CatalogItemFormModal({ item, catalogId, onClose, onSave }) {
+export default function CatalogItemFormModal({item, catalogId, onClose, onSave}) {
     const [formData, setFormData] = useState({
         nombre: '',
         codigo: '',
@@ -32,7 +32,7 @@ export default function CatalogItemFormModal({ item, catalogId, onClose, onSave 
             : 'http://127.0.0.1:8000/api/v1/config/items-catalogo/';
         const method = item ? 'PUT' : 'POST';
 
-        await handleFormSubmit({ url, method, formData, token, onSave, setError });
+        await handleFormSubmit({url, method, formData, token, onSave, setError});
     };
 
     return (
@@ -41,7 +41,7 @@ export default function CatalogItemFormModal({ item, catalogId, onClose, onSave 
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">{item ? 'Editar Ítem' : 'Nuevo Ítem'}</h3>
                     <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full">
-                        <X size={20} />
+                        <X size={20}/>
                     </button>
                 </div>
                 <form onSubmit={handleSubmit}>

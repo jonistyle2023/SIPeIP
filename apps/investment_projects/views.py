@@ -1,4 +1,3 @@
-# OBJETIVO: Definir la lógica de la API para la formulación de proyectos.
 import decimal
 
 from rest_framework import viewsets, status
@@ -143,7 +142,7 @@ class ProyectoInversionViewSet(viewsets.ModelViewSet):
             )
 
         proyecto.estado = 'EN_FORMULACION'
-        # Aquí podrías guardar las observaciones en un campo o modelo de historial si lo tuvieras.
+        # Aquí a futuro se guardan las observaciones en un campo o modelo de historial si lo tuvieras.
         # Por ahora, simplemente cambiamos el estado.
         proyecto.save()
 
@@ -164,18 +163,9 @@ class MarcoLogicoViewSet(viewsets.ModelViewSet):
     )
 
     def get_queryset(self):
-        """
-        CORRECCIÓN: Esta función filtra el queryset base.
-        Si se proporciona un 'proyecto' en la URL, filtra los marcos lógicos
-        para que coincidan con ese ID de proyecto.
-        """
-        # Obtenemos el queryset base definido arriba
         queryset = super().get_queryset()
-
-        # Buscamos el parámetro 'proyecto' en la URL (ej: /?proyecto=2)
         proyecto_id = self.request.query_params.get('proyecto')
 
-        # Si el parámetro existe, aplicamos el filtro
         if proyecto_id:
             queryset = queryset.filter(proyecto_id=proyecto_id)
 

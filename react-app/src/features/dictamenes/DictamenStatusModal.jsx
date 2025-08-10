@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { api } from '../../shared/api/api.js';
-import { X, CheckCircle, XCircle } from 'lucide-react';
+import React, {useState} from 'react';
+import {api} from '../../shared/api/api.js';
+import {X, CheckCircle, XCircle} from 'lucide-react';
 
-export default function DictamenStatusModal({ dictamen, action, onClose, onSave }) {
+export default function DictamenStatusModal({dictamen, action, onClose, onSave}) {
     const [observaciones, setObservaciones] = useState('');
     const [error, setError] = useState('');
 
@@ -14,7 +14,7 @@ export default function DictamenStatusModal({ dictamen, action, onClose, onSave 
         e.preventDefault();
         setError('');
         try {
-            await api.post(`/investment-projects/dictamenes/${dictamen.dictamen_id}/${action}/`, { observaciones });
+            await api.post(`/investment-projects/dictamenes/${dictamen.dictamen_id}/${action}/`, {observaciones});
             onSave();
         } catch (err) {
             setError(err.message || `Error al ${action} el dictamen.`);
@@ -26,10 +26,10 @@ export default function DictamenStatusModal({ dictamen, action, onClose, onSave 
             <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold flex items-center">
-                        <Icon className={`mr-2 ${isApproving ? 'text-green-500' : 'text-red-500'}`} />
+                        <Icon className={`mr-2 ${isApproving ? 'text-green-500' : 'text-red-500'}`}/>
                         {title}
                     </h3>
-                    <button onClick={onClose}><X /></button>
+                    <button onClick={onClose}><X/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
@@ -53,8 +53,10 @@ export default function DictamenStatusModal({ dictamen, action, onClose, onSave 
                     </div>
                     {error && <p className="text-red-500 text-center pb-4">{error}</p>}
                     <div className="p-4 border-t flex justify-end space-x-2">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button>
-                        <button type="submit" className={`px-4 py-2 text-white rounded ${isApproving ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}>
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar
+                        </button>
+                        <button type="submit"
+                                className={`px-4 py-2 text-white rounded ${isApproving ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}>
                             {isApproving ? 'Aprobar' : 'Rechazar'}
                         </button>
                     </div>

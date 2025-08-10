@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { api } from '../../shared/api/api.js';
-import { Link2, Zap, Layers, Flag } from 'lucide-react';
+import React, {useState, useEffect, useCallback} from 'react';
+import {api} from '../../shared/api/api.js';
+import {Link2, Zap, Layers, Flag} from 'lucide-react';
 
-export default function AlineacionTab({ project, onDataChange }) {
+export default function AlineacionTab({project, onDataChange}) {
     const [programas, setProgramas] = useState([]);
     const [selectedPrograma, setSelectedPrograma] = useState(project.programa_institucional || '');
     const [contribucion, setContribucion] = useState(project.contribucion_programa || '');
@@ -60,7 +60,8 @@ export default function AlineacionTab({ project, onDataChange }) {
     return (
         <div className="space-y-6">
             <div className="p-4 border rounded-lg">
-                <h3 className="font-semibold text-lg mb-2">1. Vinculación del Proyecto con el Programa Institucional</h3>
+                <h3 className="font-semibold text-lg mb-2">1. Vinculación del Proyecto con el Programa
+                    Institucional</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700">Seleccionar Programa</label>
@@ -87,7 +88,8 @@ export default function AlineacionTab({ project, onDataChange }) {
                     </div>
                 </div>
                 <div className="mt-4 flex justify-end">
-                    <button onClick={handleSaveAlignment} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <button onClick={handleSaveAlignment}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                         Guardar Vinculación
                     </button>
                 </div>
@@ -98,10 +100,20 @@ export default function AlineacionTab({ project, onDataChange }) {
                 <div className="p-4 border rounded-lg bg-gray-50">
                     <h3 className="font-semibold text-lg mb-3">2. Cadena de Alineación Estratégica (Automática)</h3>
                     <div className="space-y-3 text-sm">
-                        <p className="flex items-start"><Zap size={18} className="text-purple-500 mr-3 mt-1"/> <span className="font-bold mr-2">Proyecto:</span> {project.nombre}</p>
-                        <div className="pl-5 border-l-2 ml-2"><p className="flex items-start"><Layers size={18} className="text-indigo-500 mr-3 mt-1"/><span className="font-bold mr-2">Se vincula al Programa:</span> {project.programa_institucional_nombre}</p></div>
-                        <div className="pl-12 border-l-2 ml-2"><p className="flex items-start"><i data-lucide="target">🎯</i><span className="font-bold mr-2">Que contribuye al OEI:</span> {alignmentChain.instrumento_origen.description}</p></div>
-                        <div className="pl-20 border-l-2 ml-2"><p className="flex items-start"><Flag size={18} className="text-green-500 mr-3 mt-1"/><span className="font-bold mr-2">Alineado con el Objetivo PND:</span> {alignmentChain.instrumento_destino.description}</p></div>
+                        <p className="flex items-start"><Zap size={18} className="text-purple-500 mr-3 mt-1"/> <span
+                            className="font-bold mr-2">Proyecto:</span> {project.nombre}</p>
+                        <div className="pl-5 border-l-2 ml-2"><p className="flex items-start"><Layers size={18}
+                                                                                                      className="text-indigo-500 mr-3 mt-1"/><span
+                            className="font-bold mr-2">Se vincula al Programa:</span> {project.programa_institucional_nombre}
+                        </p></div>
+                        <div className="pl-12 border-l-2 ml-2"><p className="flex items-start"><i
+                            data-lucide="target">🎯</i><span
+                            className="font-bold mr-2">Que contribuye al OEI:</span> {alignmentChain.instrumento_origen.description}
+                        </p></div>
+                        <div className="pl-20 border-l-2 ml-2"><p className="flex items-start"><Flag size={18}
+                                                                                                     className="text-green-500 mr-3 mt-1"/><span
+                            className="font-bold mr-2">Alineado con el Objetivo PND:</span> {alignmentChain.instrumento_destino.description}
+                        </p></div>
                     </div>
                 </div>
             )}

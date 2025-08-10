@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
-import {Flag, BookOpen, Plus, ChevronDown, ChevronRight, Edit, Trash2} from 'lucide-react';
+import {BookOpen, ChevronDown, ChevronRight, Edit, Flag, Plus, Trash2} from 'lucide-react';
 import PndFormModal from './PndFormModal.jsx';
 import OdsFormModal from './OdsFormModal.jsx';
 import PndObjectiveFormModal from './PndObjectiveFormModal.jsx';
@@ -125,7 +125,8 @@ export default function MasterData() {
                                 <div className="flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100">
                                     <button onClick={() => setOpenPndId(openPndId === pnd.plan_id ? null : pnd.plan_id)}
                                             className="flex items-center text-left flex-grow space-x-2">
-                                        {openPndId === pnd.plan_id ? <ChevronDown size={16}/> : <ChevronRight size={16}/>}
+                                        {openPndId === pnd.plan_id ? <ChevronDown size={16}/> :
+                                            <ChevronRight size={16}/>}
                                         <span className="font-medium text-sm text-gray-800">
                                             {pnd.nombre} ({pnd.periodo})
                                         </span>
@@ -149,7 +150,8 @@ export default function MasterData() {
                                     <div className="p-4 border-t text-sm space-y-2">
                                         {pnd.objetivos.length > 0 ? (
                                             pnd.objetivos.map(obj =>
-                                                <div key={obj.objetivo_pnd_id} className="p-2 bg-gray-100 rounded flex justify-between items-center">
+                                                <div key={obj.objetivo_pnd_id}
+                                                     className="p-2 bg-gray-100 rounded flex justify-between items-center">
                                                     <div>
                                                         <p className="font-semibold text-gray-700">{obj.codigo}</p>
                                                         <p className="text-gray-600">{obj.descripcion}</p>
@@ -169,7 +171,8 @@ export default function MasterData() {
                                                 </div>
                                             )
                                         ) : (
-                                            <p className="text-gray-500 italic">Este plan no tiene objetivos definidos.</p>
+                                            <p className="text-gray-500 italic">Este plan no tiene objetivos
+                                                definidos.</p>
                                         )}
                                     </div>
                                 )}

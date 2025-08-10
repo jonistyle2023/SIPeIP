@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import React, {useState, useEffect} from 'react';
+import {Plus, Edit, Trash2} from 'lucide-react';
 import UnitFormModal from './UnitFormModal.jsx';
 
 export default function UnitManager() {
@@ -15,7 +15,7 @@ export default function UnitManager() {
         const fetchEntities = async () => {
             const token = localStorage.getItem('authToken');
             const response = await fetch('http://127.0.0.1:8000/api/v1/config/entidades/', {
-                headers: { 'Authorization': `Token ${token}` }
+                headers: {'Authorization': `Token ${token}`}
             });
             const data = await response.json();
             setEntities(data);
@@ -33,7 +33,7 @@ export default function UnitManager() {
             setLoading(true);
             const token = localStorage.getItem('authToken');
             const response = await fetch(`http://127.0.0.1:8000/api/v1/config/unidades-organizacionales/?entidad=${selectedEntityId}`, {
-                headers: { 'Authorization': `Token ${token}` }
+                headers: {'Authorization': `Token ${token}`}
             });
             const data = await response.json();
             setUnits(data);
@@ -76,8 +76,9 @@ export default function UnitManager() {
                     </select>
                 </div>
                 {selectedEntityId && (
-                    <button onClick={() => handleOpenModal()} className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-                        <Plus size={16} className="mr-2" />
+                    <button onClick={() => handleOpenModal()}
+                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        <Plus size={16} className="mr-2"/>
                         Nueva Unidad
                     </button>
                 )}
@@ -101,13 +102,17 @@ export default function UnitManager() {
                                     <td className="p-3 font-medium text-gray-800">{unit.nombre}</td>
                                     <td className="p-3">{unit.padre_nombre || 'Nivel Principal'}</td>
                                     <td className="p-3">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${unit.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                            <span
+                                                className={`px-2 py-1 rounded-full text-xs font-medium ${unit.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                                 {unit.activo ? 'Activa' : 'Inactiva'}
                                             </span>
                                     </td>
                                     <td className="p-3 flex items-center space-x-2">
-                                        <button onClick={() => handleOpenModal(unit)} className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16} /></button>
-                                        <button className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16} /></button>
+                                        <button onClick={() => handleOpenModal(unit)}
+                                                className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
+                                        </button>
+                                        <button className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16}/>
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -116,7 +121,8 @@ export default function UnitManager() {
                     </div>
                 )
             )}
-            {isModalOpen && <UnitFormModal unit={editingUnit} entityId={selectedEntityId} parentUnits={units} onClose={handleCloseModal} onSave={handleSave} />}
+            {isModalOpen && <UnitFormModal unit={editingUnit} entityId={selectedEntityId} parentUnits={units}
+                                           onClose={handleCloseModal} onSave={handleSave}/>}
         </div>
     );
 }

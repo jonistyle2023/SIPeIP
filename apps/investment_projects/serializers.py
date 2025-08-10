@@ -1,4 +1,3 @@
-# OBJETIVO: Convertir los modelos de Proyectos de Inversión a formato JSON.
 from django.db.models import Sum
 from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
@@ -10,11 +9,9 @@ from .models import (
 from apps.strategic_objectives.serializers import GenericRelatedObjectSerializer
 
 # --- Marco Lógico ---
-
 class MetaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meta
-        # Se quita 'meta_id' para la creación anidada
         fields = ['linea_base', 'valor_meta', 'periodo_anualizado']
 
 class IndicadorSerializer(serializers.ModelSerializer):
@@ -131,10 +128,6 @@ class ActividadSerializer(serializers.ModelSerializer):
 
 class ComponenteSerializer(serializers.ModelSerializer):
     actividades = ActividadSerializer(many=True, read_only=True)
-
-    # --- CORRECCIÓN ---
-    # En lugar de depender de la relación implícita, usamos un método para
-    # buscar y serializar explícitamente los indicadores de este componente.
     indicadores = serializers.SerializerMethodField()
 
     class Meta:
@@ -142,24 +135,15 @@ class ComponenteSerializer(serializers.ModelSerializer):
         fields = ['componente_id', 'marco_logico', 'nombre', 'descripcion', 'ponderacion', 'actividades', 'indicadores']
 
     def get_indicadores(self, obj):
-        """
-        Versión Final y Directa: Filtra los indicadores usando directamente
-        el ID del ContentType del componente (que sabemos es 9).
-        'obj' es una instancia del modelo Componente.
-        """
-        # Según tu SQL, el ID para el ContentType de Componente es 9.
-        # Filtramos directamente por ese número.
         indicadores_del_componente = Indicador.objects.filter(
             content_type_id=9,
             object_id=obj.pk
         )
 
-        # Serializamos los resultados para la respuesta.
         return IndicadorSerializer(indicadores_del_componente, many=True).data
 
 class MarcoLogicoSerializer(serializers.ModelSerializer):
     componentes = ComponenteSerializer(many=True, read_only=True)
-    # MODIFICACIÓN: Incluimos los indicadores de Fin y Propósito.
     indicadores = IndicadorSerializer(many=True, read_only=True)
 
     class Meta:
@@ -167,7 +151,6 @@ class MarcoLogicoSerializer(serializers.ModelSerializer):
         fields = ['marco_logico_id', 'proyecto', 'fin', 'proposito', 'componentes', 'indicadores']
 
 # --- Serializer Principal del Proyecto de Inversión ---
-
 class ArrastreInversionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArrastreInversion
@@ -177,16 +160,13 @@ class DictamenPrioridadSerializer(serializers.ModelSerializer):
     class Meta:
         model = DictamenPrioridad
         fields = '__all__'
-        read_only_fields = ('estado', 'fecha_solicitud') # El estado se maneja con acciones
+        read_only_fields = ('estado', 'fecha_solicitud')
 
 class ProyectoInversionSerializer(serializers.ModelSerializer):
     tipo_proyecto_nombre = serializers.CharField(source='tipo_proyecto.nombre', read_only=True)
     tipologia_proyecto_nombre = serializers.CharField(source='tipologia_proyecto.nombre', read_only=True)
     sector_nombre = serializers.CharField(source='sector.nombre', read_only=True)
     monto_total_programado = serializers.SerializerMethodField()
-
-# --- CORRECCIÓN CLAVE ---
-    # Se añade 'allow_null=True' para evitar el error 500 si un proyecto no tiene programa asignado.
     programa_institucional_nombre = serializers.CharField(
         source='programa_institucional.nombre',
         read_only=True,

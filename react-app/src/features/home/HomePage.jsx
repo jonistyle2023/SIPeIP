@@ -20,10 +20,10 @@ export default function HomePage({onNavigateToLogin}) {
                     <SipeipLogo/>
                     <h1
                         className="ml-4 text-6xl md:text-7xl lg:text-8xl font-semibold tracking-wider font-['Roboto'] drop-shadow-lg"
-                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                        style={{fontFamily: 'Roboto, sans-serif'}}
                     >
-                        <span style={{ color: '#454545' }}>SIPe</span>
-                        <span style={{ color: '#888888' }}>IP</span>
+                        <span style={{color: '#454545'}}>SIPe</span>
+                        <span style={{color: '#888888'}}>IP</span>
                     </h1>
                 </div>
                 <button
@@ -32,7 +32,7 @@ export default function HomePage({onNavigateToLogin}) {
                       <span
                           className="flex items-center justify-center mr-3 transition-all duration-300 ease-in-out
                                    text-black group-hover:text-white">
-                        <LoginIcon />
+                        <LoginIcon/>
                       </span>
                     Iniciar Sesión
                 </button>

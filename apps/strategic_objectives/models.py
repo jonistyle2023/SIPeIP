@@ -1,5 +1,3 @@
-# OBJETIVO: Modelos adaptados para reflejar el script de la base de datos existente.
-
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -7,7 +5,6 @@ from django.contrib.contenttypes.models import ContentType
 from apps.institutional_config.models import Entidad, PeriodoPlanificacion
 
 # --- Plan Nacional de Desarrollo (PND) ---
-
 class PlanNacionalDesarrollo(models.Model):
     pnd_id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
@@ -58,7 +55,6 @@ class IndicadorPND(models.Model):
 
 
 # --- Objetivos de Desarrollo Sostenible (ODS) ---
-
 class ObjetivoDesarrolloSostenible(models.Model):
     ods_id = models.AutoField(primary_key=True)
     numero = models.IntegerField()
@@ -90,7 +86,6 @@ class MetaODS(models.Model):
 
 
 # --- Planes Institucionales y Sectoriales ---
-
 class PlanInstitucional(models.Model):
     ESTADO_CHOICES = [('BORRADOR', 'Borrador'), ('VALIDADO', 'Validado'), ('APROBADO', 'Aprobado')]
     plan_institucional_id = models.AutoField(primary_key=True)

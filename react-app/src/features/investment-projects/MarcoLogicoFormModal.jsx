@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { api } from '../../shared/api/api.js';
-import { X } from 'lucide-react';
+import React, {useState} from 'react';
+import {api} from '../../shared/api/api.js';
+import {X} from 'lucide-react';
 
-export default function MarcoLogicoFormModal({ project, onClose, onSave }) {
+export default function MarcoLogicoFormModal({project, onClose, onSave}) {
     const [fin, setFin] = useState('');
     const [proposito, setProposito] = useState('');
     const [error, setError] = useState('');
@@ -28,7 +28,7 @@ export default function MarcoLogicoFormModal({ project, onClose, onSave }) {
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Crear Marco Lógico para "{project.nombre}"</h3>
-                    <button onClick={onClose}><X size={24} /></button>
+                    <button onClick={onClose}><X size={24}/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
@@ -63,8 +63,11 @@ export default function MarcoLogicoFormModal({ project, onClose, onSave }) {
                     </div>
                     {error && <p className="text-red-500 text-center pb-4">{error}</p>}
                     <div className="p-4 border-t flex justify-end space-x-2">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button>
-                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar Marco Lógico</button>
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar
+                        </button>
+                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar Marco
+                            Lógico
+                        </button>
                     </div>
                 </form>
             </div>

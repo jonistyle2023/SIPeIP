@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../../shared/api/api.js';
+import React, {useEffect, useState} from 'react';
+import {api} from '../../shared/api/api.js';
 
-export default function SectoralObjectiveFormModal({ planSectorialId, objetivo, onClose, onSave }) {
+export default function SectoralObjectiveFormModal({planSectorialId, objetivo, onClose, onSave}) {
     const [codigo, setCodigo] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [error, setError] = useState('');
@@ -22,7 +22,7 @@ export default function SectoralObjectiveFormModal({ planSectorialId, objetivo, 
         setIsSaving(true);
         setError('');
         try {
-            const payload = { plan_sectorial: planSectorialId, codigo, descripcion };
+            const payload = {plan_sectorial: planSectorialId, codigo, descripcion};
             if (objetivo && objetivo.objetivo_sectorial_id) {
                 await api.put(`/strategic-planning/objetivos-sectoriales/${objetivo.objetivo_sectorial_id}/`, payload);
             } else {

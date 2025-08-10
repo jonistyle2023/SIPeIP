@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {Plus, Tag, Edit, Trash2} from 'lucide-react';
+import React, {useEffect, useState} from 'react';
+import {Edit, Plus, Tag, Trash2} from 'lucide-react';
 import {api} from '../../shared/api/api.js';
 
 const CatalogItem = ({catalog, onEdit, onDelete}) => (

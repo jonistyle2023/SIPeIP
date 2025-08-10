@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
 
 export default function AlignmentFormModal({onClose, onSave, initialData, isEdit}) {
@@ -121,7 +121,8 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                     {!loading && (
                         <>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Instrumento Origen <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-medium text-gray-700">Instrumento Origen <span
+                                    className="text-red-500">*</span></label>
                                 <select
                                     value={selectedOriginType}
                                     onChange={e => {
@@ -160,7 +161,8 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Instrumento Destino (Objetivo PND)</label>
+                                <label className="block text-sm font-medium text-gray-700">Instrumento Destino (Objetivo
+                                    PND)</label>
                                 <select
                                     value={selectedDestId}
                                     onChange={e => setSelectedDestId(e.target.value)}
@@ -175,7 +177,8 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Vinculación a Metas Globales (ODS)</label>
+                                <label className="block text-sm font-medium text-gray-700">Vinculación a Metas Globales
+                                    (ODS)</label>
                                 <select
                                     multiple
                                     value={selectedOds}
@@ -191,7 +194,8 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                                 <p className="text-xs text-gray-500 mt-1">Puede seleccionar varios ODS (Ctrl+Click).</p>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Porcentaje de Contribución (%)</label>
+                                <label className="block text-sm font-medium text-gray-700">Porcentaje de Contribución
+                                    (%)</label>
                                 <input
                                     type="number"
                                     step="0.01"
@@ -206,7 +210,8 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                         </>
                     )}
                     <div className="flex justify-end pt-4 space-x-3">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-md">Cancelar</button>
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-md">Cancelar
+                        </button>
                         <button type="submit" disabled={loading}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-blue-300">
                             Guardar Alineación

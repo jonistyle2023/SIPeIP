@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import {X} from 'lucide-react';
+import {useState} from 'react';
 import {api} from '../../shared/api/api.js';
 
 const initialProjectData = {

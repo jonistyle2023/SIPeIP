@@ -1,5 +1,3 @@
-# OBJETIVO: Definir las rutas (URLs) específicas para esta aplicación.
-
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (

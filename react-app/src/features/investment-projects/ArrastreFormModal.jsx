@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { api } from '../../shared/api/api.js';
-import { X } from 'lucide-react';
+import React, {useState} from 'react';
+import {api} from '../../shared/api/api.js';
+import {X} from 'lucide-react';
 
-export default function ArrastreFormModal({ projectId, onClose, onSave }) {
+export default function ArrastreFormModal({projectId, onClose, onSave}) {
     const [formData, setFormData] = useState({
         contrato_info: '',
         monto_devengado: '',
@@ -11,7 +11,7 @@ export default function ArrastreFormModal({ projectId, onClose, onSave }) {
     const [error, setError] = useState('');
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({...formData, [e.target.name]: e.target.value});
     };
 
     const handleSubmit = async (e) => {
@@ -34,7 +34,7 @@ export default function ArrastreFormModal({ projectId, onClose, onSave }) {
             <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Nuevo Arrastre de Inversión</h3>
-                    <button onClick={onClose}><X /></button>
+                    <button onClick={onClose}><X/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
@@ -65,7 +65,8 @@ export default function ArrastreFormModal({ projectId, onClose, onSave }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Monto por Devengar ($)</label>
+                                <label className="block text-sm font-medium text-gray-700">Monto por Devengar
+                                    ($)</label>
                                 <input
                                     type="number"
                                     name="monto_por_devengar"
@@ -81,8 +82,10 @@ export default function ArrastreFormModal({ projectId, onClose, onSave }) {
                     </div>
                     {error && <p className="text-red-500 text-center pb-4">{error}</p>}
                     <div className="p-4 border-t flex justify-end space-x-2">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button>
-                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar Arrastre</button>
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar
+                        </button>
+                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar Arrastre
+                        </button>
                     </div>
                 </form>
             </div>

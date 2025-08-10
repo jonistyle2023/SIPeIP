@@ -8,7 +8,6 @@ from .models import (
 )
 
 # --- Plan Nacional de Desarrollo (PND) ---
-
 class IndicadorPNDSerializer(serializers.ModelSerializer):
     class Meta:
         model = IndicadorPND
@@ -43,7 +42,6 @@ class ObjetivoPNDSerializer(serializers.ModelSerializer):
             'objetivo_pnd_id', 'pnd', 'codigo', 'descripcion', 'politicas'
         ]
 
-
 class PlanNacionalDesarrolloSerializer(serializers.ModelSerializer):
     objetivos = ObjetivoPNDSerializer(many=True, read_only=True)
 
@@ -53,16 +51,13 @@ class PlanNacionalDesarrolloSerializer(serializers.ModelSerializer):
             'pnd_id', 'nombre', 'periodo', 'fecha_publicacion', 'objetivos'
         ]
 
-
 # --- Objetivos de Desarrollo Sostenible (ODS) ---
-
 class MetaODSSerializer(serializers.ModelSerializer):
     class Meta:
         model = MetaODS
         fields = [
             'meta_id', 'estrategia', 'codigo', 'descripcion', 'activo'
         ]
-
 
 class EstrategiaODSSerializer(serializers.ModelSerializer):
     metas = MetaODSSerializer(many=True, read_only=True)
@@ -73,7 +68,6 @@ class EstrategiaODSSerializer(serializers.ModelSerializer):
             'estrategia_id', 'objetivo', 'codigo', 'descripcion', 'activo', 'metas'
         ]
 
-
 class ObjetivoDesarrolloSostenibleSerializer(serializers.ModelSerializer):
     estrategias = EstrategiaODSSerializer(many=True, read_only=True)
 
@@ -83,16 +77,13 @@ class ObjetivoDesarrolloSostenibleSerializer(serializers.ModelSerializer):
             'ods_id', 'numero', 'nombre', 'descripcion', 'estrategias'
         ]
 
-
 # --- PLANES INSTITUCIONALES Y ALINEACIÓN
-
 class ObjetivoEstrategicoInstitucionalSerializer(serializers.ModelSerializer):
     class Meta:
         model = ObjetivoEstrategicoInstitucional
         fields = [
             'oei_id', 'plan_institucional', 'codigo', 'descripcion', 'activo'
         ]
-
 
 class PlanInstitucionalSerializer(serializers.ModelSerializer):
     objetivos_estrategicos = ObjetivoEstrategicoInstitucionalSerializer(many=True, read_only=True)
@@ -105,14 +96,12 @@ class PlanInstitucionalSerializer(serializers.ModelSerializer):
             'creador', 'objetivos_estrategicos'
         ]
 
-
 class PlanSectorialSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanSectorial
         fields = [
             'plan_sectorial_id', 'nombre', 'sector', 'periodo', 'estado', 'fecha_creacion'
         ]
-
 
 # Representar un objeto genérico de forma legible
 class GenericRelatedObjectSerializer(serializers.Field):
@@ -122,7 +111,6 @@ class GenericRelatedObjectSerializer(serializers.Field):
             'type': value._meta.model_name,
             'description': str(value)
         }
-
 
 class AlineacionSerializer(serializers.ModelSerializer):
     instrumento_origen = GenericRelatedObjectSerializer(read_only=True)
@@ -151,7 +139,6 @@ class AlineacionSerializer(serializers.ModelSerializer):
             'ods_vinculados',
         ]
 
-
 class PlanInstitucionalVersionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanInstitucionalVersion
@@ -160,12 +147,10 @@ class PlanInstitucionalVersionSerializer(serializers.ModelSerializer):
             'cambios_realizados'
         ]
 
-
 class ObjetivoSectorialSerializer(serializers.ModelSerializer):
     class Meta:
         model = ObjetivoSectorial
         fields = '__all__'
-
 
 # Actualiza el PlanSectorialSerializer para mostrar sus objetivos anidados
 class PlanSectorialSerializer(serializers.ModelSerializer):

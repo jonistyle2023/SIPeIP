@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
 
 export default function PndObjectiveFormModal({pndId, objetivo, onClose, onSave}) {
@@ -20,7 +20,7 @@ export default function PndObjectiveFormModal({pndId, objetivo, onClose, onSave}
         setIsSaving(true);
         setError('');
         try {
-            const payload = { pnd: Number(pndId), codigo, descripcion };
+            const payload = {pnd: Number(pndId), codigo, descripcion};
             if (objetivo) {
                 await api.put(`/strategic-planning/pnd-objetivos/${objetivo.objetivo_pnd_id}/`, payload);
             } else {

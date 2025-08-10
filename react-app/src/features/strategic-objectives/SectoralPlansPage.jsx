@@ -1,8 +1,6 @@
-// Archivo: react-app/src/components/strategic/SectoralPlans.jsx
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { api } from '../../shared/api/api.js';
-import { Layers, Plus, ChevronDown, ChevronRight, Edit, Trash } from 'lucide-react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {api} from '../../shared/api/api.js';
+import {ChevronDown, ChevronRight, Edit, Layers, Plus, Trash} from 'lucide-react';
 import SectoralPlanFormModal from './SectoralPlanFormModal.jsx';
 import SectoralObjectiveFormModal from './SectoralObjectiveFormModal.jsx';
 
@@ -87,14 +85,18 @@ export default function SectoralPlansPage() {
         }
     };
 
-    if (loading) return <div className="p-6 bg-white rounded-lg shadow-sm text-center">Cargando planes sectoriales...</div>;
+    if (loading) return <div className="p-6 bg-white rounded-lg shadow-sm text-center">Cargando planes
+        sectoriales...</div>;
 
     return (
         <>
             {(isPlanModalOpen || editingPlan) && (
                 <SectoralPlanFormModal
                     plan={editingPlan}
-                    onClose={() => { setIsPlanModalOpen(false); setEditingPlan(null); }}
+                    onClose={() => {
+                        setIsPlanModalOpen(false);
+                        setEditingPlan(null);
+                    }}
                     onSave={fetchData}
                 />
             )}
@@ -102,7 +104,11 @@ export default function SectoralPlansPage() {
                 <SectoralObjectiveFormModal
                     planSectorialId={selectedPlanForObjective || (editingObjective && editingObjective.plan_sectorial)}
                     objetivo={editingObjective}
-                    onClose={() => { setIsObjectiveModalOpen(false); setEditingObjective(null); setSelectedPlanForObjective(null); }}
+                    onClose={() => {
+                        setIsObjectiveModalOpen(false);
+                        setEditingObjective(null);
+                        setSelectedPlanForObjective(null);
+                    }}
                     onSave={fetchData}
                 />
             )}
@@ -113,8 +119,12 @@ export default function SectoralPlansPage() {
                     <div className="bg-white p-6 rounded shadow-lg">
                         <p>¿Seguro que deseas eliminar este plan sectorial?</p>
                         <div className="mt-4 flex justify-end gap-2">
-                            <button onClick={() => setDeletingPlanId(null)} className="px-3 py-1 bg-gray-200 rounded">Cancelar</button>
-                            <button onClick={confirmDeletePlan} className="px-3 py-1 bg-red-600 text-white rounded">Eliminar</button>
+                            <button onClick={() => setDeletingPlanId(null)}
+                                    className="px-3 py-1 bg-gray-200 rounded">Cancelar
+                            </button>
+                            <button onClick={confirmDeletePlan}
+                                    className="px-3 py-1 bg-red-600 text-white rounded">Eliminar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -126,8 +136,12 @@ export default function SectoralPlansPage() {
                     <div className="bg-white p-6 rounded shadow-lg">
                         <p>¿Seguro que deseas eliminar este objetivo sectorial?</p>
                         <div className="mt-4 flex justify-end gap-2">
-                            <button onClick={() => setDeletingObjectiveId(null)} className="px-3 py-1 bg-gray-200 rounded">Cancelar</button>
-                            <button onClick={confirmDeleteObjective} className="px-3 py-1 bg-red-600 text-white rounded">Eliminar</button>
+                            <button onClick={() => setDeletingObjectiveId(null)}
+                                    className="px-3 py-1 bg-gray-200 rounded">Cancelar
+                            </button>
+                            <button onClick={confirmDeleteObjective}
+                                    className="px-3 py-1 bg-red-600 text-white rounded">Eliminar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -136,13 +150,16 @@ export default function SectoralPlansPage() {
             <div className="bg-white p-6 rounded-lg shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold text-lg flex items-center">
-                        <Layers className="mr-2 text-blue-500" />Planes Sectoriales
+                        <Layers className="mr-2 text-blue-500"/>Planes Sectoriales
                     </h3>
                     <button
-                        onClick={() => { setIsPlanModalOpen(true); setEditingPlan(null); }}
+                        onClick={() => {
+                            setIsPlanModalOpen(true);
+                            setEditingPlan(null);
+                        }}
                         className="flex items-center px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 text-xs"
                     >
-                        <Plus size={14} className="mr-1" />Nuevo Plan
+                        <Plus size={14} className="mr-1"/>Nuevo Plan
                     </button>
                 </div>
                 <div className="space-y-2">
@@ -156,7 +173,8 @@ export default function SectoralPlansPage() {
                                         onClick={() => setOpenPlanId(openPlanId === plan.plan_sectorial_id ? null : plan.plan_sectorial_id)}
                                         className="flex items-center text-left flex-grow space-x-2"
                                     >
-                                        {openPlanId === plan.plan_sectorial_id ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                                        {openPlanId === plan.plan_sectorial_id ? <ChevronDown size={16}/> :
+                                            <ChevronRight size={16}/>}
                                         <span className="font-medium text-sm text-gray-800">
                                             {plan.nombre}
                                         </span>
@@ -167,20 +185,20 @@ export default function SectoralPlansPage() {
                                             className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
                                             title="Editar plan"
                                         >
-                                            <Edit size={16} />
+                                            <Edit size={16}/>
                                         </button>
                                         <button
                                             onClick={() => handleDeletePlan(plan.plan_sectorial_id)}
                                             className="p-2 text-red-600 hover:bg-red-100 rounded-full"
                                             title="Eliminar plan"
                                         >
-                                            <Trash size={16} />
+                                            <Trash size={16}/>
                                         </button>
                                         <button
                                             onClick={() => handleOpenObjectiveModal(plan.plan_sectorial_id)}
                                             className="text-xs flex items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-md hover:bg-blue-200"
                                         >
-                                            <Plus size={14} className="mr-1" />Añadir Objetivo
+                                            <Plus size={14} className="mr-1"/>Añadir Objetivo
                                         </button>
                                     </div>
                                 </div>
@@ -188,7 +206,8 @@ export default function SectoralPlansPage() {
                                     <div className="p-4 border-t text-sm space-y-2">
                                         {plan.objetivos && plan.objetivos.length > 0 ? (
                                             plan.objetivos.map(objetivo =>
-                                                <div key={objetivo.objetivo_sectorial_id} className="flex justify-between items-center p-2 bg-gray-100 rounded">
+                                                <div key={objetivo.objetivo_sectorial_id}
+                                                     className="flex justify-between items-center p-2 bg-gray-100 rounded">
                                                     <div>
                                                         <p className="font-semibold text-gray-700">{objetivo.codigo}</p>
                                                         <p className="text-gray-600">{objetivo.descripcion}</p>
@@ -199,20 +218,21 @@ export default function SectoralPlansPage() {
                                                             className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
                                                             title="Editar Objetivo"
                                                         >
-                                                            <Edit size={16} />
+                                                            <Edit size={16}/>
                                                         </button>
                                                         <button
                                                             onClick={() => handleDeleteObjective(objetivo.objetivo_sectorial_id)}
                                                             className="p-2 text-red-600 hover:bg-red-100 rounded-full"
                                                             title="Eliminar Objetivo"
                                                         >
-                                                            <Trash size={16} />
+                                                            <Trash size={16}/>
                                                         </button>
                                                     </div>
                                                 </div>
                                             )
                                         ) : (
-                                            <p className="text-gray-500 italic">Este plan no tiene objetivos definidos.</p>
+                                            <p className="text-gray-500 italic">Este plan no tiene objetivos
+                                                definidos.</p>
                                         )}
                                     </div>
                                 )}

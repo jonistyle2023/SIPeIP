@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
-import {Link2, Plus, Edit, Trash2} from 'lucide-react';
+import {Edit, Link2, Plus, Trash2} from 'lucide-react';
 import AlignmentFormModal from './AlignmentFormModal.jsx';
 
 export default function AlignmentMatrix() {

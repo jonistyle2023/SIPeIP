@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import React, {useState, useEffect} from 'react';
+import {Plus, Edit, Trash2} from 'lucide-react';
 import PeriodFormModal from './PeriodFormModal.jsx';
 
 export function PeriodsManager() {
@@ -48,7 +48,7 @@ export function PeriodsManager() {
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/v1/config/periodos/${periodId}/`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Token ${token}` }
+                headers: {'Authorization': `Token ${token}`}
             });
             if (!response.ok) throw new Error("No se pudo eliminar el período");
             fetchPeriods();
@@ -100,7 +100,8 @@ export function PeriodsManager() {
                                     className="p-1 text-red-500 hover:text-red-700"
                                 >
                                     <Trash2 size={16}/>
-                                </button>                            </td>
+                                </button>
+                            </td>
                         </tr>
                     ))}
                     </tbody>

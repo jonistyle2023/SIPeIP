@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import React, {useState, useEffect} from 'react';
+import {Plus, Edit, Trash2} from 'lucide-react';
 import CatalogItemFormModal from './CatalogItemFormModal.jsx';
 
 export default function CatalogManager() {
@@ -17,7 +17,7 @@ export default function CatalogManager() {
         const token = localStorage.getItem('authToken');
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/v1/config/catalogos/${selectedCatalog.id}/items/`, {
-                headers: { 'Authorization': `Token ${token}` }
+                headers: {'Authorization': `Token ${token}`}
             });
             if (!response.ok) throw new Error("Error al cargar ítems del catálogo");
             const data = await response.json();
@@ -40,7 +40,7 @@ export default function CatalogManager() {
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/v1/config/items-catalogo/${itemId}/`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Token ${token}` }
+                headers: {'Authorization': `Token ${token}`}
             });
             if (!response.ok) throw new Error("No se pudo eliminar el ítem");
             await fetchItemsForSelectedCatalog(); // Actualiza solo los ítems del catálogo seleccionado
@@ -54,7 +54,7 @@ export default function CatalogManager() {
         setLoadingCatalogs(true);
         const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/config/catalogos/', { headers: { 'Authorization': `Token ${token}` } });
+            const response = await fetch('http://127.0.0.1:8000/api/v1/config/catalogos/', {headers: {'Authorization': `Token ${token}`}});
             if (!response.ok) throw new Error("Error al cargar catálogos");
             const data = await response.json();
             setCatalogs(data);
@@ -95,7 +95,8 @@ export default function CatalogManager() {
                     <ul className="space-y-1">
                         {catalogs.map(cat => (
                             <li key={cat.id}>
-                                <button onClick={() => handleSelectCatalog(cat)} className={`w-full text-left p-2 rounded text-sm ${selectedCatalog?.id === cat.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100'}`}>
+                                <button onClick={() => handleSelectCatalog(cat)}
+                                        className={`w-full text-left p-2 rounded text-sm ${selectedCatalog?.id === cat.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100'}`}>
                                     {cat.nombre}
                                 </button>
                             </li>
@@ -107,27 +108,40 @@ export default function CatalogManager() {
                 {selectedCatalog ? (
                     <>
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-semibold">Ítems de: <span className="text-blue-600">{selectedCatalog.nombre}</span></h4>
-                            <button onClick={() => handleOpenModal()} className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs"><Plus size={14} className="mr-1" />Nuevo Ítem</button>
+                            <h4 className="font-semibold">Ítems de: <span
+                                className="text-blue-600">{selectedCatalog.nombre}</span></h4>
+                            <button onClick={() => handleOpenModal()}
+                                    className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs">
+                                <Plus size={14} className="mr-1"/>Nuevo Ítem
+                            </button>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                                <tr><th className="p-2">Nombre</th><th className="p-2">Código</th><th className="p-2">Acciones</th></tr>
+                                <tr>
+                                    <th className="p-2">Nombre</th>
+                                    <th className="p-2">Código</th>
+                                    <th className="p-2">Acciones</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                {loadingItems ? <tr><td colSpan="3" className="text-center p-4">Cargando...</td></tr> : items.map(item => (
+                                {loadingItems ? <tr>
+                                    <td colSpan="3" className="text-center p-4">Cargando...</td>
+                                </tr> : items.map(item => (
                                     <tr key={item.id} className="border-b hover:bg-gray-50">
                                         <td className="p-2">{item.nombre}</td>
                                         <td className="p-2">{item.codigo || '-'}</td>
                                         <td className="p-2 flex space-x-2">
-                                            <button onClick={() => handleOpenModal(item)} className="p-1 text-blue-500 hover:text-blue-700"><Edit size={14} /></button>
+                                            <button onClick={() => handleOpenModal(item)}
+                                                    className="p-1 text-blue-500 hover:text-blue-700"><Edit size={14}/>
+                                            </button>
                                             <button
                                                 onClick={() => handleDeleteItem(item.id)}
                                                 className="p-1 text-red-500 hover:text-red-700"
                                             >
-                                                <Trash2 size={14} />
-                                            </button>                                        </td>
+                                                <Trash2 size={14}/>
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
@@ -136,7 +150,9 @@ export default function CatalogManager() {
                     </>
                 ) : <p>Seleccione un catálogo para ver sus ítems.</p>}
             </div>
-            {isModalOpen && <CatalogItemFormModal item={editingItem} catalogId={selectedCatalog?.id} onClose={handleCloseModal} onSave={handleSave} />}
+            {isModalOpen &&
+                <CatalogItemFormModal item={editingItem} catalogId={selectedCatalog?.id} onClose={handleCloseModal}
+                                      onSave={handleSave}/>}
         </div>
     );
 }

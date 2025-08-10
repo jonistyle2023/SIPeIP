@@ -1,4 +1,3 @@
-# OBJETIVO: Definir la lógica de la API para PND y ODS.
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,52 +19,41 @@ from .serializers import (
     PlanInstitucionalVersionSerializer, ProgramaInstitucionalSerializer
 )
 
-
 # --- PND ---
 class PlanNacionalDesarrolloViewSet(viewsets.ModelViewSet):
     queryset = PlanNacionalDesarrollo.objects.all().prefetch_related('objetivos__politicas__metas__indicadores')
     serializer_class = PlanNacionalDesarrolloSerializer
 
-
 class ObjetivoPNDViewSet(viewsets.ModelViewSet):
     queryset = ObjetivoPND.objects.all().prefetch_related('politicas__metas__indicadores')
     serializer_class = ObjetivoPNDSerializer
-
 
 class PoliticaPNDViewSet(viewsets.ModelViewSet):
     queryset = PoliticaPND.objects.all().prefetch_related('metas__indicadores')
     serializer_class = PoliticaPNDSerializer
 
-
 class MetaPNDViewSet(viewsets.ModelViewSet):
     queryset = MetaPND.objects.all().prefetch_related('indicadores')
     serializer_class = MetaPNDSerializer
-
 
 class IndicadorPNDViewSet(viewsets.ModelViewSet):
     queryset = IndicadorPND.objects.all()
     serializer_class = IndicadorPNDSerializer
 
-
 # --- ODS ---
-
 class ObjetivoDesarrolloSostenibleViewSet(viewsets.ModelViewSet):
     queryset = ObjetivoDesarrolloSostenible.objects.all().prefetch_related('estrategias__metas')
     serializer_class = ObjetivoDesarrolloSostenibleSerializer
-
 
 class EstrategiaODSViewSet(viewsets.ModelViewSet):
     queryset = EstrategiaODS.objects.all().prefetch_related('metas')
     serializer_class = EstrategiaODSSerializer
 
-
 class MetaODSViewSet(viewsets.ModelViewSet):
     queryset = MetaODS.objects.all()
     serializer_class = MetaODSSerializer
 
-
 # --- PLANES Y ALINEACIÓN ---
-
 class PlanInstitucionalViewSet(viewsets.ModelViewSet):
     queryset = PlanInstitucional.objects.all().prefetch_related('objetivos_estrategicos')
     serializer_class = PlanInstitucionalSerializer
@@ -85,7 +73,6 @@ class PlanInstitucionalViewSet(viewsets.ModelViewSet):
         instance.save(update_fields=['version_actual'])
         return super().update(request, *args, **kwargs)
 
-
 class PlanInstitucionalVersionViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Endpoint para consultar el historial de versiones de los Planes Institucionales.
@@ -94,7 +81,6 @@ class PlanInstitucionalVersionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = PlanInstitucionalVersion.objects.all()
     serializer_class = PlanInstitucionalVersionSerializer
     filterset_fields = ['plan_institucional']
-
 
 class ObjetivoEstrategicoInstitucionalViewSet(viewsets.ModelViewSet):
     """
@@ -106,12 +92,10 @@ class ObjetivoEstrategicoInstitucionalViewSet(viewsets.ModelViewSet):
     serializer_class = ObjetivoEstrategicoInstitucionalSerializer
     # permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
-
 class PlanSectorialViewSet(viewsets.ModelViewSet):
     queryset = PlanSectorial.objects.all().prefetch_related('objetivos')
     serializer_class = PlanSectorialSerializer
     # permission_classes = [IsAuthenticated, ...]
-
 
 class AlineacionViewSet(viewsets.ModelViewSet):
     queryset = Alineacion.objects.all().select_related('instrumento_origen_tipo', 'instrumento_destino_tipo')
@@ -129,12 +113,10 @@ class AlineacionViewSet(viewsets.ModelViewSet):
         if ods_ids is not None:
             instance.ods_vinculados.set(ods_ids)
 
-
 class ObjetivoSectorialViewSet(viewsets.ModelViewSet):
     queryset = ObjetivoSectorial.objects.all()
     serializer_class = ObjetivoSectorialSerializer
     # permission_classes = [IsAuthenticated, ...] # Añadir permisos según sea necesario
-
 
 # Ayuda a obtener los modelos que se pueden alinear
 class AlignableContentTypesListView(APIView):

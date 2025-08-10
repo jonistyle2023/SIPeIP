@@ -1,27 +1,22 @@
-# Nuevo Sistema Integral de Planificación e Inversión Pública (SIPeIP 2.0), de la Secretaría Nacional de Planificación
+# Propuesta para la Implementación del Sistema Integral de Planificación e Inversión Pública (SIPeIP 2.0) en la Secretaría Nacional de Planificación
 
-> [!WARNING]
+> [!IMPORTANT]
 > 
-> Este proyecto es una propuesta como caso de estudio de **Examen complexivo del periodo ABRIl - AGOSTO 2025** para estudiantes de la carrera de 
-> **_Tecnologías de la información_** de la **Universidad Técnica Particular de Loja**.
+> Esta propuesta presenta el diseño e implementación del Sistema Integral de Planificación e Inversión Pública (SIPeIP 2.0) para optimizar la planificación estratégica en la Secretaría Nacional de Planificación. Mediante un estudio analítico, se identifican mejoras en los procesos de planificación y se propone un sistema de seguimiento para garantizar una gestión eficiente y sostenible, alineada con los objetivos nacionales de desarrollo.
 > 
-> No pretende ser aprobado o supervisado por alguna entidad pública del pais, solo se realiza para fines académicos.
-
->[!IMPORTANT] 
-> 
-> Esta propuesta busca mejorar la transparencia y eficiencia en la gestión de proyectos públicos.
+> **_Importante_:** Este proyecto **no pretende ser aprobado o supervisado** por alguna entidad pública del **Ecuador**, solo se realiza para fines académicos.
 
 > [!NOTE]
-> 
-> Información General:
+>
+> **Primera Versión del Proyecto**
 > - **Nombre del Proyecto:** Nuevo Sistema Integral de Planificación e Inversión Pública - **SIPeIP 2.0**
-> - **Versión del Software:** v1.
+> - **Versión del Software:** v1 (Finalizado en Julio del 2025).
 > - **Tiempo de planificación y desarrollo:** 4 meses.
 > - **Desarrollado por:** Jonathan David Panchana Rodríguez.
 
 ---
 
-## Información Relevante del Proyecto
+## Información Relevante
 
 ### Patron de Diseño de Software Utilizado: MVC (Model-View-Controller)
 

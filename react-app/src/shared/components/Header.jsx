@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { FiCalendar, FiMenu, FiX } from 'react-icons/fi';
-import { LogOut } from 'lucide-react';
+import React, {useState} from 'react';
+import {FiCalendar, FiMenu, FiX} from 'react-icons/fi';
+import {LogOut} from 'lucide-react';
 
-const Header = ({ user, onLogout, pageTitle, onOpenSidebar }) => {
+const Header = ({user, onLogout, pageTitle, onOpenSidebar}) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const dateString = new Date().toLocaleDateString();
 
@@ -13,7 +13,7 @@ const Header = ({ user, onLogout, pageTitle, onOpenSidebar }) => {
                 onClick={onOpenSidebar}
                 aria-label="Abrir menú lateral"
             >
-                <FiMenu size={24} />
+                <FiMenu size={24}/>
             </button>
             <div>
                 <h2 className="text-2xl font-semibold text-gray-800">{pageTitle}</h2>
@@ -24,11 +24,11 @@ const Header = ({ user, onLogout, pageTitle, onOpenSidebar }) => {
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="Abrir menú de usuario"
             >
-                {menuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+                {menuOpen ? <FiX size={24}/> : <FiMenu size={24}/>}
             </button>
             <div className="hidden lg:flex items-center space-x-4">
                 <div className="flex items-center px-3 py-2 bg-gray-100 rounded-md">
-                    <FiCalendar className="text-gray-600" />
+                    <FiCalendar className="text-gray-600"/>
                     <span className="ml-2 text-sm font-medium text-gray-700 hidden sm:block">{dateString}</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -37,13 +37,14 @@ const Header = ({ user, onLogout, pageTitle, onOpenSidebar }) => {
                         <p className="font-semibold text-sm text-gray-800">{user?.nombre_usuario || 'Usuario'}</p>
                         <p className="text-xs text-gray-500">{user?.roles?.join(', ') || 'Rol'}</p>
                     </div>
-                    <LogOut size={20} className="text-gray-600 cursor-pointer" onClick={onLogout} />
+                    <LogOut size={20} className="text-gray-600 cursor-pointer" onClick={onLogout}/>
                 </div>
             </div>
             {menuOpen && (
-                <div className="absolute top-full right-0 w-64 bg-white shadow-lg rounded-lg p-4 flex flex-col space-y-4 lg:hidden z-50">
+                <div
+                    className="absolute top-full right-0 w-64 bg-white shadow-lg rounded-lg p-4 flex flex-col space-y-4 lg:hidden z-50">
                     <div className="flex items-center">
-                        <FiCalendar className="text-gray-600" />
+                        <FiCalendar className="text-gray-600"/>
                         <span className="ml-2 text-sm font-medium text-gray-700">{dateString}</span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -52,7 +53,7 @@ const Header = ({ user, onLogout, pageTitle, onOpenSidebar }) => {
                             <p className="font-semibold text-sm text-gray-800">{user?.nombre_usuario || 'Usuario'}</p>
                             <p className="text-xs text-gray-500">{user?.roles?.join(', ') || 'Rol'}</p>
                         </div>
-                        <LogOut size={20} className="text-gray-600 cursor-pointer" onClick={onLogout} />
+                        <LogOut size={20} className="text-gray-600 cursor-pointer" onClick={onLogout}/>
                     </div>
                 </div>
             )}

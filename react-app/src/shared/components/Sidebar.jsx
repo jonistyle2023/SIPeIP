@@ -1,7 +1,18 @@
-import React, { useState } from 'react';
-import { LayoutDashboard, FileText, DollarSign, BarChart2, Settings, Shield, ChevronDown, ChevronRight, Dot, CheckSquare } from 'lucide-react';
+import React, {useState} from 'react';
+import {
+    LayoutDashboard,
+    FileText,
+    DollarSign,
+    BarChart2,
+    Settings,
+    Shield,
+    ChevronDown,
+    ChevronRight,
+    Dot,
+    CheckSquare
+} from 'lucide-react';
 
-export default function Sidebar({ activePage, setActivePage, sidebarOpen, setSidebarOpen }) {
+export default function Sidebar({activePage, setActivePage, sidebarOpen, setSidebarOpen}) {
     const [openSubmenus, setOpenSubmenus] = useState({});
 
     const toggleSubmenu = (menu) => {
@@ -12,14 +23,18 @@ export default function Sidebar({ activePage, setActivePage, sidebarOpen, setSid
     };
 
     const menuItems = [
-        { name: 'Panel Principal', icon: LayoutDashboard },
-        { name: 'Planificación', icon: FileText },
-        { name: 'Inversión', icon: DollarSign },
-        { name: 'Priorización PAI', icon: CheckSquare },
-        { name: 'Seguimiento', icon: BarChart2, subItems: ['Seguimiento a la Planificación', 'Seguimiento a la Inversión', 'Seguimiento a obras', 'Seguimiento a Cierre y Baja de Proyectos'] },
-        { name: 'Reportería', icon: FileText },
-        { name: 'Configuración', icon: Settings, subItems: ['Usuarios', 'Institucional'] },
-        { name: 'Auditoría', icon: Shield },
+        {name: 'Panel Principal', icon: LayoutDashboard},
+        {name: 'Planificación', icon: FileText},
+        {name: 'Inversión', icon: DollarSign},
+        {name: 'Priorización PAI', icon: CheckSquare},
+        {
+            name: 'Seguimiento',
+            icon: BarChart2,
+            subItems: ['Seguimiento a la Planificación', 'Seguimiento a la Inversión', 'Seguimiento a obras', 'Seguimiento a Cierre y Baja de Proyectos']
+        },
+        {name: 'Reportería', icon: FileText},
+        {name: 'Configuración', icon: Settings, subItems: ['Usuarios', 'Institucional']},
+        {name: 'Auditoría', icon: Shield},
     ];
 
     return (
@@ -28,7 +43,8 @@ export default function Sidebar({ activePage, setActivePage, sidebarOpen, setSid
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:block fixed lg:static`}
         >
             <div className="p-4 flex items-center">
-                <img src="./src/app/assets/images/logo.png" alt="Logo SIPeIP" className="w-10 h-10 rounded-full mr-3 object-cover" />
+                <img src="./src/app/assets/images/logo.png" alt="Logo SIPeIP"
+                     className="w-10 h-10 rounded-full mr-3 object-cover"/>
                 <div>
                     <h1 className="text-xl font-bold text-gray-800">SIPeIP</h1>
                     <p className="text-xs text-gray-500">Sistema de Planificación</p>
@@ -55,9 +71,10 @@ export default function Sidebar({ activePage, setActivePage, sidebarOpen, setSid
                                         : 'text-gray-600 hover:bg-gray-100'
                                 }`}
                             >
-                                <item.icon className="w-5 h-5 mr-3" />
+                                <item.icon className="w-5 h-5 mr-3"/>
                                 <span className="flex-1">{item.name}</span>
-                                {item.subItems && (openSubmenus[item.name] ? <ChevronDown size={16} /> : <ChevronRight size={16} />)}
+                                {item.subItems && (openSubmenus[item.name] ? <ChevronDown size={16}/> :
+                                    <ChevronRight size={16}/>)}
                             </a>
                             {item.subItems && openSubmenus[item.name] && (
                                 <div className="pl-8 mt-1 space-y-1">
@@ -75,7 +92,7 @@ export default function Sidebar({ activePage, setActivePage, sidebarOpen, setSid
                                                     : 'text-gray-500 hover:bg-gray-100'
                                             }`}
                                         >
-                                            <Dot size={16} className="mr-2" />
+                                            <Dot size={16} className="mr-2"/>
                                             {subItem}
                                         </a>
                                     ))}
@@ -86,7 +103,7 @@ export default function Sidebar({ activePage, setActivePage, sidebarOpen, setSid
                 })}
             </nav>
             <button onClick={() => setSidebarOpen(false)} className="absolute top-4 right-4 text-gray-600 lg:hidden">
-                <ChevronRight size={24} />
+                <ChevronRight size={24}/>
             </button>
         </div>
     );

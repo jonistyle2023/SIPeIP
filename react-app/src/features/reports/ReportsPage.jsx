@@ -1,13 +1,13 @@
 import React from 'react';
-import { FileText, BarChart3, Bell, History, Download, FileJson, FileSpreadsheet, FileType } from 'lucide-react';
+import {FileText, BarChart3, Bell, History, Download, FileJson, FileSpreadsheet, FileType} from 'lucide-react';
 
 // Pequeño componente para las tarjetas de capacidad de exportación
-const ExportCard = ({ icon: Icon, title, format, onExport }) => (
+const ExportCard = ({icon: Icon, title, format, onExport}) => (
     <button
         onClick={() => onExport(format)}
         className="bg-gray-50 p-4 rounded-lg flex flex-col items-center justify-center text-center hover:bg-blue-100 hover:shadow-md transition-all duration-300"
     >
-        <Icon className="w-10 h-10 text-blue-600 mb-2" />
+        <Icon className="w-10 h-10 text-blue-600 mb-2"/>
         <h4 className="font-semibold text-gray-800">{title}</h4>
         <p className="text-xs text-gray-500 mt-1">Exportar datos en formato .{format}</p>
     </button>
@@ -62,8 +62,9 @@ export default function ReportsPage() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">PROC08 - Reportes y Visualización</h1>
-                    <button onClick={() => handleExport('pdf')} className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center shadow hover:bg-blue-700">
-                        <Download className="w-4 h-4 mr-2" />
+                    <button onClick={() => handleExport('pdf')}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center shadow hover:bg-blue-700">
+                        <Download className="w-4 h-4 mr-2"/>
                         Exportar
                     </button>
                 </div>
@@ -71,20 +72,36 @@ export default function ReportsPage() {
                 {/* Módulo de Reportes y Visualización */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {/* Tarjetas de Módulo */}
-                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><FileText className="w-8 h-8 text-green-500 mr-4"/><div><h3 className="font-bold">Exportación</h3><p className="text-sm text-gray-500">PDF, Excel, JSON, CSV</p></div></div>
-                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><BarChart3 className="w-8 h-8 text-yellow-500 mr-4"/><div><h3 className="font-bold">Visualización</h3><p className="text-sm text-gray-500">Dashboards dinámicos</p></div></div>
-                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><Bell className="w-8 h-8 text-red-500 mr-4"/><div><h3 className="font-bold">Alertas</h3><p className="text-sm text-gray-500">Reportes dinámicos</p></div></div>
-                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><History className="w-8 h-8 text-purple-500 mr-4"/><div><h3 className="font-bold">Histórico</h3><p className="text-sm text-gray-500">Desde 2011</p></div></div>
+                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><FileText
+                        className="w-8 h-8 text-green-500 mr-4"/>
+                        <div><h3 className="font-bold">Exportación</h3><p className="text-sm text-gray-500">PDF, Excel,
+                            JSON, CSV</p></div>
+                    </div>
+                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><BarChart3
+                        className="w-8 h-8 text-yellow-500 mr-4"/>
+                        <div><h3 className="font-bold">Visualización</h3><p className="text-sm text-gray-500">Dashboards
+                            dinámicos</p></div>
+                    </div>
+                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><Bell
+                        className="w-8 h-8 text-red-500 mr-4"/>
+                        <div><h3 className="font-bold">Alertas</h3><p className="text-sm text-gray-500">Reportes
+                            dinámicos</p></div>
+                    </div>
+                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><History
+                        className="w-8 h-8 text-purple-500 mr-4"/>
+                        <div><h3 className="font-bold">Histórico</h3><p className="text-sm text-gray-500">Desde 2011</p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Capacidades de Exportación */}
                 <div className="bg-white p-6 rounded-lg shadow mb-8">
                     <h2 className="text-xl font-semibold mb-4 text-gray-700">Capacidades de Exportación</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <ExportCard icon={FileType} title="PDF" format="pdf" onExport={handleExport} />
-                        <ExportCard icon={FileSpreadsheet} title="Excel" format="excel" onExport={handleExport} />
-                        <ExportCard icon={FileJson} title="JSON" format="json" onExport={handleExport} />
-                        <ExportCard icon={FileType} title="CSV" format="csv" onExport={handleExport} />
+                        <ExportCard icon={FileType} title="PDF" format="pdf" onExport={handleExport}/>
+                        <ExportCard icon={FileSpreadsheet} title="Excel" format="excel" onExport={handleExport}/>
+                        <ExportCard icon={FileJson} title="JSON" format="json" onExport={handleExport}/>
+                        <ExportCard icon={FileType} title="CSV" format="csv" onExport={handleExport}/>
                     </div>
                 </div>
 

@@ -34,8 +34,6 @@ class ExportReportView(APIView):
 
         df = pd.DataFrame(data)
 
-        # --- Lógica de exportación actualizada ---
-
         if report_format == 'pdf':
             # 2. Lógica para generar un PDF real
             response = HttpResponse(content_type='application/pdf')

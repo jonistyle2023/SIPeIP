@@ -1,5 +1,3 @@
-# OBJETIVO: Definir los modelos de datos para la gestión de Proyectos de Inversión
-
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -9,8 +7,6 @@ from apps.strategic_objectives.models import ProgramaInstitucional
 
 # --- Modelo Principal del Proyecto de Inversión ---
 class ProyectoInversion(models.Model):
-    # El CUP se genera al final, por lo que no puede ser el PK.
-    # Usamos un AutoField como PK y un campo aparte para el CUP.
     proyecto_id = models.AutoField(primary_key=True)
     cup = models.CharField(max_length=50, unique=True, null=True, blank=True,
                            help_text="Código Único de Proyecto, generado al final del proceso")
@@ -54,7 +50,7 @@ class ProyectoInversionVersion(models.Model):
     ESTADO_CHOICES = [
         ('EN_FORMULACION', 'En Formulación'),
         ('POSTULADO', 'Postulado'),
-        ('PRIORIZADO', 'Priorizado'),  # <-- Añadido
+        ('PRIORIZADO', 'Priorizado'),
         # ... otros estados
     ]
     version_id = models.AutoField(primary_key=True)

@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
-import {Edit, Eye, Filter, Search, Hospital, University, Car, Briefcase} from 'lucide-react';
+import {Briefcase, Car, Edit, Eye, Filter, Hospital, Search, University} from 'lucide-react';
 
 const statusStyles = {
     'EN_FORMULACION': 'bg-blue-100 text-blue-800',

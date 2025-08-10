@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { api } from '../../shared/api/api.js';
-import { CheckSquare, Eye, ThumbsUp, CornerUpLeft } from 'lucide-react';
+import React, {useState, useEffect, useCallback} from 'react';
+import {api} from '../../shared/api/api.js';
+import {CheckSquare, Eye, ThumbsUp, CornerUpLeft} from 'lucide-react';
 import ProjectDetailModal from '../investment-projects/ProjectDetailModal.jsx';
 
 // Modal para las observaciones al devolver un proyecto
-const DevolverModal = ({ project, onClose, onConfirm }) => {
+const DevolverModal = ({project, onClose, onConfirm}) => {
     const [observaciones, setObservaciones] = useState('');
 
     return (
@@ -74,7 +74,7 @@ export default function PaiPrioritizationPage() {
     const handleDevolver = async (observaciones) => {
         if (!projectToReturn) return;
         try {
-            await api.post(`/investment-projects/proyectos/${projectToReturn.proyecto_id}/devolver/`, { observaciones });
+            await api.post(`/investment-projects/proyectos/${projectToReturn.proyecto_id}/devolver/`, {observaciones});
             setProjectToReturn(null);
             fetchData();
         } catch (error) {
@@ -86,12 +86,13 @@ export default function PaiPrioritizationPage() {
 
     return (
         <div className="space-y-6">
-            {projectToReturn && <DevolverModal project={projectToReturn} onClose={() => setProjectToReturn(null)} onConfirm={handleDevolver} />}
-            {viewingProject && <ProjectDetailModal project={viewingProject} onClose={() => setViewingProject(null)} />}
+            {projectToReturn && <DevolverModal project={projectToReturn} onClose={() => setProjectToReturn(null)}
+                                               onConfirm={handleDevolver}/>}
+            {viewingProject && <ProjectDetailModal project={viewingProject} onClose={() => setViewingProject(null)}/>}
 
             <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                    <CheckSquare className="mr-3 text-blue-600" />
+                    <CheckSquare className="mr-3 text-blue-600"/>
                     Módulo de Priorización del Plan Anual de Inversiones (PAI)
                 </h2>
                 <p className="text-gray-600 mt-1">
@@ -104,36 +105,45 @@ export default function PaiPrioritizationPage() {
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                            <tr>
-                                <th className="p-3">Nombre del Proyecto</th>
-                                <th className="p-3">Programa Institucional</th>
-                                <th className="p-3 text-right">Monto Total ($)</th>
-                                <th className="p-3 text-center">Acciones</th>
-                            </tr>
+                        <tr>
+                            <th className="p-3">Nombre del Proyecto</th>
+                            <th className="p-3">Programa Institucional</th>
+                            <th className="p-3 text-right">Monto Total ($)</th>
+                            <th className="p-3 text-center">Acciones</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {postulatedProjects.map(project => (
-                                <tr key={project.proyecto_id} className="border-b hover:bg-gray-50">
-                                    <td className="p-3 font-medium">{project.nombre}</td>
-                                    <td className="p-3 text-gray-600">{project.programa_institucional_nombre || 'N/A'}</td>
-                                    <td className="p-3 text-right font-mono">
-                                        {parseFloat(project.monto_total_programado).toLocaleString('es-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </td>
-                                    <td className="p-3 text-center">
-                                        <div className="flex justify-center space-x-2">
-                                            <button onClick={() => setViewingProject(project)} className="p-2 text-blue-600 hover:bg-blue-100 rounded-full" title="Ver Detalle del Proyecto">
-                                                <Eye size={18} />
-                                            </button>
-                                            <button onClick={() => handlePriorizar(project.proyecto_id)} className="p-2 text-green-600 hover:bg-green-100 rounded-full" title="Priorizar para PAI">
-                                                <ThumbsUp size={18} />
-                                            </button>
-                                            <button onClick={() => setProjectToReturn(project)} className="p-2 text-red-600 hover:bg-red-100 rounded-full" title="Devolver a Formulación">
-                                                <CornerUpLeft size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                        {postulatedProjects.map(project => (
+                            <tr key={project.proyecto_id} className="border-b hover:bg-gray-50">
+                                <td className="p-3 font-medium">{project.nombre}</td>
+                                <td className="p-3 text-gray-600">{project.programa_institucional_nombre || 'N/A'}</td>
+                                <td className="p-3 text-right font-mono">
+                                    {parseFloat(project.monto_total_programado).toLocaleString('es-US', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    })}
+                                </td>
+                                <td className="p-3 text-center">
+                                    <div className="flex justify-center space-x-2">
+                                        <button onClick={() => setViewingProject(project)}
+                                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
+                                                title="Ver Detalle del Proyecto">
+                                            <Eye size={18}/>
+                                        </button>
+                                        <button onClick={() => handlePriorizar(project.proyecto_id)}
+                                                className="p-2 text-green-600 hover:bg-green-100 rounded-full"
+                                                title="Priorizar para PAI">
+                                            <ThumbsUp size={18}/>
+                                        </button>
+                                        <button onClick={() => setProjectToReturn(project)}
+                                                className="p-2 text-red-600 hover:bg-red-100 rounded-full"
+                                                title="Devolver a Formulación">
+                                            <CornerUpLeft size={18}/>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                     {postulatedProjects.length === 0 && !loading && (

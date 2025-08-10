@@ -1,14 +1,9 @@
-# OBJETIVO: Definir la lógica de la API (qué hacer para cada petición).
-
 from rest_framework import viewsets, permissions
 from .models import Catalogo, ItemCatalogo, Entidad, UnidadOrganizacional, PeriodoPlanificacion
 from .serializers import (
     CatalogoSerializer, ItemCatalogoSerializer, EntidadSerializer, UnidadOrganizacionalSerializer, \
     PeriodoPlanificacionSerializer
 )
-
-# ModelViewSet porque provee el CRUD completo (GET, POST, PUT, DELETE)
-# de forma automática, sin necesidad de escribir cada función por separado.
 
 class CatalogoViewSet(viewsets.ModelViewSet):
     queryset = Catalogo.objects.all().prefetch_related('items')

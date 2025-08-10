@@ -1,8 +1,3 @@
-# Modelo para Catálogos Genéricos
-# NOTA: "Gestión de Catálogos y Datos Maestros" (tipos de intervención, sectores, etc.)
-# Esto evita tener texto libre y previene la "información basura".
-
-# IMPORTACIONES
 from django.db import models
 
 class Catalogo(models.Model):
@@ -32,7 +27,6 @@ class ItemCatalogo(models.Model):
         ordering = ['catalogo__nombre', 'nombre']
 
 # ENTIDADES
-# NOTA: "Gestión de Entidades y Unidades Organizacionales"
 class Entidad(models.Model):
     nombre = models.CharField(max_length=255, unique=True)
     codigo_unico = models.CharField(max_length=50, unique=True, help_text="Código único de creación de la entidad")
@@ -85,7 +79,6 @@ class UnidadOrganizacional(models.Model):
         ordering = ['entidad__nombre', 'nombre']
 
 # Períodos de Planificación
-# NOTA: "Gestión de Períodos"
 class PeriodoPlanificacion(models.Model):
     ESTADO_CHOICES = [
         ('ABIERTO', 'Abierto'),
