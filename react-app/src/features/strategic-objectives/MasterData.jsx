@@ -131,18 +131,18 @@ export default function MasterData() {
                                             {pnd.nombre} ({pnd.periodo})
                                         </span>
                                     </button>
-                                    <div className="flex items-center">
-                                        <button onClick={() => handleOpenObjectiveModal(pnd.pnd_id)}
-                                                className="text-xs flex items-center bg-green-100 text-green-700 px-2 py-1 rounded-md hover:bg-green-200">
-                                            <Plus size={14} className="mr-1"/>Añadir Objetivo
-                                        </button>
+                                    <div className="flex items-center ml-4 gap-2">
                                         <button onClick={() => setEditPnd(pnd)}
                                                 className="ml-2 text-blue-600 hover:underline flex items-center">
-                                            <Edit size={16} className="mr-1"/>Editar
+                                            <Edit size={16}/>
                                         </button>
                                         <button onClick={() => handleDeletePnd(pnd.plan_id)}
                                                 className="ml-2 text-red-600 hover:underline flex items-center">
-                                            <Trash2 size={16} className="mr-1"/>Eliminar
+                                            <Trash2 size={16}/>
+                                        </button>
+                                        <button onClick={() => handleOpenObjectiveModal(pnd.pnd_id)}
+                                                className="text-xs flex items-center bg-green-100 text-green-700 px-2 py-1 rounded-md hover:bg-green-200">
+                                            <Plus size={14} className="mr-1"/>Añadir Objetivo
                                         </button>
                                     </div>
                                 </div>
@@ -202,11 +202,11 @@ export default function MasterData() {
                                 <div className="flex flex-col space-y-1 ml-4">
                                     <button onClick={() => setEditOds(o)}
                                             className="text-blue-600 hover:underline flex items-center">
-                                        <Edit size={16} className="mr-1"/>Editar
+                                        <Edit size={16}/>
                                     </button>
                                     <button onClick={() => handleDeleteOds(o.ods_id)}
                                             className="text-red-600 hover:underline flex items-center">
-                                        <Trash2 size={16} className="mr-1"/>Eliminar
+                                        <Trash2 size={16}/>
                                     </button>
                                 </div>
                             </div>
