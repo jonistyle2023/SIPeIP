@@ -58,11 +58,11 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
     return (
         <>
             <div
-                className={`bg-white shadow-md w-64 flex flex-col z-40 transition-transform duration-300
+                className={`p-3 bg-white shadow-md w-64 flex flex-col z-40 transition-transform duration-300
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed top-0 left-0 h-screen overflow-y-auto`}
             >
                 <div className="p-4 flex items-center">
-                    <img src="./src/app/assets/images/logo.png" alt="Logo SIPeIP"
+                    <img src="./src/app/assets/images/sipeip-logo.png" alt="Logo SIPeIP"
                          className="w-10 h-10 rounded-full mr-3 object-cover"/>
                     <div>
                         <h1 className="text-xl font-bold text-gray-800">SIPeIP</h1>

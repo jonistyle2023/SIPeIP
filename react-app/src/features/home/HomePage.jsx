@@ -1,5 +1,5 @@
 import React from 'react';
-import logoSipeip from '../../app/assets/images/logo.png';
+import logoSipeip from '../../app/assets/images/sipeip-logo.png';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faRightToBracket} from '@fortawesome/free-solid-svg-icons';
 

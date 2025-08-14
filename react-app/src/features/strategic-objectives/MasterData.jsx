@@ -112,7 +112,7 @@ export default function MasterData() {
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="font-semibold text-lg flex items-center">
-                            <Flag className="mr-2 text-green-500"/>Planes Nacionales (PND)
+                            <Flag className="mr-2 text-green-500"/>Plan Nacional de Desarrollo (PND)
                         </h3>
                         <button onClick={() => setIsPndModalOpen(true)}
                                 className="flex items-center px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs">
@@ -185,7 +185,7 @@ export default function MasterData() {
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="font-semibold text-lg flex items-center">
-                            <BookOpen className="mr-2 text-blue-500"/>Objetivos Sostenibles (ODS)
+                            <BookOpen className="mr-2 text-blue-500"/>Objetivos de Desarrollo Sostenibles (ODS)
                         </h3>
                         <button onClick={() => setIsOdsModalOpen(true)}
                                 className="flex items-center px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs">

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {HiEye, HiEyeOff} from 'react-icons/hi';
 import logoEcuador from '../../app/assets/images/logo-ecuador.png';
+import backgroundLogin from '../../app/assets/images/background-login.png';
 
 const EcuadorLogo = () => (
     <img src={logoEcuador} alt="Logo Ecuador" width={250}/>
@@ -42,11 +43,13 @@ export default function LoginPage({onLoginSuccess}) {
 
     return (
         <div
-            className="min-h-screen w-full font-sans bg-white bg-cover bg-center"
-            style={{backgroundImage: "url('./src/assets/images/background-login.png')"}}
+            className="min-h-screen w-full font-sans bg-cover bg-center bg-no-repeat"
+            style={{
+                backgroundImage: `linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)), url(${backgroundLogin})`
+            }}
         >
             <div className="min-h-screen w-full flex flex-col bg-white bg-opacity-80">
-                <header className="w-full p-4 md:p-6 flex items-center justify-between">
+                <header className="w-full p-4 md:p-3 flex items-center justify-between">
                     <div className="flex items-center">
                         <EcuadorLogo/>
                     </div>
@@ -96,7 +99,7 @@ export default function LoginPage({onLoginSuccess}) {
                         </form>
                     </div>
                 </main>
-                <footer className="w-full p-6 bg-purple-800 text-white text-xs text-center"><p>Derechos Reservados ©
+                <footer className="w-full p-4 bg-purple-800 text-white text-xs text-center"><p>Derechos Reservados ©
                     Secretaría Nacional de Planificación</p><p>Av. Patria y Av. 12 de Octubre, Edificio Secretaría
                     Nacional de Planificación</p><p>Código Postal: 170526 / Quito - Ecuador</p><p>Teléfono: (593-2)
                     397-8900</p></footer>

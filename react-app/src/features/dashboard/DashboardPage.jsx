@@ -51,9 +51,11 @@ const kpiData = [
 ];
 
 const indicatorData = [
-    {name: 'Infraestructura Vial', value: 85, projects: 34},
-    {name: 'Educación', value: 65, projects: 28},
-    {name: 'Salud', value: 45, projects: 19},
+    {name: 'Eje Social', value: 85, projects: 34, color: '#704e99'},
+    {name: 'Eje Económico', value: 65, projects: 28, color: '#008882'},
+    {name: 'Eje de Infraestructura, Energía y Medio Ambiente', value: 45, projects: 19, color: '#2563eb'},
+    {name: 'Eje Institucional', value: 75, projects: 32, color: '#3e2e6d'},
+    {name: 'Eje de Gestión de Riesgos', value: 90, projects: 40, color: '#f9b43e'},
 ];
 
 const alertData = [
@@ -111,7 +113,7 @@ const DashboardPage = () => {
             {/* Consola de Indicadores y Alertas */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow">
-                    <h3 className="font-semibold text-gray-800 mb-4">Consola de Indicadores de Avance</h3>
+                    <h3 className="font-semibold text-gray-800 mb-4">Indicadores de Avance</h3>
                     <div className="space-y-4">
                         {indicatorData.map(indicator => (
                             <div key={indicator.name}>
@@ -123,7 +125,7 @@ const DashboardPage = () => {
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                                     <div className="h-2.5 rounded-full" style={{
                                         width: `${indicator.value}%`,
-                                        backgroundColor: indicator.value > 75 ? '#22c55e' : indicator.value > 50 ? '#f59e0b' : '#ef4444'
+                                        backgroundColor: indicator.color
                                     }}></div>
                                 </div>
                             </div>
