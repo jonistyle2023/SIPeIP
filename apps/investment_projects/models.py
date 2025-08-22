@@ -46,6 +46,12 @@ class ProyectoInversion(models.Model):
         help_text="Porcentaje de contribución del proyecto al Programa Institucional vinculado."
     )
 
+    ultimas_observaciones = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Observaciones de la última revisión del proyecto."
+    )
+
 class ProyectoInversionVersion(models.Model):
     ESTADO_CHOICES = [
         ('EN_FORMULACION', 'En Formulación'),

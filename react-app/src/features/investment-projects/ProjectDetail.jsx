@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {api} from '../../shared/api/api.js';
-import {Anchor, ArrowLeft, FileText, HardHat, Link2, Plus, Send, Target} from 'lucide-react';
+import {Anchor, ArrowLeft, FileText, HardHat, Link2, Plus, Send, Target, AlertCircle} from 'lucide-react';
 import IndicadorList from './IndicadorList.jsx';
 import IndicadorFormModal from './IndicadorFormModal.jsx';
 import MarcoLogicoFormModal from './MarcoLogicoFormModal.jsx';
@@ -291,6 +291,25 @@ export default function ProjectDetail({project, onReturnToList}) {
                     onClose={() => setIsComponenteModalOpen(false)}
                     onSave={handleSave}
                 />
+            )}
+
+            {/* --- AVISO DE OBSERVACIONES --- */}
+            {projectDetails.estado === 'EN_FORMULACION' && projectDetails.ultimas_observaciones && (
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <AlertCircle className="h-5 w-5 text-yellow-400"/>
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm font-semibold text-yellow-800">
+                                Este proyecto fue devuelto para corrección.
+                            </p>
+                            <div className="mt-2 text-sm text-yellow-700">
+                                <p><strong>Observaciones:</strong> {projectDetails.ultimas_observaciones}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <button onClick={onReturnToList}

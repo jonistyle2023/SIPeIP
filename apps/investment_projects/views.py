@@ -144,6 +144,7 @@ class ProyectoInversionViewSet(viewsets.ModelViewSet):
         proyecto.estado = 'EN_FORMULACION'
         # Aquí a futuro se guardan las observaciones en un campo o modelo de historial si lo tuvieras.
         # Por ahora, simplemente cambiamos el estado.
+        proyecto.ultimas_observaciones = observaciones # Asumiendo que tienes un campo para observaciones
         proyecto.save()
 
         # Lógica futura: enviar una notificación a la entidad formuladora.

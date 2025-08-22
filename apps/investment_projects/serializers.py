@@ -186,7 +186,7 @@ class ProyectoInversionSerializer(serializers.ModelSerializer):
             'estado', 'version_actual', 'creador',
             'marco_logico', 'arrastres', 'dictamenes',
             'programa_institucional', 'contribucion_programa', 'programa_institucional_nombre',
-            'monto_total_programado'
+            'monto_total_programado', 'ultimas_observaciones'
         ]
 
     def get_monto_total_programado(self, obj):
