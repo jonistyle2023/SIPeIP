@@ -10,6 +10,15 @@ export default function UnitManager() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUnit, setEditingUnit] = useState(null);
 
+    // Simulación de fetch de unidades al montar el componente
+    useEffect(() => {
+        setLoading(true);
+        setTimeout(() => {
+            setUnits([]); // Aquí deberías poner los datos reales si lo deseas
+            setLoading(false);
+        }, 500);
+    }, []);
+
     // Cargar la lista de todas las entidades para el selector
     useEffect(() => {
         const fetchEntities = async () => {
@@ -58,6 +67,9 @@ export default function UnitManager() {
         setTimeout(() => setSelectedEntityId(currentId), 0);
     };
 
+    if (loading) return <p className="text-center p-4">Cargando unidades...</p>;
+    if (units.length === 0) return <p className="text-center p-4 text-gray-500">No hay unidades organizacionales registradas.</p>;
+
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
@@ -85,41 +97,39 @@ export default function UnitManager() {
             </div>
 
             {selectedEntityId && (
-                loading ? <p>Cargando unidades...</p> : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                            <tr>
-                                <th className="p-3">Nombre de la Unidad</th>
-                                <th className="p-3">Unidad Padre</th>
-                                <th className="p-3">Estado</th>
-                                <th className="p-3">Acciones</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {units.map(unit => (
-                                <tr key={unit.id} className="border-b hover:bg-gray-50">
-                                    <td className="p-3 font-medium text-gray-800">{unit.nombre}</td>
-                                    <td className="p-3">{unit.padre_nombre || 'Nivel Principal'}</td>
-                                    <td className="p-3">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                        <tr>
+                            <th className="p-3">Nombre de la Unidad</th>
+                            <th className="p-3">Unidad Padre</th>
+                            <th className="p-3">Estado</th>
+                            <th className="p-3">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {units.map(unit => (
+                            <tr key={unit.id} className="border-b hover:bg-gray-50">
+                                <td className="p-3 font-medium text-gray-800">{unit.nombre}</td>
+                                <td className="p-3">{unit.padre_nombre || 'Nivel Principal'}</td>
+                                <td className="p-3">
                                             <span
                                                 className={`px-2 py-1 rounded-full text-xs font-medium ${unit.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                                 {unit.activo ? 'Activa' : 'Inactiva'}
                                             </span>
-                                    </td>
-                                    <td className="p-3 flex items-center space-x-2">
-                                        <button onClick={() => handleOpenModal(unit)}
-                                                className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
-                                        </button>
-                                        <button className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16}/>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )
+                                </td>
+                                <td className="p-3 flex items-center space-x-2">
+                                    <button onClick={() => handleOpenModal(unit)}
+                                            className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
+                                    </button>
+                                    <button className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16}/>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
             {isModalOpen && <UnitFormModal unit={editingUnit} entityId={selectedEntityId} parentUnits={units}
                                            onClose={handleCloseModal} onSave={handleSave}/>}

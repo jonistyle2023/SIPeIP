@@ -50,7 +50,7 @@ export default function EntityFormModal({entity, onClose, onSave}) {
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">{entity ? 'Editar Entidad' : 'Nueva Entidad'}</h3>

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Plus, Edit, Trash2} from 'lucide-react';
 import CatalogItemFormModal from './CatalogItemFormModal.jsx';
+import CatalogFormModal from './CatalogFormModal.jsx'; // Importar el modal
 
 export default function CatalogManager() {
     const [catalogs, setCatalogs] = useState([]);
@@ -10,6 +11,7 @@ export default function CatalogManager() {
     const [loadingItems, setLoadingItems] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false); // Estado para el modal de catálogo
 
     const fetchItemsForSelectedCatalog = async () => {
         if (!selectedCatalog) return;
@@ -87,21 +89,34 @@ export default function CatalogManager() {
         setEditingItem(null);
     };
 
+    const handleSaveCatalog = async () => {
+        await fetchCatalogs(); // Actualiza la lista de catálogos
+        setIsCatalogModalOpen(false); // Cierra el modal
+    };
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1 bg-white p-4 rounded-lg shadow-sm">
                 <h4 className="font-semibold mb-3">Catálogos del Sistema</h4>
                 {loadingCatalogs ? <p>Cargando...</p> : (
-                    <ul className="space-y-1">
-                        {catalogs.map(cat => (
-                            <li key={cat.id}>
-                                <button onClick={() => handleSelectCatalog(cat)}
-                                        className={`w-full text-left p-2 rounded text-sm ${selectedCatalog?.id === cat.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100'}`}>
-                                    {cat.nombre}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    <>
+                        <ul className="space-y-1">
+                            {catalogs.map(cat => (
+                                <li key={cat.id}>
+                                    <button onClick={() => handleSelectCatalog(cat)}
+                                            className={`w-full text-left p-2 rounded text-sm ${selectedCatalog?.id === cat.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100'}`}>
+                                        {cat.nombre}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                        <button
+                            onClick={() => setIsCatalogModalOpen(true)}
+                            className="mt-4 w-full flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-xs"
+                        >
+                            <Plus size={14} className="mr-1"/>Nuevo Catálogo
+                        </button>
+                    </>
                 )}
             </div>
             <div className="md:col-span-2 bg-white p-6 rounded-lg shadow-sm">
@@ -153,6 +168,8 @@ export default function CatalogManager() {
             {isModalOpen &&
                 <CatalogItemFormModal item={editingItem} catalogId={selectedCatalog?.id} onClose={handleCloseModal}
                                       onSave={handleSave}/>}
+            {isCatalogModalOpen &&
+                <CatalogFormModal onClose={() => setIsCatalogModalOpen(false)} onSave={handleSaveCatalog}/>}
         </div>
     );
 }
