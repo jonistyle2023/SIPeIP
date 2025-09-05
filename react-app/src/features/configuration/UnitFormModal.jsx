@@ -1,15 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import {X} from 'lucide-react';
+import {api} from '../../shared/api/api'; // Asegúrate de usar tu helper de API
 
 export default function UnitFormModal({
-    unit, entityId, parentUnits, macroSectores, sectores, onClose, onSave
-}) {
+                                          unit, entityId, parentUnits, macroSectores, sectores, onClose, onSave
+                                      }) {
     const [formData, setFormData] = useState({
         nombre: '',
         entidad: entityId,
         padre: '',
         macrosector: '',
-        sectores: [],
+        sectores: [], // Para el backend, debe ser 'sectores' según tu serializer
         activo: true,
     });
     const [error, setError] = useState('');
@@ -21,7 +22,7 @@ export default function UnitFormModal({
                 entidad: unit.entidad,
                 padre: unit.padre || '',
                 macrosector: unit.macrosector || '',
-                sectores: unit.sectores || [],
+                sectores: unit.sectores || [], // El serializer espera 'sectores'
                 activo: unit.activo,
             });
         }
@@ -39,28 +40,21 @@ export default function UnitFormModal({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('authToken');
-        const url = unit
-            ? `http://127.0.0.1:8000/api/v1/config/unidades-organizacionales/${unit.id}/`
-            : 'http://127.0.0.1:8000/api/v1/config/unidades-organizacionales/';
-        const method = unit ? 'PUT' : 'POST';
 
         const body = {...formData};
         if (!body.padre) delete body.padre;
         if (!body.macrosector) delete body.macrosector;
-        if (!body.sectores || body.sectores.length === 0) delete body.sectores;
 
         try {
-            const response = await fetch(url, {
-                method,
-                headers: {'Content-Type': 'application/json', 'Authorization': `Token ${token}`},
-                body: JSON.stringify(body),
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(JSON.stringify(data));
+            if (unit) {
+                await api.put(`/config/unidades-organizacionales/${unit.id}/`, body);
+            } else {
+                await api.post('/config/unidades-organizacionales/', body);
+            }
             onSave();
         } catch (err) {
-            setError(err.message);
+            const errorData = await err.response.json();
+            setError(JSON.stringify(errorData));
         }
     };
 
@@ -68,33 +62,52 @@ export default function UnitFormModal({
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
                 <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">{unit ? 'Editar Unidad' : 'Nueva Unidad'}</h3>
+                    <h3 className="text-lg font-semibold">{unit ? 'Editar Unidad Organizacional' : 'Nueva Unidad Organizacional'}</h3>
                     <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full"><X size={20}/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
-                        <input type="text" name="nombre" placeholder="Nombre de la Unidad" value={formData.nombre}
-                               onChange={handleChange} className="w-full p-2 border rounded" required/>
-                        <select name="padre" value={formData.padre} onChange={handleChange}
-                                className="w-full p-2 border rounded">
-                            <option value="">-- Nivel Principal (Sin Padre) --</option>
-                            {parentUnits.filter(u => !unit || u.id !== unit.id).map(p => (
-                                <option key={p.id} value={p.id}>{p.nombre}</option>
-                            ))}
-                        </select>
-                        <select name="macrosector" value={formData.macrosector} onChange={handleChange}
-                                className="w-full p-2 border rounded">
-                            <option value="">-- Seleccione MacroSector --</option>
-                            {macroSectores.map(ms => (
-                                <option key={ms.id} value={ms.id}>{ms.nombre}</option>
-                            ))}
-                        </select>
-                        <select name="sectores" multiple value={formData.sectores} onChange={handleChange}
-                                className="w-full p-2 border rounded h-24">
-                            {sectores.map(s => (
-                                <option key={s.id} value={s.id}>{s.nombre}</option>
-                            ))}
-                        </select>
+                        <div>
+                            <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">Nombre de la
+                                Unidad</label>
+                            <input id="nombre" type="text" name="nombre" placeholder="Nombre de la Unidad"
+                                   value={formData.nombre}
+                                   onChange={handleChange} className="w-full p-2 border rounded mt-1" required/>
+                        </div>
+                        <div>
+                            <label htmlFor="padre" className="block text-sm font-medium text-gray-700">Unidad Padre
+                                (Jerarquía)</label>
+                            <select id="padre" name="padre" value={formData.padre} onChange={handleChange}
+                                    className="w-full p-2 border rounded mt-1">
+                                <option value="">-- Nivel Principal (Sin Padre) --</option>
+                                {parentUnits.filter(u => !unit || u.id !== unit.id).map(p => (
+                                    <option key={p.id} value={p.id}>{p.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="macrosector"
+                                   className="block text-sm font-medium text-gray-700">MacroSector</label>
+                            <select id="macrosector" name="macrosector" value={formData.macrosector}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded mt-1">
+                                <option value="">-- Seleccione MacroSector --</option>
+                                {macroSectores.map(ms => (
+                                    <option key={ms.id} value={ms.id}>{ms.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="sectores" className="block text-sm font-medium text-gray-700">Sectores
+                                Vinculados</label>
+                            <select id="sectores" name="sectores" multiple value={formData.sectores}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded h-24 mt-1">
+                                {sectores.map(s => (
+                                    <option key={s.id} value={s.id}>{s.nombre}</option>
+                                ))}
+                            </select>
+                        </div>
                         <label className="flex items-center space-x-2">
                             <input type="checkbox" name="activo"
                                    checked={formData.activo}

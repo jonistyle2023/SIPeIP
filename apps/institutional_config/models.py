@@ -17,6 +17,16 @@ class ItemCatalogo(models.Model):
     nombre = models.CharField(max_length=255, help_text="Nombre del item (ej. 'Salud', 'Educación')")
     codigo = models.CharField(max_length=50, blank=True, null=True, help_text="Código opcional para el item")
     activo = models.BooleanField(default=True)
+
+    padre = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='hijos',
+        help_text="Ítem padre para crear jerarquías (ej. un Sector bajo un MacroSector)."
+    )
+
     def __str__(self):
         return f"{self.catalogo.nombre} - {self.nombre}"
 
@@ -71,13 +81,15 @@ class UnidadOrganizacional(models.Model):
         ItemCatalogo,
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        limit_choices_to={'catalogo__codigo': 'MACROSECTOR'},
+        # Ahora busca ítems sin padre dentro del nuevo catálogo
+        limit_choices_to={'catalogo__codigo': 'CLASIFICADOR_SECTORIAL', 'padre__isnull': True},
         related_name='unidades_por_macrosector'
     )
     sectores = models.ManyToManyField(
         ItemCatalogo,
         blank=True,
-        limit_choices_to={'catalogo__codigo': 'SECTOR'},
+        # Ahora busca ítems que sí tienen padre (o cualquier ítem del catálogo)
+        limit_choices_to={'catalogo__codigo': 'CLASIFICADOR_SECTORIAL'},
         related_name='unidades_por_sector'
     )
     activo = models.BooleanField(default=True)

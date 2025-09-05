@@ -1,97 +1,118 @@
-import React, {useState, useEffect} from 'react';
-import {Plus, Edit, Trash2} from 'lucide-react';
-import CatalogItemFormModal from './CatalogItemFormModal.jsx';
-import CatalogFormModal from './CatalogFormModal.jsx';
+import React, { useState, useEffect, useCallback } from 'react';
+import { api } from '../../shared/api/api';
+import { Plus, Edit, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import CatalogItemFormModal from './CatalogItemFormModal';
+import CatalogFormModal from './CatalogFormModal';
+
+// --- SUB-COMPONENTE RECURSIVO PARA ÁRBOL DE ÍTEMS ---
+const ItemNode = ({ item, level = 0, onAddItem, onEditItem, onDeleteItem }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div style={{ marginLeft: `${level * 20}px` }}>
+            <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                <div className="flex items-center">
+                    {item.hijos && item.hijos.length > 0 && (
+                        <button onClick={() => setIsOpen(!isOpen)} className="p-1">
+                            {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </button>
+                    )}
+                    <span className="ml-2">{item.nombre} ({item.codigo || 'S/C'})</span>
+                </div>
+                <div className="flex space-x-2">
+                    <button onClick={() => onAddItem(null, item)} title="Añadir sub-ítem" className="p-1 text-green-500"><Plus size={14}/></button>
+                    <button onClick={() => onEditItem(item, null)} title="Editar ítem" className="p-1 text-blue-500"><Edit size={14}/></button>
+                    <button onClick={() => onDeleteItem(item.id)} title="Eliminar ítem" className="p-1 text-red-500"><Trash2 size={14}/></button>
+                </div>
+            </div>
+            {isOpen && item.hijos && item.hijos.map(child => (
+                <ItemNode key={child.id} item={child} level={level + 1} onAddItem={onAddItem} onEditItem={onEditItem} onDeleteItem={onDeleteItem} />
+            ))}
+        </div>
+    );
+};
 
 export default function CatalogManager() {
     const [catalogs, setCatalogs] = useState([]);
     const [selectedCatalog, setSelectedCatalog] = useState(null);
-    const [items, setItems] = useState([]);
-    const [loadingCatalogs, setLoadingCatalogs] = useState(true);
-    const [loadingItems, setLoadingItems] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [items, setItems] = useState([]); // Árbol de ítems
+    const [loading, setLoading] = useState(true);
+
+    // Estados de los modales
+    const [isItemModalOpen, setIsItemModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [parentItem, setParentItem] = useState(null);
     const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false);
     const [catalogToEdit, setCatalogToEdit] = useState(null);
-    const [sortBy, setSortBy] = useState('nombre');
-    const [sortOrder, setSortOrder] = useState('asc');
 
-    const fetchItemsForSelectedCatalog = async (catalog) => {
-        if (!catalog) return;
-        setLoadingItems(true);
-        const token = localStorage.getItem('authToken');
+    // --- Carga de catálogos ---
+    const fetchCatalogs = useCallback(async () => {
+        setLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/items-catalogo/?catalogo=${catalog.id}`, {
-                headers: {'Authorization': `Token ${token}`}
-            });
-            if (!response.ok) throw new Error("Error al cargar ítems del catálogo");
-            const data = await response.json();
-            setItems(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoadingItems(false);
-        }
-    };
-
-    const handleSave = async () => {
-        handleCloseModal();
-        await fetchItemsForSelectedCatalog(selectedCatalog);
-    };
-
-    const handleDeleteItem = async (itemId) => {
-        if (!window.confirm('¿Está seguro de eliminar este ítem? Esta acción no se puede deshacer.')) return;
-        const token = localStorage.getItem('authToken');
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/items-catalogo/${itemId}/`, {
-                method: 'DELETE',
-                headers: {'Authorization': `Token ${token}`}
-            });
-            if (!response.ok) throw new Error("No se pudo eliminar el ítem");
-            await fetchItemsForSelectedCatalog(selectedCatalog);
-        } catch (error) {
-            alert("Error al eliminar el ítem.");
-            console.error(error);
-        }
-    };
-
-    const fetchCatalogs = async () => {
-        setLoadingCatalogs(true);
-        const token = localStorage.getItem('authToken');
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/config/catalogos/', {headers: {'Authorization': `Token ${token}`}});
-            if (!response.ok) throw new Error("Error al cargar catálogos");
-            const data = await response.json();
+            const data = await api.get('/config/catalogos/');
             setCatalogs(data);
             if (data.length > 0) {
-                handleSelectCatalog(data[0]);
+                setSelectedCatalog(data[0]);
             }
         } catch (error) {
             console.error(error);
         } finally {
-            setLoadingCatalogs(false);
+            setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchCatalogs();
+    }, [fetchCatalogs]);
+
+    // --- Carga de ítems jerárquicos ---
+    const fetchItems = useCallback(async (catalog) => {
+        if (!catalog) {
+            setItems([]);
+            return;
+        }
+        setLoading(true);
+        try {
+            const data = await api.get(`/config/items-catalogo/?catalogo=${catalog.id}`);
+            setItems(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        if (selectedCatalog) fetchItems(selectedCatalog);
+    }, [selectedCatalog, fetchItems]);
 
     const handleSelectCatalog = (catalog) => {
         setSelectedCatalog(catalog);
-        fetchItemsForSelectedCatalog(catalog);
+        fetchItems(catalog);
     };
 
-    const handleOpenModal = (item = null) => {
-        setEditingItem(item);
-        setIsModalOpen(true);
+    // --- Modales para ítems jerárquicos ---
+    const handleOpenItemModal = (itemToEdit = null, parent = null) => {
+        setEditingItem(itemToEdit);
+        setParentItem(parent);
+        setIsItemModalOpen(true);
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
+    const handleSaveItem = () => {
+        setIsItemModalOpen(false);
         setEditingItem(null);
+        setParentItem(null);
+        fetchItems(selectedCatalog);
     };
 
+    const handleDeleteItem = async (itemId) => {
+        if (window.confirm('¿Eliminar este ítem y todos sus sub-ítems?')) {
+            await api.delete(`/config/items-catalogo/${itemId}/`);
+            fetchItems(selectedCatalog);
+        }
+    };
+
+    // --- Catálogo: editar/eliminar ---
     const handleEditCatalog = (catalog) => {
         setCatalogToEdit(catalog);
         setIsCatalogModalOpen(true);
@@ -99,13 +120,8 @@ export default function CatalogManager() {
 
     const handleDeleteCatalog = async (catalog) => {
         if (!window.confirm('¿Está seguro de eliminar este catálogo? Esta acción no se puede deshacer.')) return;
-        const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/catalogos/${catalog.id}/`, {
-                method: 'DELETE',
-                headers: {'Authorization': `Token ${token}`}
-            });
-            if (!response.ok) throw new Error("No se pudo eliminar el catálogo");
+            await api.delete(`/config/catalogos/${catalog.id}/`);
             await fetchCatalogs();
             setSelectedCatalog(null);
         } catch (error) {
@@ -125,28 +141,11 @@ export default function CatalogManager() {
         setCatalogToEdit(null);
     };
 
-    const sortedItems = [...items].sort((a, b) => {
-        const fieldA = (a[sortBy] || '').toLowerCase();
-        const fieldB = (b[sortBy] || '').toLowerCase();
-        if (fieldA < fieldB) return sortOrder === 'asc' ? -1 : 1;
-        if (fieldA > fieldB) return sortOrder === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-    const handleSort = (field) => {
-        if (sortBy === field) {
-            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-        } else {
-            setSortBy(field);
-            setSortOrder('asc');
-        }
-    };
-
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1 bg-white p-4 rounded-lg shadow-sm">
                 <h4 className="font-semibold mb-3">Catálogos del Sistema</h4>
-                {loadingCatalogs ? <p>Cargando...</p> : (
+                {loading ? <p>Cargando...</p> : (
                     <>
                         <ul className="space-y-1">
                             {catalogs.map(cat => (
@@ -185,65 +184,34 @@ export default function CatalogManager() {
                 {selectedCatalog ? (
                     <>
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-semibold">Ítems de: <span
-                                className="text-blue-600">{selectedCatalog.nombre}</span></h4>
-                            <button onClick={() => handleOpenModal()}
-                                    className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs">
-                                <Plus size={14} className="mr-1"/>Nuevo Ítem
+                            <h4 className="font-semibold">Jerarquía de: <span className="text-blue-600">{selectedCatalog.nombre}</span></h4>
+                            <button onClick={() => handleOpenItemModal(null, null)} className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs">
+                                <Plus size={14} className="mr-1"/>Nuevo Ítem Raíz
                             </button>
                         </div>
-                        <div className="flex space-x-2 mb-4">
-                            <button
-                                onClick={() => handleSort('nombre')}
-                                className={`px-3 py-1 rounded ${sortBy === 'nombre' ? 'bg-blue-100 text-blue-700 font-semibold' : 'bg-gray-100 text-gray-700'}`}
-                            >
-                                Ordenar por Nombre {sortBy === 'nombre' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
-                            </button>
-                            <button
-                                onClick={() => handleSort('codigo')}
-                                className={`px-3 py-1 rounded ${sortBy === 'codigo' ? 'bg-blue-100 text-blue-700 font-semibold' : 'bg-gray-100 text-gray-700'}`}
-                            >
-                                Ordenar por Código {sortBy === 'codigo' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
-                            </button>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                                <tr>
-                                    <th className="p-2">Nombre</th>
-                                    <th className="p-2">Código</th>
-                                    <th className="p-2">Acciones</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {loadingItems ? <tr>
-                                    <td colSpan="3" className="text-center p-4">Cargando...</td>
-                                </tr> : sortedItems.map(item => (
-                                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                                        <td className="p-2">{item.nombre}</td>
-                                        <td className="p-2">{item.codigo || '-'}</td>
-                                        <td className="p-2 flex space-x-2">
-                                            <button onClick={() => handleOpenModal(item)}
-                                                    className="p-1 text-blue-500 hover:text-blue-700"><Edit size={14}/>
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteItem(item.id)}
-                                                className="p-1 text-red-500 hover:text-red-700"
-                                            >
-                                                <Trash2 size={14}/>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                        <div className="space-y-1">
+                            {loading ? <p>Cargando...</p> : items.map(item => (
+                                <ItemNode
+                                    key={item.id}
+                                    item={item}
+                                    onAddItem={handleOpenItemModal}
+                                    onEditItem={handleOpenItemModal}
+                                    onDeleteItem={handleDeleteItem}
+                                />
+                            ))}
                         </div>
                     </>
-                ) : <p>Seleccione un catálogo para ver sus ítems.</p>}
+                ) : <p>Seleccione un catálogo.</p>}
             </div>
-            {isModalOpen &&
-                <CatalogItemFormModal item={editingItem} catalogId={selectedCatalog?.id} onClose={handleCloseModal}
-                                      onSave={handleSave}/>}
+            {isItemModalOpen &&
+                <CatalogItemFormModal
+                    item={editingItem}
+                    catalogId={selectedCatalog?.id}
+                    parentItem={parentItem}
+                    onClose={() => setIsItemModalOpen(false)}
+                    onSave={handleSaveItem}
+                />
+            }
             {isCatalogModalOpen &&
                 <CatalogFormModal
                     onClose={handleCloseCatalogModal}

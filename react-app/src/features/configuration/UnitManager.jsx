@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Plus, Edit, Trash2} from 'lucide-react';
 import UnitFormModal from './UnitFormModal.jsx';
+import { api } from '../../shared/api/api'; // <-- NUEVO IMPORT
 
 export default function UnitManager() {
     const [entities, setEntities] = useState([]);
@@ -83,6 +84,20 @@ export default function UnitManager() {
         setTimeout(() => setSelectedEntityId(currentId), 0);
     };
 
+    // --- NUEVA FUNCIÓN PARA ELIMINAR ---
+    const handleDelete = async (unitId) => {
+        if (!window.confirm('¿Está seguro de que desea eliminar esta unidad organizacional?')) {
+            return;
+        }
+        try {
+            await api.delete(`/config/unidades-organizacionales/${unitId}/`);
+            handleSave();
+        } catch (error) {
+            alert('Error al eliminar la unidad.');
+            console.error(error);
+        }
+    };
+
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
@@ -151,7 +166,10 @@ export default function UnitManager() {
                                     <button onClick={() => handleOpenModal(unit)}
                                             className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
                                     </button>
-                                    <button className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16}/>
+                                    {/* MODIFICADO: ahora llama a handleDelete */}
+                                    <button onClick={() => handleDelete(unit.id)}
+                                            className="p-1 text-red-500 hover:text-red-700">
+                                        <Trash2 size={16}/>
                                     </button>
                                 </td>
                             </tr>

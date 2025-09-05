@@ -19,7 +19,7 @@ class CatalogoViewSet(viewsets.ModelViewSet):
 
 class ItemCatalogoViewSet(viewsets.ModelViewSet):
     """
-    API endpoint que permite ver, crear, editar y eliminar los Ítems de un Catálogo.
+    API endpoint para los Ítems de un Catálogo. Ahora devuelve una estructura jerárquica.
     """
     queryset = ItemCatalogo.objects.all()
     serializer_class = ItemCatalogoSerializer
@@ -28,9 +28,10 @@ class ItemCatalogoViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         catalogo_id = self.request.query_params.get('catalogo')
         if catalogo_id:
-            queryset = queryset.filter(catalogo_id=catalogo_id)
+            # --- MODIFICACIÓN CLAVE ---
+            # Filtramos por catálogo Y solo traemos los ítems raíz (sin padre).
+            queryset = queryset.filter(catalogo_id=catalogo_id, padre__isnull=True)
         return queryset
-
     # permission_classes = [permissions.IsAdminUser] # Igualmente, restringir a administradores
 
 class EntidadViewSet(viewsets.ModelViewSet):

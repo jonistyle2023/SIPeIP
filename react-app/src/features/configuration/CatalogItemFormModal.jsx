@@ -2,11 +2,12 @@ import React, {useState, useEffect} from 'react';
 import {X} from 'lucide-react';
 import {handleFormChange, handleFormSubmit} from '../../shared/utils/formUtils';
 
-export default function CatalogItemFormModal({item, catalogId, onClose, onSave}) {
+export default function CatalogItemFormModal({ item, catalogId, parentItem, onClose, onSave }) {
     const [formData, setFormData] = useState({
         nombre: '',
         codigo: '',
         catalogo: catalogId,
+        padre: parentItem ? parentItem.id : null, // Asigna el padre si se está creando un hijo
         activo: true,
     });
     const [error, setError] = useState('');

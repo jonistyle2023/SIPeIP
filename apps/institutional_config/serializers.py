@@ -1,12 +1,20 @@
 from rest_framework import serializers
 from .models import Catalogo, ItemCatalogo, Entidad, UnidadOrganizacional, PeriodoPlanificacion
 
+class RecursiveField(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
 # ItemCatalogo
 # Este serializer se usará para el CRUD completo de los ítems.
 class ItemCatalogoSerializer(serializers.ModelSerializer):
+    # El campo 'hijos' usará el serializador recursivo para mostrar los ítems anidados.
+    hijos = RecursiveField(many=True, read_only=True)
+
     class Meta:
         model = ItemCatalogo
-        fields = ['id', 'catalogo', 'nombre', 'codigo', 'activo']
+        fields = ['id', 'catalogo', 'nombre', 'codigo', 'activo', 'padre', 'hijos']
 
 # Catálogo
 class CatalogoSerializer(serializers.ModelSerializer):
