@@ -33,7 +33,7 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
             subItems: ['Seguimiento a la Planificación', 'Seguimiento a la Inversión', 'Seguimiento a obras', 'Seguimiento a Cierre y Baja de Proyectos']
         },
         {name: 'Reportería', icon: FileText},
-        {name: 'Configuración', icon: Settings, subItems: ['Usuarios', 'Institucional']},
+        {name: 'Configuración', icon: Settings, subItems: ['Usuarios', 'Institucional', 'Priorización']},
         {name: 'Auditoría', icon: Shield},
     ];
 

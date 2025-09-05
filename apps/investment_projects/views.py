@@ -7,12 +7,14 @@ from rest_framework.permissions import IsAuthenticated
 from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 from .models import (
     ProyectoInversion, MarcoLogico, Componente, Actividad, Indicador, Meta,
-    ArrastreInversion, CronogramaValorado, DictamenPrioridad, ProyectoInversionVersion
+    ArrastreInversion, CronogramaValorado, DictamenPrioridad, ProyectoInversionVersion, CriterioPriorizacion,
+    PuntuacionProyecto
 )
 from .serializers import (
     ProyectoInversionSerializer,
     ArrastreInversionSerializer, CronogramaValoradoSerializer, DictamenPrioridadSerializer, MarcoLogicoSerializer,
-    ComponenteSerializer, ActividadSerializer, IndicadorSerializer, MetaSerializer
+    ComponenteSerializer, ActividadSerializer, IndicadorSerializer, MetaSerializer, CriterioPriorizacionSerializer,
+    PuntuacionProyectoSerializer
 )
 from ..institutional_config.models import Catalogo
 from ..institutional_config.serializers import CatalogoSerializer
@@ -228,3 +230,12 @@ class CatalogoViewSet(viewsets.ModelViewSet):
             catalogos = Catalogo.objects.all()
         serializer = self.get_serializer(catalogos, many=True)
         return Response(serializer.data)
+
+class CriterioPriorizacionViewSet(viewsets.ModelViewSet):
+    queryset = CriterioPriorizacion.objects.all()
+    serializer_class = CriterioPriorizacionSerializer
+
+class PuntuacionProyectoViewSet(viewsets.ModelViewSet):
+    queryset = PuntuacionProyecto.objects.all()
+    serializer_class = PuntuacionProyectoSerializer
+    filterset_fields = ['proyecto', 'criterio']

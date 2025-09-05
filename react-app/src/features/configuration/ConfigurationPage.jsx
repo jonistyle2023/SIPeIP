@@ -1,38 +1,77 @@
-import React, {useState, useEffect} from 'react';
-import UsersContent from './UsersContent.jsx';
-import InstitutionalContent from './InstitutionalContent.jsx';
+import React, { useState, useEffect } from 'react';
+import { Users, Settings, ListChecks } from 'lucide-react';
 
-export default function ConfigurationPage({initialTab, setActivePage}) {
-    // El estado local maneja 'usuarios' o 'institucional'
+// --- CORRECCIÓN: Importamos tus componentes existentes ---
+import UsersContent from './UsersContent';
+import InstitutionalContent from './InstitutionalContent';
+import CriteriosManager from './CriteriosManager';
+
+// Componente para un botón de pestaña
+const TabButton = ({ icon: Icon, label, isActive, onClick }) => (
+    <button
+        onClick={onClick}
+        className={`flex items-center px-4 py-2 text-sm font-medium ${
+            isActive
+                ? 'border-b-2 border-blue-500 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+        }`}
+    >
+        <Icon size={16} className="mr-2" />
+        {label}
+    </button>
+);
+
+export default function ConfigurationPage({ initialTab, setActivePage }) {
+    // El estado local ahora maneja 'usuarios', 'institucional', o 'criterios'
     const [activeTab, setActiveTabLocal] = useState(initialTab === 'Usuarios' ? 'usuarios' : 'institucional');
 
-    // Sincroniza el estado local si la prop cambia (al hacer clic en el sidebar)
+    // Sincroniza el estado si la prop del layout principal cambia
     useEffect(() => {
-        setActiveTabLocal(initialTab === 'Usuarios' ? 'usuarios' : 'institucional');
+        if (initialTab === 'Usuarios' || initialTab === 'Institucional') {
+            setActiveTabLocal(initialTab === 'Usuarios' ? 'usuarios' : 'institucional');
+        }
     }, [initialTab]);
 
     const handleTabClick = (tab, pageName) => {
         setActiveTabLocal(tab);
-        setActivePage(pageName); // Actualiza el estado en el layout principal
+        if (pageName === 'Usuarios' || pageName === 'Institucional') {
+            setActivePage(pageName);
+        } else {
+            setActivePage('Institucional');
+        }
+    };
+
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'usuarios':
+                return <UsersContent />; // <-- Ahora usa tu componente importado
+            case 'institucional':
+                return <InstitutionalContent />; // <-- Ahora usa tu componente importado
+            case 'criterios':
+                return <CriteriosManager />;
+            default:
+                return <InstitutionalContent />;
+        }
     };
 
     return (
-        <div className="space-y-8">
-            {/* Pestañas de Navegación */}
-            <div className="flex border-b">
-                <button onClick={() => handleTabClick('usuarios', 'Usuarios')}
-                        className={`px-4 py-2 text-sm font-medium ${activeTab === 'usuarios' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>
-                    Gestión de Usuarios
-                </button>
-                <button onClick={() => handleTabClick('institucional', 'Institucional')}
-                        className={`px-4 py-2 text-sm font-medium ${activeTab === 'institucional' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>
-                    Configuración Institucional
-                </button>
+        <div className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-800">Módulo de Configuración</h2>
+                <p className="text-gray-600 mt-1">Administración de parámetros, usuarios y criterios del sistema.</p>
             </div>
 
-            {/* Renderizado de contenido condicional */}
-            {activeTab === 'usuarios' && <UsersContent/>}
-            {activeTab === 'institucional' && <InstitutionalContent/>}
+            {/* Menú de Pestañas Integrado */}
+            <div className="border-b flex flex-wrap">
+                <TabButton label="Gestión de Usuarios" icon={Users} isActive={activeTab === 'usuarios'} onClick={() => handleTabClick('usuarios', 'Usuarios')} />
+                <TabButton label="Configuración Institucional" icon={Settings} isActive={activeTab === 'institucional'} onClick={() => handleTabClick('institucional', 'Institucional')} />
+                <TabButton label="Criterios de Priorización" icon={ListChecks} isActive={activeTab === 'criterios'} onClick={() => handleTabClick('criterios', 'Institucional')} />
+            </div>
+
+            {/* Contenido de la pestaña activa */}
+            <div>
+                {renderContent()}
+            </div>
         </div>
     );
 }

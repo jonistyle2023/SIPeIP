@@ -12,6 +12,8 @@ router.register(r'metas', views.MetaViewSet, basename='metas')
 router.register(r'arrastres', views.ArrastreInversionViewSet, basename='arrastres')
 router.register(r'cronogramas', views.CronogramaValoradoViewSet, basename='cronogramas')
 router.register(r'dictamenes', views.DictamenPrioridadViewSet, basename='dictamenes')
+router.register(r'criterios-priorizacion', views.CriterioPriorizacionViewSet, basename='criterios-priorizacion')
+router.register(r'puntuaciones', views.PuntuacionProyectoViewSet, basename='puntuaciones')
 
 urlpatterns = [
     path('', include(router.urls)),

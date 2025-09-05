@@ -9,6 +9,8 @@ import ActividadFormModal from './ActividadFormModal.jsx';
 import ComponenteFormModal from './ComponenteFormModal.jsx';
 import ArrastresTab from './ArrastresTab.jsx';
 import AlineacionTab from './AlineacionTab.jsx';
+import PriorizacionTab from './PriorizacionTab';
+import { Star } from 'lucide-react';
 
 const CONTENT_TYPE_IDS = {
     MARCO_LOGICO: 32,
@@ -262,6 +264,8 @@ export default function ProjectDetail({project, onReturnToList}) {
                 return <ArrastresTab project={projectDetails} onDataChange={fetchData}/>;
             case 'documentos':
                 return <PlaceholderContent tabName="Documentos"/>;
+            case 'priorizacion':
+                return <PriorizacionTab project={projectDetails} />;
             default:
                 return null;
         }
@@ -350,6 +354,8 @@ export default function ProjectDetail({project, onReturnToList}) {
                            onClick={() => setActiveTab('arrastres')}/>
                 <TabButton label="Documentos" icon={FileText} isActive={activeTab === 'documentos'}
                            onClick={() => setActiveTab('documentos')}/>
+                <TabButton label="Priorización" icon={Star} isActive={activeTab === 'priorizacion'}
+                           onClick={() => setActiveTab('priorizacion')}/>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm min-h-[300px]">

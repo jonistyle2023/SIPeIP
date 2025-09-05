@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from .models import (
     ProyectoInversion, MarcoLogico, Componente, Actividad,
     Indicador, Meta, ArrastreInversion, CronogramaValorado,
-    DictamenPrioridad
+    DictamenPrioridad, CriterioPriorizacion, PuntuacionProyecto
 )
 from apps.strategic_objectives.serializers import GenericRelatedObjectSerializer
 
@@ -176,6 +176,7 @@ class ProyectoInversionSerializer(serializers.ModelSerializer):
     marco_logico = MarcoLogicoSerializer(read_only=True)
     arrastres = ArrastreInversionSerializer(many=True, read_only=True)
     dictamenes = DictamenPrioridadSerializer(many=True, read_only=True)
+    puntaje_priorizacion_total = serializers.SerializerMethodField()
 
     class Meta:
         model = ProyectoInversion
@@ -186,7 +187,7 @@ class ProyectoInversionSerializer(serializers.ModelSerializer):
             'estado', 'version_actual', 'creador',
             'marco_logico', 'arrastres', 'dictamenes',
             'programa_institucional', 'contribucion_programa', 'programa_institucional_nombre',
-            'monto_total_programado', 'ultimas_observaciones'
+            'monto_total_programado', 'ultimas_observaciones', 'puntaje_priorizacion_total'
         ]
 
     def get_monto_total_programado(self, obj):
@@ -195,3 +196,22 @@ class ProyectoInversionSerializer(serializers.ModelSerializer):
         total = obj.marco_logico.componentes.all() \
             .aggregate(total=Sum('actividades__cronograma__valor_programado'))['total']
         return total if total is not None else 0.00
+
+    def get_puntaje_priorizacion_total(self, obj):
+        puntuaciones = obj.puntuaciones.filter(criterio__activo=True)
+        total_ponderado = 0
+        for p in puntuaciones:
+            total_ponderado += (p.puntuacion_asignada * (p.criterio.ponderacion / 100))
+        return round(total_ponderado, 2)
+
+class CriterioPriorizacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CriterioPriorizacion
+        fields = '__all__'
+
+class PuntuacionProyectoSerializer(serializers.ModelSerializer):
+    criterio_nombre = serializers.CharField(source='criterio.nombre', read_only=True)
+
+    class Meta:
+        model = PuntuacionProyecto
+        fields = '__all__'

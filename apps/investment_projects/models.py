@@ -129,7 +129,6 @@ class Meta(models.Model):
         return f"Meta: {self.valor_meta} {self.indicador.unidad_medida}"
 
 # --- Componentes Financieros y Administrativos ---
-
 class CronogramaValorado(models.Model):
     """Registro del cronograma valorado de actividades o componentes."""
     cronograma_id = models.AutoField(primary_key=True)
@@ -154,3 +153,31 @@ class DictamenPrioridad(models.Model):  # Criterio de Aceptación: Gestión de D
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     usuario_responsable_snp = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     observaciones = models.TextField(blank=True, null=True)
+
+class CriterioPriorizacion(models.Model):
+    criterio_id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=255, unique=True)
+    descripcion = models.TextField(blank=True)
+    ponderacion = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        help_text="Peso del criterio en el puntaje total (ej. 30.00 para 30%)"
+    )
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nombre
+
+class PuntuacionProyecto(models.Model):
+    puntuacion_id = models.AutoField(primary_key=True)
+    proyecto = models.ForeignKey(ProyectoInversion, on_delete=models.CASCADE, related_name='puntuaciones')
+    criterio = models.ForeignKey(CriterioPriorizacion, on_delete=models.CASCADE, related_name='puntuaciones')
+    puntuacion_asignada = models.DecimalField(max_digits=5, decimal_places=2)
+    justificacion = models.TextField(blank=True, help_text="Justificación de la puntuación asignada.")
+    evaluador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    fecha_evaluacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('proyecto', 'criterio') # Un proyecto solo puede tener una puntuación por criterio
+
+    def __str__(self):
+        return f"{self.proyecto.nombre} - {self.criterio.nombre}: {self.puntuacion_asignada}"

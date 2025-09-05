@@ -45,7 +45,8 @@ const ProjectsTable = ({ projects, onPrioritize, onReturn, onViewDetail, isPrior
             <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
                 <tr>
                     <th className="p-3">Nombre del Proyecto</th>
-                    <th className="p-3">Programa Institucional</th>
+                    {/* --- AÑADIR NUEVA COLUMNA --- */}
+                    <th className="p-3 text-right">Puntaje Ponderado</th>
                     <th className="p-3 text-right">Monto Total ($)</th>
                     <th className="p-3 text-center">Acciones</th>
                 </tr>
@@ -54,7 +55,10 @@ const ProjectsTable = ({ projects, onPrioritize, onReturn, onViewDetail, isPrior
                 {projects.map(project => (
                     <tr key={project.proyecto_id} className="border-b hover:bg-gray-50">
                         <td className="p-3 font-medium">{project.nombre}</td>
-                        <td className="p-3 text-gray-600">{project.programa_institucional_nombre || 'N/A'}</td>
+                        {/* --- AÑADIR NUEVA CELDA --- */}
+                        <td className="p-3 text-right font-bold text-blue-600">
+                            {project.puntaje_priorizacion_total}
+                        </td>
                         <td className="p-3 text-right font-mono">
                             {parseFloat(project.monto_total_programado).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>

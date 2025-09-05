@@ -32,6 +32,7 @@ export default function DashboardLayout({ user, onLogout }) {
                 return <ReportsPage />;
             case 'Usuarios':
             case 'Institucional':
+            case 'Priorización':
                 return <ConfigurationPage />;
             default:
                 return <DashboardPage />;
