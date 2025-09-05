@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Plus, Edit, Trash2} from 'lucide-react';
 import CatalogItemFormModal from './CatalogItemFormModal.jsx';
-import CatalogFormModal from './CatalogFormModal.jsx'; // Importar el modal
+import CatalogFormModal from './CatalogFormModal.jsx';
 
 export default function CatalogManager() {
     const [catalogs, setCatalogs] = useState([]);
@@ -11,14 +11,17 @@ export default function CatalogManager() {
     const [loadingItems, setLoadingItems] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-    const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false); // Estado para el modal de catálogo
+    const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false);
+    const [catalogToEdit, setCatalogToEdit] = useState(null);
+    const [sortBy, setSortBy] = useState('nombre');
+    const [sortOrder, setSortOrder] = useState('asc');
 
-    const fetchItemsForSelectedCatalog = async () => {
-        if (!selectedCatalog) return;
+    const fetchItemsForSelectedCatalog = async (catalog) => {
+        if (!catalog) return;
         setLoadingItems(true);
         const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/catalogos/${selectedCatalog.id}/items/`, {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/items-catalogo/?catalogo=${catalog.id}`, {
                 headers: {'Authorization': `Token ${token}`}
             });
             if (!response.ok) throw new Error("Error al cargar ítems del catálogo");
@@ -32,8 +35,8 @@ export default function CatalogManager() {
     };
 
     const handleSave = async () => {
-        await fetchItemsForSelectedCatalog(); // Actualiza los ítems del catálogo seleccionado
-        handleCloseModal(); // Cierra el modal
+        handleCloseModal();
+        await fetchItemsForSelectedCatalog(selectedCatalog);
     };
 
     const handleDeleteItem = async (itemId) => {
@@ -45,7 +48,7 @@ export default function CatalogManager() {
                 headers: {'Authorization': `Token ${token}`}
             });
             if (!response.ok) throw new Error("No se pudo eliminar el ítem");
-            await fetchItemsForSelectedCatalog(); // Actualiza solo los ítems del catálogo seleccionado
+            await fetchItemsForSelectedCatalog(selectedCatalog);
         } catch (error) {
             alert("Error al eliminar el ítem.");
             console.error(error);
@@ -76,7 +79,7 @@ export default function CatalogManager() {
 
     const handleSelectCatalog = (catalog) => {
         setSelectedCatalog(catalog);
-        setItems(catalog.items || []);
+        fetchItemsForSelectedCatalog(catalog);
     };
 
     const handleOpenModal = (item = null) => {
@@ -89,9 +92,54 @@ export default function CatalogManager() {
         setEditingItem(null);
     };
 
+    const handleEditCatalog = (catalog) => {
+        setCatalogToEdit(catalog);
+        setIsCatalogModalOpen(true);
+    };
+
+    const handleDeleteCatalog = async (catalog) => {
+        if (!window.confirm('¿Está seguro de eliminar este catálogo? Esta acción no se puede deshacer.')) return;
+        const token = localStorage.getItem('authToken');
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/catalogos/${catalog.id}/`, {
+                method: 'DELETE',
+                headers: {'Authorization': `Token ${token}`}
+            });
+            if (!response.ok) throw new Error("No se pudo eliminar el catálogo");
+            await fetchCatalogs();
+            setSelectedCatalog(null);
+        } catch (error) {
+            alert("Error al eliminar el catálogo.");
+            console.error(error);
+        }
+    };
+
     const handleSaveCatalog = async () => {
-        await fetchCatalogs(); // Actualiza la lista de catálogos
-        setIsCatalogModalOpen(false); // Cierra el modal
+        await fetchCatalogs();
+        setIsCatalogModalOpen(false);
+        setCatalogToEdit(null);
+    };
+
+    const handleCloseCatalogModal = () => {
+        setIsCatalogModalOpen(false);
+        setCatalogToEdit(null);
+    };
+
+    const sortedItems = [...items].sort((a, b) => {
+        const fieldA = (a[sortBy] || '').toLowerCase();
+        const fieldB = (b[sortBy] || '').toLowerCase();
+        if (fieldA < fieldB) return sortOrder === 'asc' ? -1 : 1;
+        if (fieldA > fieldB) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    const handleSort = (field) => {
+        if (sortBy === field) {
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortBy(field);
+            setSortOrder('asc');
+        }
     };
 
     return (
@@ -102,16 +150,30 @@ export default function CatalogManager() {
                     <>
                         <ul className="space-y-1">
                             {catalogs.map(cat => (
-                                <li key={cat.id}>
+                                <li key={cat.id} className="flex items-center">
                                     <button onClick={() => handleSelectCatalog(cat)}
-                                            className={`w-full text-left p-2 rounded text-sm ${selectedCatalog?.id === cat.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100'}`}>
+                                            className={`flex-1 text-left p-2 rounded text-sm ${selectedCatalog?.id === cat.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100'}`}>
                                         {cat.nombre}
+                                    </button>
+                                    <button
+                                        onClick={() => handleEditCatalog(cat)}
+                                        className="ml-2 p-1 text-blue-500 hover:text-blue-700"
+                                        title="Editar catálogo"
+                                    >
+                                        <Edit size={16}/>
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteCatalog(cat)}
+                                        className="ml-1 p-1 text-red-500 hover:text-red-700"
+                                        title="Eliminar catálogo"
+                                    >
+                                        <Trash2 size={16}/>
                                     </button>
                                 </li>
                             ))}
                         </ul>
                         <button
-                            onClick={() => setIsCatalogModalOpen(true)}
+                            onClick={() => { setIsCatalogModalOpen(true); setCatalogToEdit(null); }}
                             className="mt-4 w-full flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-xs"
                         >
                             <Plus size={14} className="mr-1"/>Nuevo Catálogo
@@ -130,6 +192,20 @@ export default function CatalogManager() {
                                 <Plus size={14} className="mr-1"/>Nuevo Ítem
                             </button>
                         </div>
+                        <div className="flex space-x-2 mb-4">
+                            <button
+                                onClick={() => handleSort('nombre')}
+                                className={`px-3 py-1 rounded ${sortBy === 'nombre' ? 'bg-blue-100 text-blue-700 font-semibold' : 'bg-gray-100 text-gray-700'}`}
+                            >
+                                Ordenar por Nombre {sortBy === 'nombre' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+                            </button>
+                            <button
+                                onClick={() => handleSort('codigo')}
+                                className={`px-3 py-1 rounded ${sortBy === 'codigo' ? 'bg-blue-100 text-blue-700 font-semibold' : 'bg-gray-100 text-gray-700'}`}
+                            >
+                                Ordenar por Código {sortBy === 'codigo' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+                            </button>
+                        </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
@@ -142,7 +218,7 @@ export default function CatalogManager() {
                                 <tbody>
                                 {loadingItems ? <tr>
                                     <td colSpan="3" className="text-center p-4">Cargando...</td>
-                                </tr> : items.map(item => (
+                                </tr> : sortedItems.map(item => (
                                     <tr key={item.id} className="border-b hover:bg-gray-50">
                                         <td className="p-2">{item.nombre}</td>
                                         <td className="p-2">{item.codigo || '-'}</td>
@@ -169,7 +245,12 @@ export default function CatalogManager() {
                 <CatalogItemFormModal item={editingItem} catalogId={selectedCatalog?.id} onClose={handleCloseModal}
                                       onSave={handleSave}/>}
             {isCatalogModalOpen &&
-                <CatalogFormModal onClose={() => setIsCatalogModalOpen(false)} onSave={handleSaveCatalog}/>}
+                <CatalogFormModal
+                    onClose={handleCloseCatalogModal}
+                    onSave={handleSaveCatalog}
+                    catalogToEdit={catalogToEdit}
+                    onDelete={handleSaveCatalog}
+                />}
         </div>
     );
 }

@@ -19,36 +19,46 @@ class CatalogoSerializer(serializers.ModelSerializer):
 # Entidad
 class EntidadSerializer(serializers.ModelSerializer):
     nivel_gobierno_nombre = serializers.CharField(source='nivel_gobierno.nombre', read_only=True)
-    sector_nombre = serializers.CharField(source='sector.nombre', read_only=True, allow_null=True)
+    subsector_nombre = serializers.CharField(source='subsector.nombre', read_only=True, allow_null=True)
 
     class Meta:
         model = Entidad
         fields = [
             'id', 'nombre', 'codigo_unico',
             'nivel_gobierno', 'nivel_gobierno_nombre',
-            'sector', 'sector_nombre',
+            'subsector', 'subsector_nombre',
             'activo', 'fecha_creacion', 'fecha_modificacion'
         ]
         extra_kwargs = {
             'nivel_gobierno': {'write_only': True},
-            'sector': {'write_only': True, 'required': False, 'allow_null': True},
+            'subsector': {'write_only': True, 'required': False, 'allow_null': True},
         }
 
 # UnidadOrganizacional
 class UnidadOrganizacionalSerializer(serializers.ModelSerializer):
     entidad_nombre = serializers.CharField(source='entidad.nombre', read_only=True)
     padre_nombre = serializers.CharField(source='padre.nombre', read_only=True, allow_null=True)
+    macrosector_nombre = serializers.CharField(source='macrosector.nombre', read_only=True, allow_null=True)
+    sectores_nombres = serializers.SerializerMethodField()
 
     class Meta:
         model = UnidadOrganizacional
         fields = [
             'id', 'nombre', 'entidad', 'entidad_nombre',
-            'padre', 'padre_nombre', 'activo'
+            'padre', 'padre_nombre',
+            'macrosector', 'macrosector_nombre',
+            'sectores', 'sectores_nombres',
+            'activo'
         ]
         extra_kwargs = {
             'entidad': {'write_only': True},
             'padre': {'write_only': True, 'required': False, 'allow_null': True},
+            'macrosector': {'write_only': True, 'required': False, 'allow_null': True},
+            'sectores': {'write_only': True, 'required': False},
         }
+
+    def get_sectores_nombres(self, obj):
+        return [s.nombre for s in obj.sectores.all()]
 
 # PeriodoPlanificacion
 class PeriodoPlanificacionSerializer(serializers.ModelSerializer):

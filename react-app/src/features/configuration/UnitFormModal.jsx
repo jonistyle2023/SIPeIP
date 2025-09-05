@@ -1,11 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import {X} from 'lucide-react';
 
-export default function UnitFormModal({unit, entityId, parentUnits, onClose, onSave}) {
+export default function UnitFormModal({
+    unit, entityId, parentUnits, macroSectores, sectores, onClose, onSave
+}) {
     const [formData, setFormData] = useState({
         nombre: '',
         entidad: entityId,
         padre: '',
+        macrosector: '',
+        sectores: [],
         activo: true,
     });
     const [error, setError] = useState('');
@@ -16,26 +20,35 @@ export default function UnitFormModal({unit, entityId, parentUnits, onClose, onS
                 nombre: unit.nombre,
                 entidad: unit.entidad,
                 padre: unit.padre || '',
+                macrosector: unit.macrosector || '',
+                sectores: unit.sectores || [],
                 activo: unit.activo,
             });
         }
     }, [unit]);
 
     const handleChange = (e) => {
-        const {name, value, type, checked} = e.target;
-        setFormData(prev => ({...prev, [name]: type === 'checkbox' ? checked : value}));
+        const {name, value, type, checked, options} = e.target;
+        if (name === 'sectores') {
+            const selected = Array.from(options).filter(opt => opt.selected).map(opt => opt.value);
+            setFormData(prev => ({...prev, sectores: selected}));
+        } else {
+            setFormData(prev => ({...prev, [name]: type === 'checkbox' ? checked : value}));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('authToken');
-        const url = unit ? `http://127.0.0.1:8000/api/v1/config/unidades-organizacionales/${unit.id}/` : 'http://127.0.0.1:8000/api/v1/config/unidades-organizacionales/';
+        const url = unit
+            ? `http://127.0.0.1:8000/api/v1/config/unidades-organizacionales/${unit.id}/`
+            : 'http://127.0.0.1:8000/api/v1/config/unidades-organizacionales/';
         const method = unit ? 'PUT' : 'POST';
 
         const body = {...formData};
-        if (!body.padre) { // Si 'padre' está vacío, no lo enviamos
-            delete body.padre;
-        }
+        if (!body.padre) delete body.padre;
+        if (!body.macrosector) delete body.macrosector;
+        if (!body.sectores || body.sectores.length === 0) delete body.sectores;
 
         try {
             const response = await fetch(url, {
@@ -54,8 +67,8 @@ export default function UnitFormModal({unit, entityId, parentUnits, onClose, onS
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-                <div className="p-4 border-b flex justify-between items-center"><h3
-                    className="text-lg font-semibold">{unit ? 'Editar Unidad' : 'Nueva Unidad'}</h3>
+                <div className="p-4 border-b flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">{unit ? 'Editar Unidad' : 'Nueva Unidad'}</h3>
                     <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full"><X size={20}/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
@@ -65,13 +78,29 @@ export default function UnitFormModal({unit, entityId, parentUnits, onClose, onS
                         <select name="padre" value={formData.padre} onChange={handleChange}
                                 className="w-full p-2 border rounded">
                             <option value="">-- Nivel Principal (Sin Padre) --</option>
-                            {parentUnits.filter(u => !unit || u.id !== unit.id).map(p => ( // Evitar que una unidad sea su propio padre
+                            {parentUnits.filter(u => !unit || u.id !== unit.id).map(p => (
                                 <option key={p.id} value={p.id}>{p.nombre}</option>
                             ))}
                         </select>
-                        <label className="flex items-center space-x-2"><input type="checkbox" name="activo"
-                                                                              checked={formData.activo}
-                                                                              onChange={handleChange}/><span>Activa</span></label>
+                        <select name="macrosector" value={formData.macrosector} onChange={handleChange}
+                                className="w-full p-2 border rounded">
+                            <option value="">-- Seleccione MacroSector --</option>
+                            {macroSectores.map(ms => (
+                                <option key={ms.id} value={ms.id}>{ms.nombre}</option>
+                            ))}
+                        </select>
+                        <select name="sectores" multiple value={formData.sectores} onChange={handleChange}
+                                className="w-full p-2 border rounded h-24">
+                            {sectores.map(s => (
+                                <option key={s.id} value={s.id}>{s.nombre}</option>
+                            ))}
+                        </select>
+                        <label className="flex items-center space-x-2">
+                            <input type="checkbox" name="activo"
+                                   checked={formData.activo}
+                                   onChange={handleChange}/>
+                            <span>Activa</span>
+                        </label>
                     </div>
                     {error && <p className="text-red-500 text-sm text-center px-6 pb-2">{error}</p>}
                     <div className="p-4 border-t flex justify-end space-x-2">

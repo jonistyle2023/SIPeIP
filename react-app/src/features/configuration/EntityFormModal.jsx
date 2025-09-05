@@ -7,23 +7,25 @@ export default function EntityFormModal({entity, onClose, onSave}) {
         nombre: '',
         codigo_unico: '',
         nivel_gobierno: '',
-        sector: '',
+        subsector: '',
         activo: true,
     });
     const [nivelesGobierno, setNivelesGobierno] = useState([]);
-    const [sectores, setSectores] = useState([]);
+    const [subsectores, setSubsectores] = useState([]);
     const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchCatalogs = async () => {
             const token = localStorage.getItem('authToken');
+            // Nivel de Gobierno
             const resNiveles = await fetch('http://127.0.0.1:8000/api/v1/config/catalogos/?codigo=NIVEL_GOBIERNO', {headers: {'Authorization': `Token ${token}`}});
             const dataNiveles = await resNiveles.json();
             if (dataNiveles.length > 0) setNivelesGobierno(dataNiveles[0].items);
 
-            const resSectores = await fetch('http://127.0.0.1:8000/api/v1/config/catalogos/?codigo=SECTORES', {headers: {'Authorization': `Token ${token}`}});
-            const dataSectores = await resSectores.json();
-            if (dataSectores.length > 0) setSectores(dataSectores[0].items);
+            // Subsectores
+            const resSubsectores = await fetch('http://127.0.0.1:8000/api/v1/config/catalogos/?codigo=SUBSECTOR', {headers: {'Authorization': `Token ${token}`}});
+            const dataSubsectores = await resSubsectores.json();
+            if (dataSubsectores.length > 0) setSubsectores(dataSubsectores[0].items);
         };
         fetchCatalogs();
 
@@ -32,7 +34,7 @@ export default function EntityFormModal({entity, onClose, onSave}) {
                 nombre: entity.nombre,
                 codigo_unico: entity.codigo_unico,
                 nivel_gobierno: entity.nivel_gobierno,
-                sector: entity.sector || '',
+                subsector: entity.subsector || '',
                 activo: entity.activo,
             });
         }
@@ -67,10 +69,10 @@ export default function EntityFormModal({entity, onClose, onSave}) {
                             <option value="">Seleccione Nivel de Gobierno</option>
                             {nivelesGobierno.map(n => <option key={n.id} value={n.id}>{n.nombre}</option>)}
                         </select>
-                        <select name="sector" value={formData.sector} onChange={handleChange}
+                        <select name="subsector" value={formData.subsector} onChange={handleChange}
                                 className="w-full p-2 border rounded">
-                            <option value="">Seleccione Sector (Opcional)</option>
-                            {sectores.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
+                            <option value="">Seleccione Subsector (Opcional)</option>
+                            {subsectores.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
                         </select>
                         <label className="flex items-center space-x-2">
                             <input type="checkbox" name="activo" checked={formData.activo} onChange={handleChange}/>

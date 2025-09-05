@@ -9,6 +9,8 @@ export default function UnitManager() {
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUnit, setEditingUnit] = useState(null);
+    const [macroSectores, setMacroSectores] = useState([]);
+    const [sectores, setSectores] = useState([]);
 
     // Simulación de fetch de unidades al montar el componente
     useEffect(() => {
@@ -51,6 +53,20 @@ export default function UnitManager() {
         fetchUnits();
     }, [selectedEntityId]);
 
+    // Cargar catálogos de MacroSector y Sector
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+        const fetchCatalog = async (codigo, setter) => {
+            const res = await fetch(`http://127.0.0.1:8000/api/v1/config/catalogos/?codigo=${codigo}`, {
+                headers: {'Authorization': `Token ${token}`}
+            });
+            const data = await res.json();
+            if (data.length > 0) setter(data[0].items || []);
+        };
+        fetchCatalog('MACROSECTOR', setMacroSectores);
+        fetchCatalog('SECTOR', setSectores);
+    }, []);
+
     const handleOpenModal = (unit = null) => {
         setEditingUnit(unit);
         setIsModalOpen(true);
@@ -66,9 +82,6 @@ export default function UnitManager() {
         setSelectedEntityId('');
         setTimeout(() => setSelectedEntityId(currentId), 0);
     };
-
-    if (loading) return <p className="text-center p-4">Cargando unidades...</p>;
-    if (units.length === 0) return <p className="text-center p-4 text-gray-500">No hay unidades organizacionales registradas.</p>;
 
     return (
         <div>
@@ -96,12 +109,21 @@ export default function UnitManager() {
                 )}
             </div>
 
-            {selectedEntityId && (
+            {loading && <p className="text-center p-4">Cargando unidades...</p>}
+
+            {selectedEntityId && !loading && units.length === 0 && (
+                <p className="text-center p-4 text-gray-500">No hay unidades organizacionales registradas.</p>
+            )}
+
+            {selectedEntityId && units.length > 0 && !loading && (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
                         <tr>
                             <th className="p-3">Nombre de la Unidad</th>
+                            <th className="p-3">Entidad</th>
+                            <th className="p-3">MacroSector</th>
+                            <th className="p-3">Sector(es)</th>
                             <th className="p-3">Unidad Padre</th>
                             <th className="p-3">Estado</th>
                             <th className="p-3">Acciones</th>
@@ -111,12 +133,19 @@ export default function UnitManager() {
                         {units.map(unit => (
                             <tr key={unit.id} className="border-b hover:bg-gray-50">
                                 <td className="p-3 font-medium text-gray-800">{unit.nombre}</td>
+                                <td className="p-3">{unit.entidad_nombre || '-'}</td>
+                                <td className="p-3">{unit.macrosector_nombre || '-'}</td>
+                                <td className="p-3">
+                                    {unit.sectores_nombres && unit.sectores_nombres.length > 0
+                                        ? unit.sectores_nombres.join(', ')
+                                        : '-'}
+                                </td>
                                 <td className="p-3">{unit.padre_nombre || 'Nivel Principal'}</td>
                                 <td className="p-3">
-                                            <span
-                                                className={`px-2 py-1 rounded-full text-xs font-medium ${unit.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                                {unit.activo ? 'Activa' : 'Inactiva'}
-                                            </span>
+                                    <span
+                                        className={`px-2 py-1 rounded-full text-xs font-medium ${unit.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                        {unit.activo ? 'Activa' : 'Inactiva'}
+                                    </span>
                                 </td>
                                 <td className="p-3 flex items-center space-x-2">
                                     <button onClick={() => handleOpenModal(unit)}
@@ -131,8 +160,15 @@ export default function UnitManager() {
                     </table>
                 </div>
             )}
-            {isModalOpen && <UnitFormModal unit={editingUnit} entityId={selectedEntityId} parentUnits={units}
-                                           onClose={handleCloseModal} onSave={handleSave}/>}
+            {isModalOpen && <UnitFormModal
+                unit={editingUnit}
+                entityId={selectedEntityId}
+                parentUnits={units}
+                macroSectores={macroSectores}
+                sectores={sectores}
+                onClose={handleCloseModal}
+                onSave={handleSave}
+            />}
         </div>
     );
 }

@@ -23,6 +23,14 @@ class ItemCatalogoViewSet(viewsets.ModelViewSet):
     """
     queryset = ItemCatalogo.objects.all()
     serializer_class = ItemCatalogoSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        catalogo_id = self.request.query_params.get('catalogo')
+        if catalogo_id:
+            queryset = queryset.filter(catalogo_id=catalogo_id)
+        return queryset
+
     # permission_classes = [permissions.IsAdminUser] # Igualmente, restringir a administradores
 
 class EntidadViewSet(viewsets.ModelViewSet):
@@ -31,7 +39,7 @@ class EntidadViewSet(viewsets.ModelViewSet):
     """
     # select_related para optimizar la consulta a la BD, trayendo los datos
     # de las tablas relacionadas (ItemCatalogo) en una sola consulta.
-    queryset = Entidad.objects.select_related('nivel_gobierno', 'sector').all()
+    queryset = Entidad.objects.select_related('nivel_gobierno', 'subsector').all()
     serializer_class = EntidadSerializer
     # permission_classes = [permissions.IsAdminUser]
 

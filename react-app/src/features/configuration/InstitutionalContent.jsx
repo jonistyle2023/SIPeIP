@@ -75,6 +75,7 @@ const EntityTable = ({onEdit, refreshKey}) => {
                     <th className="p-3">Nombre de la Entidad</th>
                     <th className="p-3">Código Único</th>
                     <th className="p-3">Nivel de Gobierno</th>
+                    <th className="p-3">Subsector</th>
                     <th className="p-3">Estado</th>
                     <th className="p-3">Acciones</th>
                 </tr>
@@ -85,6 +86,7 @@ const EntityTable = ({onEdit, refreshKey}) => {
                         <td className="p-3 font-medium text-gray-800">{entity.nombre}</td>
                         <td className="p-3">{entity.codigo_unico}</td>
                         <td className="p-3">{entity.nivel_gobierno_nombre}</td>
+                        <td className="p-3">{entity.subsector_nombre || '-'}</td>
                         <td className="p-3"><span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${entity.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{entity.activo ? 'Activo' : 'Inactivo'}</span>
                         </td>

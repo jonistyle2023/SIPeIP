@@ -38,12 +38,12 @@ class Entidad(models.Model):
         related_name='entidades_por_nivel',
         help_text="Nivel de gobierno al que pertenece la entidad"
     )
-    sector = models.ForeignKey(
+    subsector = models.ForeignKey(
         ItemCatalogo,
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        limit_choices_to={'catalogo__codigo': 'SECTORES'},
-        related_name='entidades_por_sector'
+        limit_choices_to={'catalogo__codigo': 'SUBSECTOR'},
+        related_name='entidades_por_subsector'
     )
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
@@ -66,6 +66,19 @@ class UnidadOrganizacional(models.Model):
         on_delete=models.CASCADE,
         null=True, blank=True,
         related_name='hijos'
+    )
+    macrosector = models.ForeignKey(
+        ItemCatalogo,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        limit_choices_to={'catalogo__codigo': 'MACROSECTOR'},
+        related_name='unidades_por_macrosector'
+    )
+    sectores = models.ManyToManyField(
+        ItemCatalogo,
+        blank=True,
+        limit_choices_to={'catalogo__codigo': 'SECTOR'},
+        related_name='unidades_por_sector'
     )
     activo = models.BooleanField(default=True)
     def __str__(self):
