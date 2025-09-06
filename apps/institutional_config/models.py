@@ -1,12 +1,15 @@
 from django.db import models
 
+
 class Catalogo(models.Model):
     nombre = models.CharField(max_length=255, unique=True,
                               help_text="Nombre del catálogo (ej. 'Sectores', 'Tipos de Plan')")
     codigo = models.CharField(max_length=50, unique=True, help_text="Código único para el catálogo")
     descripcion = models.TextField(blank=True, null=True)
+
     def __str__(self):
         return self.nombre
+
     class Meta:
         verbose_name = "Catálogo"
         verbose_name_plural = "Catálogos"
@@ -33,7 +36,7 @@ class ItemCatalogo(models.Model):
     class Meta:
         verbose_name = "Ítem de Catálogo"
         verbose_name_plural = "Ítems de Catálogos"
-        unique_together = ('catalogo', 'nombre')  # No pueden existir dos items con el mismo nombre en el mismo catálogo
+        unique_together = ('catalogo', 'nombre')
         ordering = ['catalogo__nombre', 'nombre']
 
 # ENTIDADES
@@ -43,7 +46,7 @@ class Entidad(models.Model):
     nivel_gobierno = models.ForeignKey(
         ItemCatalogo,
         on_delete=models.SET_NULL,
-        null=True, blank=False,  # Hacemos que no sea opcional en la BD
+        null=True, blank=False,
         limit_choices_to={'catalogo__codigo': 'NIVEL_GOBIERNO'},
         related_name='entidades_por_nivel',
         help_text="Nivel de gobierno al que pertenece la entidad"
@@ -52,25 +55,25 @@ class Entidad(models.Model):
         ItemCatalogo,
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        limit_choices_to={'catalogo__codigo': 'SUBSECTOR'},
+        limit_choices_to={'catalogo__codigo': 'MACROSECTOR', 'padre__isnull': False},
         related_name='entidades_por_subsector'
     )
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.nombre
+
     class Meta:
         verbose_name = "Entidad"
         verbose_name_plural = "Entidades"
         ordering = ['nombre']
 
-# Unidades Organizacionales (Jerarquía dentro de una Entidad)
 class UnidadOrganizacional(models.Model):
     nombre = models.CharField(max_length=255)
     entidad = models.ForeignKey(Entidad, on_delete=models.CASCADE, related_name='unidades')
 
-    # Crear Jerarquías
     padre = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
@@ -81,22 +84,22 @@ class UnidadOrganizacional(models.Model):
         ItemCatalogo,
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        # Ahora busca ítems sin padre dentro del nuevo catálogo
-        limit_choices_to={'catalogo__codigo': 'CLASIFICADOR_SECTORIAL', 'padre__isnull': True},
+        limit_choices_to={'catalogo__codigo': 'MACROSECTOR', 'padre__isnull': True},
         related_name='unidades_por_macrosector'
     )
     sectores = models.ManyToManyField(
         ItemCatalogo,
         blank=True,
-        # Ahora busca ítems que sí tienen padre (o cualquier ítem del catálogo)
-        limit_choices_to={'catalogo__codigo': 'CLASIFICADOR_SECTORIAL'},
+        limit_choices_to={'catalogo__codigo': 'MACROSECTOR'},
         related_name='unidades_por_sector'
     )
     activo = models.BooleanField(default=True)
+
     def __str__(self):
         if self.padre:
             return f"{self.entidad.nombre} | {self.padre.nombre} -> {self.nombre}"
         return f"{self.entidad.nombre} | {self.nombre}"
+
     class Meta:
         verbose_name = "Unidad Organizacional"
         verbose_name_plural = "Unidades Organizacionales"
@@ -121,6 +124,7 @@ class PeriodoPlanificacion(models.Model):
                                                help_text="Indica si en este período se puede ingresar nueva información.")
     def __str__(self):
         return f"{self.nombre} ({self.fecha_inicio.year}-{self.fecha_fin.year})"
+
     class Meta:
         verbose_name = "Período de Planificación"
         verbose_name_plural = "Períodos de Planificación"

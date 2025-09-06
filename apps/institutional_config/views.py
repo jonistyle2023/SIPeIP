@@ -28,8 +28,6 @@ class ItemCatalogoViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         catalogo_id = self.request.query_params.get('catalogo')
         if catalogo_id:
-            # --- MODIFICACIÓN CLAVE ---
-            # Filtramos por catálogo Y solo traemos los ítems raíz (sin padre).
             queryset = queryset.filter(catalogo_id=catalogo_id, padre__isnull=True)
         return queryset
     # permission_classes = [permissions.IsAdminUser] # Igualmente, restringir a administradores
@@ -38,8 +36,6 @@ class EntidadViewSet(viewsets.ModelViewSet):
     """
     API endpoint para la gestión de Entidades del Estado.
     """
-    # select_related para optimizar la consulta a la BD, trayendo los datos
-    # de las tablas relacionadas (ItemCatalogo) en una sola consulta.
     queryset = Entidad.objects.select_related('nivel_gobierno', 'subsector').all()
     serializer_class = EntidadSerializer
     # permission_classes = [permissions.IsAdminUser]

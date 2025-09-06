@@ -12,7 +12,6 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
     const [codigosExistentes, setCodigosExistentes] = useState([]);
 
     useEffect(() => {
-        // Cargar códigos existentes de la base de datos
         const token = localStorage.getItem('authToken');
         fetch('http://127.0.0.1:8000/api/v1/config/catalogos/', {
             headers: {'Authorization': `Token ${token}`}
@@ -86,7 +85,7 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-80">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">

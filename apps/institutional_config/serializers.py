@@ -9,7 +9,6 @@ class RecursiveField(serializers.Serializer):
 # ItemCatalogo
 # Este serializer se usará para el CRUD completo de los ítems.
 class ItemCatalogoSerializer(serializers.ModelSerializer):
-    # El campo 'hijos' usará el serializador recursivo para mostrar los ítems anidados.
     hijos = RecursiveField(many=True, read_only=True)
 
     class Meta:
@@ -18,11 +17,22 @@ class ItemCatalogoSerializer(serializers.ModelSerializer):
 
 # Catálogo
 class CatalogoSerializer(serializers.ModelSerializer):
-    items = ItemCatalogoSerializer(many=True, read_only=True)
+    items = serializers.SerializerMethodField()
 
     class Meta:
         model = Catalogo
         fields = ['id', 'nombre', 'codigo', 'descripcion', 'items']
+
+    def get_items(self, obj):
+        """
+        Este método se ejecuta para el campo 'items'.
+        Filtra y devuelve solo los ítems que no tienen padre (los Macrosectores).
+        """
+        # Filtramos los items del catálogo para obtener solo los que son raíz
+        root_items = obj.items.filter(padre__isnull=True)
+        # Serializamos únicamente esos ítems raíz (que ya incluyen a sus hijos)
+        serializer = ItemCatalogoSerializer(root_items, many=True, context=self.context)
+        return serializer.data
 
 # Entidad
 class EntidadSerializer(serializers.ModelSerializer):
@@ -39,7 +49,6 @@ class EntidadSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             'nivel_gobierno': {'write_only': True},
-            'subsector': {'write_only': True, 'required': False, 'allow_null': True},
         }
 
 # UnidadOrganizacional
@@ -59,7 +68,6 @@ class UnidadOrganizacionalSerializer(serializers.ModelSerializer):
             'activo'
         ]
         extra_kwargs = {
-            'entidad': {'write_only': True},
             'padre': {'write_only': True, 'required': False, 'allow_null': True},
             'macrosector': {'write_only': True, 'required': False, 'allow_null': True},
             'sectores': {'write_only': True, 'required': False},

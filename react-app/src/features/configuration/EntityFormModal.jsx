@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {X} from 'lucide-react';
 import {handleFormChange, handleFormSubmit} from '../../shared/utils/formUtils';
+import {api} from '../../shared/api/api';
 
 export default function EntityFormModal({entity, onClose, onSave}) {
     const [formData, setFormData] = useState({
@@ -16,24 +17,28 @@ export default function EntityFormModal({entity, onClose, onSave}) {
 
     useEffect(() => {
         const fetchCatalogs = async () => {
-            const token = localStorage.getItem('authToken');
-            // Nivel de Gobierno
-            const resNiveles = await fetch('http://127.0.0.1:8000/api/v1/config/catalogos/?codigo=NIVEL_GOBIERNO', {headers: {'Authorization': `Token ${token}`}});
-            const dataNiveles = await resNiveles.json();
-            if (dataNiveles.length > 0) setNivelesGobierno(dataNiveles[0].items);
+            try {
+                const dataNiveles = await api.get('/config/catalogos/?codigo=NIVEL_GOBIERNO');
+                if (dataNiveles.length > 0) setNivelesGobierno(dataNiveles[0].items);
 
-            // Subsectores
-            const resSubsectores = await fetch('http://127.0.0.1:8000/api/v1/config/catalogos/?codigo=SUBSECTOR', {headers: {'Authorization': `Token ${token}`}});
-            const dataSubsectores = await resSubsectores.json();
-            if (dataSubsectores.length > 0) setSubsectores(dataSubsectores[0].items);
+                const dataMacro = await api.get('/config/catalogos/?codigo=MACROSECTOR');
+                if (dataMacro.length > 0) {
+                    const itemsRaiz = dataMacro[0].items || [];
+                    const todosLosSubsectores = itemsRaiz.flatMap(macrosector => macrosector.hijos || []);
+                    setSubsectores(todosLosSubsectores);
+                }
+            } catch (err) {
+                console.error("Error al cargar catálogos:", err);
+            }
         };
+
         fetchCatalogs();
 
         if (entity) {
             setFormData({
                 nombre: entity.nombre,
                 codigo_unico: entity.codigo_unico,
-                nivel_gobierno: entity.nivel_gobierno,
+                nivel_gobierno: entity.nivel_gobierno || '',
                 subsector: entity.subsector || '',
                 activo: entity.activo,
             });
@@ -45,14 +50,21 @@ export default function EntityFormModal({entity, onClose, onSave}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('authToken');
-        const url = entity ? `http://127.0.0.1:8000/api/v1/config/entidades/${entity.id}/` : 'http://127.0.0.1:8000/api/v1/config/entidades/';
+        const payload = {
+            ...formData,
+            subsector: formData.subsector || null
+        };
+
+        const url = entity
+            ? `http://127.0.0.1:8000/api/v1/config/entidades/${entity.id}/`
+            : 'http://127.0.0.1:8000/api/v1/config/entidades/';
         const method = entity ? 'PUT' : 'POST';
 
-        await handleFormSubmit({url, method, formData, token, onSave, setError});
+        await handleFormSubmit({url, method, formData: payload, token, onSave, setError});
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-80">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
                 <div className="p-4 border-b flex justify-between items-center">
                     <h3 className="text-lg font-semibold">{entity ? 'Editar Entidad' : 'Nueva Entidad'}</h3>

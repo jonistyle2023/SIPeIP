@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { api } from '../../shared/api/api';
-import { Plus, Edit, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Edit, Trash2, ChevronDown, ChevronRight, List, GitMerge } from 'lucide-react';
 import CatalogItemFormModal from './CatalogItemFormModal';
 import CatalogFormModal from './CatalogFormModal';
+import ItemTable from './ItemTable'; // <-- Importa la nueva tabla
 
 // --- SUB-COMPONENTE RECURSIVO PARA ÁRBOL DE ÍTEMS ---
 const ItemNode = ({ item, level = 0, onAddItem, onEditItem, onDeleteItem }) => {
@@ -37,6 +38,7 @@ export default function CatalogManager() {
     const [selectedCatalog, setSelectedCatalog] = useState(null);
     const [items, setItems] = useState([]); // Árbol de ítems
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState('tree'); // 'tree' o 'table'
 
     // Estados de los modales
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
@@ -141,6 +143,21 @@ export default function CatalogManager() {
         setCatalogToEdit(null);
     };
 
+    // --- NUEVA LÓGICA PARA APLANAR Y ORDENAR DATOS PARA LA TABLA ---
+    const flattenedItems = useMemo(() => {
+        const flatten = (items, level = 0) => {
+            let allItems = [];
+            for (const item of items) {
+                allItems.push({ ...item, level });
+                if (item.hijos && item.hijos.length > 0) {
+                    allItems = allItems.concat(flatten(item.hijos, level + 1));
+                }
+            }
+            return allItems;
+        };
+        return flatten(items);
+    }, [items]);
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1 bg-white p-4 rounded-lg shadow-sm">
@@ -184,30 +201,56 @@ export default function CatalogManager() {
                 {selectedCatalog ? (
                     <>
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-semibold">Jerarquía de: <span className="text-blue-600">{selectedCatalog.nombre}</span></h4>
+                            <div>
+                                <h4 className="font-semibold">Jerarquía de: <span className="text-blue-600">{selectedCatalog.nombre}</span></h4>
+                                {/* --- INTERRUPTOR DE VISTA --- */}
+                                <div className="flex gap-2 mt-2">
+                                    <button onClick={() => setViewMode('tree')} className={`px-3 py-1 text-xs flex items-center rounded-full ${viewMode === 'tree' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
+                                        <GitMerge size={14} className="mr-1"/> Vista Jerárquica
+                                    </button>
+                                    <button onClick={() => setViewMode('table')} className={`px-3 py-1 text-xs flex items-center rounded-full ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
+                                        <List size={14} className="mr-1"/> Vista de Tabla
+                                    </button>
+                                </div>
+                            </div>
                             <button onClick={() => handleOpenItemModal(null, null)} className="flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs">
                                 <Plus size={14} className="mr-1"/>Nuevo Ítem Raíz
                             </button>
                         </div>
-                        <div className="space-y-1">
-                            {loading ? <p>Cargando...</p> : items.map(item => (
-                                <ItemNode
-                                    key={item.id}
-                                    item={item}
-                                    onAddItem={handleOpenItemModal}
-                                    onEditItem={handleOpenItemModal}
+
+                        {/* --- RENDERIZADO CONDICIONAL DE LA VISTA --- */}
+                        {loading ? <p>Cargando...</p> : (
+                            viewMode === 'tree' ? (
+                                <div className="space-y-1">
+                                    {items.map(item => (
+                                        <ItemNode
+                                            key={item.id}
+                                            item={item}
+                                            onAddItem={handleOpenItemModal}
+                                            onEditItem={(itemToEdit) => handleOpenItemModal(itemToEdit, null)}
+                                            onDeleteItem={handleDeleteItem}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <ItemTable
+                                    items={flattenedItems}
+                                    onEditItem={(itemToEdit) => handleOpenItemModal(itemToEdit, null)}
                                     onDeleteItem={handleDeleteItem}
                                 />
-                            ))}
-                        </div>
+                            )
+                        )}
                     </>
                 ) : <p>Seleccione un catálogo.</p>}
             </div>
+
             {isItemModalOpen &&
                 <CatalogItemFormModal
                     item={editingItem}
                     catalogId={selectedCatalog?.id}
                     parentItem={parentItem}
+                    // Pasamos la lista aplanada para el selector de 'padre'
+                    allItems={flattenedItems}
                     onClose={() => setIsItemModalOpen(false)}
                     onSave={handleSaveItem}
                 />

@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Plus, Edit, Trash2} from 'lucide-react';
 import UnitFormModal from './UnitFormModal.jsx';
-import { api } from '../../shared/api/api'; // <-- NUEVO IMPORT
+import {api} from '../../shared/api/api';
 
 export default function UnitManager() {
     const [entities, setEntities] = useState([]);
@@ -13,16 +13,14 @@ export default function UnitManager() {
     const [macroSectores, setMacroSectores] = useState([]);
     const [sectores, setSectores] = useState([]);
 
-    // Simulación de fetch de unidades al montar el componente
     useEffect(() => {
         setLoading(true);
         setTimeout(() => {
-            setUnits([]); // Aquí deberías poner los datos reales si lo deseas
+            setUnits([]);
             setLoading(false);
         }, 500);
     }, []);
 
-    // Cargar la lista de todas las entidades para el selector
     useEffect(() => {
         const fetchEntities = async () => {
             const token = localStorage.getItem('authToken');
@@ -35,7 +33,6 @@ export default function UnitManager() {
         fetchEntities();
     }, []);
 
-    // Cargar las unidades de la entidad seleccionada
     useEffect(() => {
         if (!selectedEntityId) {
             setUnits([]);
@@ -54,18 +51,38 @@ export default function UnitManager() {
         fetchUnits();
     }, [selectedEntityId]);
 
-    // Cargar catálogos de MacroSector y Sector
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        const fetchCatalog = async (codigo, setter) => {
-            const res = await fetch(`http://127.0.0.1:8000/api/v1/config/catalogos/?codigo=${codigo}`, {
-                headers: {'Authorization': `Token ${token}`}
-            });
-            const data = await res.json();
-            if (data.length > 0) setter(data[0].items || []);
+        const fetchClasificadorSectorial = async () => {
+            try {
+                const response = await api.get(`/config/catalogos/?codigo=MACROSECTOR`);
+
+                if (response && response.length > 0) {
+                    const catalogoCompleto = response[0];
+                    const itemsRaiz = catalogoCompleto.items || [];
+
+                    setMacroSectores(itemsRaiz);
+
+                    const todosLosSectores = itemsRaiz.flatMap(macrosector =>
+                        macrosector.hijos ? macrosector.hijos.map(sector => ({
+                            ...sector,
+                            padre: macrosector.id
+                        })) : []
+                    );
+                    setSectores(todosLosSectores);
+
+                } else {
+                    console.error("No se encontró el catálogo con código 'MACROSECTOR'");
+                    setMacroSectores([]);
+                    setSectores([]);
+                }
+            } catch (error) {
+                console.error("Error al cargar el catálogo MACROSECTOR:", error);
+                setMacroSectores([]);
+                setSectores([]);
+            }
         };
-        fetchCatalog('MACROSECTOR', setMacroSectores);
-        fetchCatalog('SECTOR', setSectores);
+
+        fetchClasificadorSectorial();
     }, []);
 
     const handleOpenModal = (unit = null) => {
@@ -166,7 +183,6 @@ export default function UnitManager() {
                                     <button onClick={() => handleOpenModal(unit)}
                                             className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
                                     </button>
-                                    {/* MODIFICADO: ahora llama a handleDelete */}
                                     <button onClick={() => handleDelete(unit.id)}
                                             className="p-1 text-red-500 hover:text-red-700">
                                         <Trash2 size={16}/>
