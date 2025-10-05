@@ -1,7 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {api} from '../../shared/api/api.js';
-import {Anchor, ArrowLeft, FileText, HardHat, Link2, Plus, Send, Target, AlertCircle} from 'lucide-react';
+import {Anchor, ArrowLeft, FileText, HardHat, Link2, Plus, Send, Target, AlertCircle, History} from 'lucide-react';
 import IndicadorList from './IndicadorList.jsx';
+import AuditTrail from '../audit/components/AuditTrail.jsx';
 import IndicadorFormModal from './IndicadorFormModal.jsx';
 import MarcoLogicoFormModal from './MarcoLogicoFormModal.jsx';
 import FinancieroTab from './FinancieroTab.jsx';
@@ -266,6 +267,13 @@ export default function ProjectDetail({project, onReturnToList}) {
                 return <PlaceholderContent tabName="Documentos"/>;
             case 'priorizacion':
                 return <PriorizacionTab project={projectDetails} />;
+            case 'auditoria':
+                return (
+                    <AuditTrail 
+                        modelName="proyecto_inversion"
+                        objectId={projectDetails.proyecto_id} 
+                    />
+                );
             default:
                 return null;
         }
@@ -356,6 +364,8 @@ export default function ProjectDetail({project, onReturnToList}) {
                            onClick={() => setActiveTab('documentos')}/>
                 <TabButton label="Priorización" icon={Star} isActive={activeTab === 'priorizacion'}
                            onClick={() => setActiveTab('priorizacion')}/>
+                <TabButton label="Historial" icon={History} isActive={activeTab === 'auditoria'}
+                           onClick={() => setActiveTab('auditoria')}/>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm min-h-[300px]">

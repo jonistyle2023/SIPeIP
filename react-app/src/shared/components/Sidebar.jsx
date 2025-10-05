@@ -9,8 +9,46 @@ import {
     ChevronDown,
     ChevronRight,
     Dot,
-    CheckSquare
+    CheckSquare,
+    Target,
+    ClipboardList,
+    HardHat,
+    Archive,
+    ShieldCheck,
+    FolderKanban
 } from 'lucide-react';
+
+const NavItem = ({ icon: Icon, text, active, onClick }) => (
+    <li>
+        <button onClick={onClick} className={`flex items-center w-full p-3 my-1 text-sm rounded-lg transition-colors ${active ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-blue-100'}`}>
+            <Icon size={20} />
+            <span className="ml-3">{text}</span>
+        </button>
+    </li>
+);
+
+// NUEVO COMPONENTE PARA MENÚS DESPLEGABLES
+const CollapsibleNavItem = ({ icon: Icon, text, children, activePage }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const hasActiveChild = React.Children.toArray(children).some(child => child.props.active);
+
+    return (
+        <li>
+            <button onClick={() => setIsOpen(!isOpen)} className={`flex items-center justify-between w-full p-3 my-1 text-sm rounded-lg transition-colors ${hasActiveChild ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-100'}`}>
+                <div className="flex items-center">
+                    <Icon size={20} />
+                    <span className="ml-3">{text}</span>
+                </div>
+                <ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <ul className="pl-6 mt-1 space-y-1">
+                    {children}
+                </ul>
+            )}
+        </li>
+    );
+};
 
 export default function Sidebar({activePage, setActivePage, sidebarOpen, setSidebarOpen}) {
     const [openSubmenus, setOpenSubmenus] = useState({});
@@ -24,17 +62,20 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
 
     const menuItems = [
         {name: 'Panel Principal', icon: LayoutDashboard},
-        {name: 'Planificación', icon: FileText},
-        {name: 'Inversión', icon: DollarSign},
+        {name: 'Proyectos', icon: FolderKanban},
         {name: 'Priorización PAI', icon: CheckSquare},
         {
             name: 'Seguimiento',
-            icon: BarChart2,
-            subItems: ['Seguimiento a la Planificación', 'Seguimiento a la Inversión', 'Seguimiento a obras', 'Seguimiento a Cierre y Baja de Proyectos']
+            icon: Target,
+            subItems: [
+                {name: 'Seguimiento Planificación', icon: ClipboardList},
+                {name: 'Seguimiento Inversión', icon: DollarSign},
+                {name: 'Seguimiento Obras', icon: HardHat},
+                {name: 'Seguimiento Cierre', icon: Archive}
+            ]
         },
-        {name: 'Reportería', icon: FileText},
         {name: 'Configuración', icon: Settings, subItems: ['Usuarios', 'Institucional', 'Priorización']},
-        {name: 'Auditoría', icon: Shield},
+        {name: 'Auditoría', icon: ShieldCheck},
     ];
 
     // Empuja el contenido en escritorio cuando el sidebar está abierto
@@ -71,7 +112,10 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
                 </div>
                 <nav className="flex-1 p-4 space-y-2">
                     {menuItems.map((item) => {
-                        const isParentActive = item.name === 'Configuración' && (activePage === 'Usuarios' || activePage === 'Institucional');
+                        const isParentActive = 
+                            (item.name === 'Configuración' && (activePage === 'Usuarios' || activePage === 'Institucional' || activePage === 'Priorización')) ||
+                            (item.name === 'Seguimiento' && (activePage === 'Seguimiento Planificación' || activePage === 'Seguimiento Inversión' || activePage === 'Seguimiento Obras' || activePage === 'Seguimiento Cierre'));
+
                         return (
                             <div key={item.name}>
                                 <a
@@ -97,24 +141,29 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
                                 </a>
                                 {item.subItems && openSubmenus[item.name] && (
                                     <div className="pl-8 mt-1 space-y-1">
-                                        {item.subItems.map((subItem) => (
-                                            <a
-                                                href="#"
-                                                key={subItem}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    setActivePage(subItem);
-                                                }}
-                                                className={`flex items-center text-sm p-2 rounded-lg transition-colors ${
-                                                    activePage === subItem
-                                                        ? 'bg-blue-100 text-blue-600'
-                                                        : 'text-gray-500 hover:bg-gray-100'
-                                                }`}
-                                            >
-                                                <Dot size={16} className="mr-2"/>
-                                                {subItem}
-                                            </a>
-                                        ))}
+                                        {item.subItems.map((subItem) => {
+                                            const subItemName = typeof subItem === 'string' ? subItem : subItem.name;
+                                            const SubItemIcon = typeof subItem === 'string' ? Dot : subItem.icon;
+
+                                            return (
+                                                <a
+                                                    href="#"
+                                                    key={subItemName}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setActivePage(subItemName);
+                                                    }}
+                                                    className={`flex items-center text-sm p-2 rounded-lg transition-colors ${
+                                                        activePage === subItemName
+                                                            ? 'bg-blue-100 text-blue-600'
+                                                            : 'text-gray-500 hover:bg-gray-100'
+                                                    }`}
+                                                >
+                                                    <SubItemIcon size={16} className="mr-2"/>
+                                                    {subItemName}
+                                                </a>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

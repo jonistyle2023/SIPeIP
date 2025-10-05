@@ -7,6 +7,11 @@ import ConfigurationPage from '../../features/configuration/ConfigurationPage.js
 import ReportsPage from '../../features/reports/ReportsPage';
 import Sidebar from '../../shared/components/Sidebar.jsx';
 import Header from '../../shared/components/Header.jsx';
+import AuditPage from '../../features/audit/AuditPage';
+import PlanningMonitoringPage from '../../features/monitoring/PlanningMonitoringPage';
+import InvestmentMonitoringPage from '../../features/monitoring/InvestmentMonitoringPage';
+import WorksMonitoringPage from '../../features/monitoring/WorksMonitoringPage';
+import ClosureMonitoringPage from '../../features/monitoring/ClosureMonitoringPage';
 
 export default function DashboardLayout({ user, onLogout }) {
     const [activePage, setActivePage] = useState(
@@ -24,7 +29,7 @@ export default function DashboardLayout({ user, onLogout }) {
                 return <DashboardPage />;
             case 'Planificación':
                 return <StrategicObjectivesPage />;
-            case 'Inversión':
+            case 'Proyectos':
                 return <InvestmentProjectsPage />;
             case 'Priorización PAI':
                 return <PaiPrioritizationPage />;
@@ -36,6 +41,16 @@ export default function DashboardLayout({ user, onLogout }) {
                 return <ConfigurationPage />;
             default:
                 return <DashboardPage />;
+            case 'Auditoría':
+                return <AuditPage />;
+            case 'Seguimiento Planificación':
+                return <PlanningMonitoringPage />;
+            case 'Seguimiento Inversión':
+                return <InvestmentMonitoringPage />;
+            case 'Seguimiento Obras':
+                return <WorksMonitoringPage />;
+            case 'Seguimiento Cierre':
+                return <ClosureMonitoringPage />;
         }
     };
 
