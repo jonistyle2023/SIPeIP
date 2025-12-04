@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {X} from 'lucide-react';
-import {handleFormChange, handleFormSubmit} from '../../shared/utils/formUtils';
+import {handleFormChange, handleFormSubmit} from '../../../shared/utils/formUtils.jsx';
 
 export default function PeriodFormModal({period, onClose, onSave}) {
     const [formData, setFormData] = useState({

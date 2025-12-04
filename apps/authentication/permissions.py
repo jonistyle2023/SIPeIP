@@ -58,7 +58,6 @@ class IsOwnerOfPlan(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         # El creador del objeto puede editarlo
-        # Asumimos que el objeto (ej. PlanInstitucional) tiene un campo 'creador'
         is_owner = obj.creador == request.user
         # Un admin también puede editarlo
         is_admin = request.user.roles.filter(nombre="Administrador (Admin)").exists()

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {X} from 'lucide-react';
-import {api} from '../../shared/api/api';
+import {api} from '../../../shared/api/api.js';
 
 export default function UnitFormModal({unit, entityId, parentUnits, macroSectores, sectores, onClose, onSave}) {
     const [formData, setFormData] = useState({

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Settings, ListChecks } from 'lucide-react';
 
-// --- CORRECCIÓN: Importamos tus componentes existentes ---
 import UsersContent from './UsersContent';
 import InstitutionalContent from './InstitutionalContent';
 import CriteriosManager from './CriteriosManager';
@@ -23,17 +22,29 @@ const TabButton = ({ icon: Icon, label, isActive, onClick }) => (
 
 export default function ConfigurationPage({ initialTab, setActivePage }) {
     // El estado local ahora maneja 'usuarios', 'institucional', o 'criterios'
-    const [activeTab, setActiveTabLocal] = useState(initialTab === 'Usuarios' ? 'usuarios' : 'institucional');
+    // Recupera la pestaña guardada en localStorage si existe, o respeta la prop initialTab si se pasa
+    const getInitialTab = () => {
+        if (initialTab === 'Usuarios') return 'usuarios';
+        if (initialTab === 'Institucional') return 'institucional';
+        const stored = localStorage.getItem('configActiveTab');
+        if (stored === 'usuarios' || stored === 'institucional' || stored === 'criterios') return stored;
+        return 'institucional';
+    };
 
-    // Sincroniza el estado si la prop del layout principal cambia
+    const [activeTab, setActiveTabLocal] = useState(getInitialTab);
+
+    // Si el layout padre cambia la prop initialTab explícitamente, respetarla y persistirla
     useEffect(() => {
-        if (initialTab === 'Usuarios' || initialTab === 'Institucional') {
-            setActiveTabLocal(initialTab === 'Usuarios' ? 'usuarios' : 'institucional');
+        if (initialTab === 'Usuarios' || initialTab === 'Institucional' || initialTab === 'Criterios') {
+            const mapped = initialTab === 'Usuarios' ? 'usuarios' : initialTab === 'Institucional' ? 'institucional' : 'criterios';
+            setActiveTabLocal(mapped);
+            try { localStorage.setItem('configActiveTab', mapped); } catch (e) { /* noop */ }
         }
     }, [initialTab]);
 
     const handleTabClick = (tab, pageName) => {
         setActiveTabLocal(tab);
+        try { localStorage.setItem('configActiveTab', tab); } catch (e) { /* noop */ }
         if (pageName === 'Usuarios' || pageName === 'Institucional') {
             setActivePage(pageName);
         } else {

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Plus, Edit, Trash2} from 'lucide-react';
-import UnitFormModal from './UnitFormModal.jsx';
+import UnitFormModal from './modals/UnitFormModal.jsx';
 import {api} from '../../shared/api/api';
 
 export default function UnitManager() {
@@ -33,21 +33,24 @@ export default function UnitManager() {
         fetchEntities();
     }, []);
 
-    useEffect(() => {
-        if (!selectedEntityId) {
+    const fetchUnits = async () => {
+        if (!selectedEntityId) { // No hacer nada si no hay entidad seleccionada
             setUnits([]);
             return;
         }
-        const fetchUnits = async () => {
-            setLoading(true);
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/unidades-organizacionales/?entidad=${selectedEntityId}`, {
-                headers: {'Authorization': `Token ${token}`}
-            });
-            const data = await response.json();
+        setLoading(true);
+        try {
+            const data = await api.get(`/config/unidades-organizacionales/?entidad=${selectedEntityId}`);
             setUnits(data);
+        } catch (error) {
+            console.error("Error al cargar las unidades organizacionales:", error);
+            setUnits([]); // Limpiar en caso de error
+        } finally {
             setLoading(false);
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchUnits();
     }, [selectedEntityId]);
 
@@ -95,10 +98,7 @@ export default function UnitManager() {
     };
     const handleSave = () => {
         handleCloseModal();
-        // Forzar recarga de unidades
-        const currentId = selectedEntityId;
-        setSelectedEntityId('');
-        setTimeout(() => setSelectedEntityId(currentId), 0);
+        fetchUnits(); // Recargar unidades directamente
     };
 
     // --- NUEVA FUNCIÓN PARA ELIMINAR ---
@@ -108,7 +108,7 @@ export default function UnitManager() {
         }
         try {
             await api.delete(`/config/unidades-organizacionales/${unitId}/`);
-            handleSave();
+            fetchUnits(); // Recargar unidades directamente
         } catch (error) {
             alert('Error al eliminar la unidad.');
             console.error(error);

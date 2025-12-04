@@ -57,7 +57,7 @@ class IndicadorPND(models.Model):
 # --- Objetivos de Desarrollo Sostenible (ODS) ---
 class ObjetivoDesarrolloSostenible(models.Model):
     ods_id = models.AutoField(primary_key=True)
-    numero = models.IntegerField()
+    numero = models.IntegerField(unique=True)
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
 
@@ -65,24 +65,27 @@ class ObjetivoDesarrolloSostenible(models.Model):
         return f"ODS {self.numero}: {self.nombre}"
 
 
-class EstrategiaODS(models.Model):
-    estrategia_ods_id = models.AutoField(primary_key=True)
-    ods = models.ForeignKey(ObjetivoDesarrolloSostenible, on_delete=models.CASCADE, related_name='estrategias')
-    codigo = models.CharField(max_length=50)
-    descripcion = models.TextField()
-
-    def __str__(self):
-        return self.codigo
-
-
 class MetaODS(models.Model):
     meta_ods_id = models.AutoField(primary_key=True)
-    estrategia_ods = models.ForeignKey(EstrategiaODS, on_delete=models.CASCADE, related_name='metas')
+    ods = models.ForeignKey(ObjetivoDesarrolloSostenible, on_delete=models.CASCADE, related_name='metas', null=True)
     codigo = models.CharField(max_length=50)
     descripcion = models.TextField()
 
     def __str__(self):
-        return self.codigo
+        return f"Meta {self.codigo}"
+
+    class Meta:
+        unique_together = ('ods', 'codigo')
+
+
+class IndicadorODS(models.Model):
+    indicador_ods_id = models.AutoField(primary_key=True)
+    meta_ods = models.ForeignKey(MetaODS, on_delete=models.CASCADE, related_name='indicadores')
+    codigo = models.CharField(max_length=50)
+    descripcion = models.TextField()
+
+    def __str__(self):
+        return f"Indicador {self.codigo}"
 
 
 # --- Planes Institucionales y Sectoriales ---

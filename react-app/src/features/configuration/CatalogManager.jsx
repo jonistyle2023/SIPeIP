@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { api } from '../../shared/api/api';
 import { Plus, Edit, Trash2, ChevronDown, ChevronRight, List, GitMerge } from 'lucide-react';
-import CatalogItemFormModal from './CatalogItemFormModal';
-import CatalogFormModal from './CatalogFormModal';
+import CatalogItemFormModal from './modals/CatalogItemFormModal.jsx';
+import CatalogFormModal from './modals/CatalogFormModal.jsx';
 import ItemTable from './ItemTable'; // <-- Importa la nueva tabla
 
 // --- SUB-COMPONENTE RECURSIVO PARA ÁRBOL DE ÍTEMS ---

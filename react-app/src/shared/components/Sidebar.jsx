@@ -15,7 +15,9 @@ import {
     HardHat,
     Archive,
     ShieldCheck,
-    FolderKanban
+    FolderKanban,
+    BookOpen,
+    CalendarCheck
 } from 'lucide-react';
 
 const NavItem = ({ icon: Icon, text, active, onClick }) => (
@@ -62,8 +64,10 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
 
     const menuItems = [
         {name: 'Panel Principal', icon: LayoutDashboard},
+        {name: 'Planificación', icon: CalendarCheck},
         {name: 'Proyectos', icon: FolderKanban},
         {name: 'Priorización PAI', icon: CheckSquare},
+        {name: 'Reportería', icon: BookOpen},
         {
             name: 'Seguimiento',
             icon: Target,
@@ -74,7 +78,7 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
                 {name: 'Seguimiento Cierre', icon: Archive}
             ]
         },
-        {name: 'Configuración', icon: Settings, subItems: ['Usuarios', 'Institucional', 'Priorización']},
+        {name: 'Configuración', icon: Settings}, // Eliminado subItems
         {name: 'Auditoría', icon: ShieldCheck},
     ];
 

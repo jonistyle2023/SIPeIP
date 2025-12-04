@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {api} from '../../shared/api/api.js';
+import {api} from '../../../shared/api/api.js';
 
 export default function SectoralPlanFormModal({plan, onClose, onSave}) {
     const [formData, setFormData] = useState({

@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
 import {ChevronDown, ChevronRight, Edit, Layers, Plus, Trash} from 'lucide-react';
-import OeiFormModal from './OeiFormModal.jsx';
-import InstitutionalPlanFormModal from './InstitutionalPlanFormModal.jsx';
+import OeiFormModal from './modals/OeiFormModal.jsx';
+import InstitutionalPlanFormModal from './modals/InstitutionalPlanFormModal.jsx';
 
 export default function InstitutionalPlans() {
     const [plans, setPlans] = useState([]);

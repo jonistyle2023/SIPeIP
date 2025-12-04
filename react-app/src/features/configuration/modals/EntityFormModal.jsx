@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {X} from 'lucide-react';
-import {handleFormChange, handleFormSubmit} from '../../shared/utils/formUtils';
-import {api} from '../../shared/api/api';
+import {handleFormChange, handleFormSubmit} from '../../../shared/utils/formUtils.jsx';
+import {api} from '../../../shared/api/api.js';
 
 export default function EntityFormModal({entity, onClose, onSave}) {
     const [formData, setFormData] = useState({

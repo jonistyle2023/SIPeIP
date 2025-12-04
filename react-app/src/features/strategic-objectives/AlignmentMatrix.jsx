@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
 import {Edit, Link2, Plus, Trash2} from 'lucide-react';
-import AlignmentFormModal from './AlignmentFormModal.jsx';
+import AlignmentFormModal from './modals/AlignmentFormModal.jsx';
 
 export default function AlignmentMatrix() {
     const [alignments, setAlignments] = useState([]);

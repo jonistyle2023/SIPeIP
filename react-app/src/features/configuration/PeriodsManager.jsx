@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Plus, Edit, Trash2} from 'lucide-react';
-import PeriodFormModal from './PeriodFormModal.jsx';
+import PeriodFormModal from './modals/PeriodFormModal.jsx';
 
 export function PeriodsManager() {
     const [periods, setPeriods] = useState([]);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DashboardPage from '../../features/dashboard/DashboardPage.jsx';
+import UsersContentPage from '../../features/configuration/UsersContent.jsx';
 import StrategicObjectivesPage from '../../features/strategic-objectives/StrategicObjectivesPage.jsx';
 import InvestmentProjectsPage from '../../features/investment-projects/InvestmentProjectsPage.jsx';
 import PaiPrioritizationPage from '../../features/pai-prioritization/PaiPrioritizationPage.jsx';
@@ -36,11 +37,12 @@ export default function DashboardLayout({ user, onLogout }) {
             case 'Reportería':
                 return <ReportsPage />;
             case 'Usuarios':
+                return <UsersContentPage />;
             case 'Institucional':
             case 'Priorización':
                 return <ConfigurationPage />;
-            default:
-                return <DashboardPage />;
+            case 'Configuración':
+                return <ConfigurationPage />;
             case 'Auditoría':
                 return <AuditPage />;
             case 'Seguimiento Planificación':
@@ -51,6 +53,8 @@ export default function DashboardLayout({ user, onLogout }) {
                 return <WorksMonitoringPage />;
             case 'Seguimiento Cierre':
                 return <ClosureMonitoringPage />;
+            default:
+                return <DashboardPage />;
         }
     };
 

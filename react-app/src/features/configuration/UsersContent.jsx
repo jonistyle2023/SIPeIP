@@ -9,15 +9,11 @@ import {
     Trash2,
     ShieldCheck,
     ShieldAlert,
-    KeyRound,
     Search,
     CheckCircle,
-    XCircle,
-    LogIn,
-    Lock,
-    Layers
+    Lock
 } from 'lucide-react';
-import UserFormModal from './UserFormModal.jsx';
+import UserFormModal from './modals/UserFormModal.jsx';
 
 // Componente para las tarjetas de KPI
 const KpiCard = ({title, value, icon: Icon, color}) => (
@@ -35,7 +31,7 @@ const KpiCard = ({title, value, icon: Icon, color}) => (
 );
 
 export default function UsersPage() {
-    const [activeTab, setActiveTab] = useState('gestion');
+    // estado para usuarios y modales
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,7 +46,13 @@ export default function UsersPage() {
             const response = await fetch('http://127.0.0.1:8000/api/auth/usuarios/', {
                 headers: {'Authorization': `Token ${token}`}
             });
-            if (!response.ok) throw new Error('No se pudo obtener la lista de usuarios.');
+            if (!response.ok) {
+                // Manejo explícito en lugar de lanzar excepción
+                const msg = 'No se pudo obtener la lista de usuarios.';
+                setError(msg);
+                setLoading(false);
+                return;
+            }
             const data = await response.json();
             setUsers(data);
         } catch (err) {
@@ -87,7 +89,10 @@ export default function UsersPage() {
                     method: 'DELETE',
                     headers: {'Authorization': `Token ${token}`}
                 });
-                if (!response.ok) throw new Error('No se pudo eliminar el usuario.');
+                if (!response.ok) {
+                    alert('No se pudo eliminar el usuario.');
+                    return;
+                }
                 fetchUsers();
             } catch (err) {
                 alert(err.message);
@@ -109,46 +114,72 @@ export default function UsersPage() {
 
     return (
         <div className="space-y-8">
-            {/* --- NUEVA SECCIÓN: Flujo de Autenticación SSO --- */}
+            {/* --- SECCIÓN: KPIs de Gestión de Usuarios (ahora primera) --- */}
             <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center"><LogIn className="mr-3 text-blue-500"/>Flujo
-                    de Autenticación SSO</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-red-50 border-l-4 border-red-400 p-6 rounded-r-lg">
-                        <h4 className="font-bold text-red-800 mb-3">Sistema Actual</h4>
-                        <ul className="space-y-2 text-sm text-red-700">
-                            <li className="flex items-start"><XCircle size={16} className="mr-2 mt-0.5 flex-shrink-0"/>Página
-                                principal con módulos separados
-                            </li>
-                            <li className="flex items-start"><XCircle size={16} className="mr-2 mt-0.5 flex-shrink-0"/>Login
-                                independiente por módulo
-                            </li>
-                            <li className="flex items-start"><XCircle size={16} className="mr-2 mt-0.5 flex-shrink-0"/>Múltiples
-                                credenciales requeridas
-                            </li>
-                        </ul>
+                <h3 className="text-xl font-semibold mb-4 flex items-center"><Users className="mr-3 text-blue-500"/>Usuarios del Sistema</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <KpiCard title="Total Usuarios" value={kpis.total} icon={Users} color="border-blue-500"/>
+                    <KpiCard title="Usuarios Activos" value={kpis.activos} icon={UserCheck} color="border-green-500"/>
+                    <KpiCard title="Pendientes" value={kpis.pendientes} icon={UserX} color="border-yellow-500"/>
+                    <KpiCard title="Administradores" value={kpis.administradores} icon={UserCog}
+                             color="border-purple-500"/>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                    <div className="flex justify-between items-center mb-4">
+                        <h4 className="font-semibold">Lista de Usuarios</h4>
+                        <button onClick={() => handleOpenModal()}
+                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                            <Plus size={16} className="mr-2"/>
+                            Nuevo Usuario
+                        </button>
                     </div>
-                    <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
-                        <h4 className="font-bold text-green-800 mb-3">Propuesta SSO</h4>
-                        <ul className="space-y-2 text-sm text-green-700">
-                            <li className="flex items-start"><CheckCircle size={16}
-                                                                          className="mr-2 mt-0.5 flex-shrink-0"/>Ingreso
-                                centralizado único
-                            </li>
-                            <li className="flex items-start"><CheckCircle size={16}
-                                                                          className="mr-2 mt-0.5 flex-shrink-0"/>Autenticación
-                                Single Sign On
-                            </li>
-                            <li className="flex items-start"><CheckCircle size={16}
-                                                                          className="mr-2 mt-0.5 flex-shrink-0"/>Módulos
-                                basados en permisos de rol
-                            </li>
-                        </ul>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left">
+                            <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                            <tr>
+                                <th className="p-3">Usuario</th>
+                                <th className="p-3">Rol</th>
+                                <th className="p-3">Entidad</th>
+                                <th className="p-3">Estado</th>
+                                <th className="p-3">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {users.map(user => (
+                                <tr key={user.id} className="border-b hover:bg-gray-50">
+                                    <td className="p-3 flex items-center">
+                                        <div className="w-8 h-8 rounded-full bg-gray-200 mr-3"></div>
+                                        <div>
+                                            <p className="font-medium text-gray-800">{user.datos_basicos?.nombre || user.nombre_usuario}</p>
+                                            <p className="text-gray-500">{user.nombre_usuario}</p>
+                                        </div>
+                                    </td>
+                                    <td className="p-3">{user.roles.map(r => r.nombre).join(', ')}</td>
+                                    <td className="p-3">{user.entidad_codigo || 'N/A'}</td>
+                                    <td className="p-3">
+                      <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {user.is_active ? 'Activo' : 'Inactivo'}
+                      </span>
+                                    </td>
+                                    <td className="p-3 flex items-center space-x-2">
+                                        <button onClick={() => handleOpenModal(user)}
+                                                className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
+                                        </button>
+                                        <button onClick={() => handleDeleteUser(user.id)}
+                                                className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            {/* --- SECCIÓN ACTUALIZADA: Roles y Permisos --- */}
+            {/* --- SECCIÓN: Roles y Permisos del Sistema (ahora al final) --- */}
             <div>
                 <h3 className="text-xl font-semibold mb-4 flex items-center"><Lock className="mr-3 text-blue-500"/>Roles
                     y Permisos del Sistema</h3>
@@ -222,72 +253,6 @@ export default function UsersPage() {
                                                                                          className="mr-2 text-green-500"/>Consulta
                                 versiones</p></div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Sección de Gestión de Usuarios */}
-            <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center"><Users className="mr-3 text-blue-500"/>Gestión
-                    de Usuarios</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                    <KpiCard title="Total Usuarios" value={kpis.total} icon={Users} color="border-blue-500"/>
-                    <KpiCard title="Usuarios Activos" value={kpis.activos} icon={UserCheck} color="border-green-500"/>
-                    <KpiCard title="Pendientes" value={kpis.pendientes} icon={UserX} color="border-yellow-500"/>
-                    <KpiCard title="Administradores" value={kpis.administradores} icon={UserCog}
-                             color="border-purple-500"/>
-                </div>
-
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                    <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-semibold">Lista de Usuarios</h4>
-                        <button onClick={() => handleOpenModal()}
-                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-                            <Plus size={16} className="mr-2"/>
-                            Nuevo Usuario
-                        </button>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
-                            <tr>
-                                <th className="p-3">Usuario</th>
-                                <th className="p-3">Rol</th>
-                                <th className="p-3">Entidad</th>
-                                <th className="p-3">Estado</th>
-                                <th className="p-3">Acciones</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {users.map(user => (
-                                <tr key={user.id} className="border-b hover:bg-gray-50">
-                                    <td className="p-3 flex items-center">
-                                        <div className="w-8 h-8 rounded-full bg-gray-200 mr-3"></div>
-                                        <div>
-                                            <p className="font-medium text-gray-800">{user.datos_basicos?.nombre || user.nombre_usuario}</p>
-                                            <p className="text-gray-500">{user.nombre_usuario}</p>
-                                        </div>
-                                    </td>
-                                    <td className="p-3">{user.roles.map(r => r.nombre).join(', ')}</td>
-                                    <td className="p-3">{user.entidad_codigo || 'N/A'}</td>
-                                    <td className="p-3">
-                      <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {user.is_active ? 'Activo' : 'Inactivo'}
-                      </span>
-                                    </td>
-                                    <td className="p-3 flex items-center space-x-2">
-                                        <button onClick={() => handleOpenModal(user)}
-                                                className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
-                                        </button>
-                                        <button onClick={() => handleDeleteUser(user.id)}
-                                                className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16}/>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>

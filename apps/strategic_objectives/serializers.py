@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
 from .models import (
     PlanNacionalDesarrollo, ObjetivoPND, PoliticaPND, MetaPND, IndicadorPND,
-    ObjetivoDesarrolloSostenible, EstrategiaODS, MetaODS,
+    ObjetivoDesarrolloSostenible, MetaODS, IndicadorODS,
     PlanInstitucional, ObjetivoEstrategicoInstitucional, PlanSectorial, ObjetivoSectorial, Alineacion,
     PlanInstitucionalVersion, ProgramaInstitucional
 )
@@ -12,7 +12,7 @@ class IndicadorPNDSerializer(serializers.ModelSerializer):
     class Meta:
         model = IndicadorPND
         fields = [
-            'indicador_id', 'meta', 'codigo', 'descripcion', 'unidad_medida', 'activo'
+            'indicador_pnd_id', 'meta_pnd', 'codigo', 'descripcion'
         ]
 
 class MetaPNDSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class MetaPNDSerializer(serializers.ModelSerializer):
     class Meta:
         model = MetaPND
         fields = [
-            'meta_id', 'politica', 'codigo', 'descripcion', 'activo', 'indicadores'
+            'meta_pnd_id', 'politica_pnd', 'codigo', 'descripcion', 'indicadores'
         ]
 
 class PoliticaPNDSerializer(serializers.ModelSerializer):
@@ -52,29 +52,29 @@ class PlanNacionalDesarrolloSerializer(serializers.ModelSerializer):
         ]
 
 # --- Objetivos de Desarrollo Sostenible (ODS) ---
+class IndicadorODSSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IndicadorODS
+        fields = [
+            'indicador_ods_id', 'meta_ods', 'codigo', 'descripcion'
+        ]
+
 class MetaODSSerializer(serializers.ModelSerializer):
+    indicadores = IndicadorODSSerializer(many=True, read_only=True)
+
     class Meta:
         model = MetaODS
         fields = [
-            'meta_id', 'estrategia', 'codigo', 'descripcion', 'activo'
-        ]
-
-class EstrategiaODSSerializer(serializers.ModelSerializer):
-    metas = MetaODSSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = EstrategiaODS
-        fields = [
-            'estrategia_id', 'objetivo', 'codigo', 'descripcion', 'activo', 'metas'
+            'meta_ods_id', 'ods', 'codigo', 'descripcion', 'indicadores'
         ]
 
 class ObjetivoDesarrolloSostenibleSerializer(serializers.ModelSerializer):
-    estrategias = EstrategiaODSSerializer(many=True, read_only=True)
+    metas = MetaODSSerializer(many=True, read_only=True)
 
     class Meta:
         model = ObjetivoDesarrolloSostenible
         fields = [
-            'ods_id', 'numero', 'nombre', 'descripcion', 'estrategias'
+            'ods_id', 'numero', 'nombre', 'descripcion', 'metas'
         ]
 
 # --- PLANES INSTITUCIONALES Y ALINEACIÓN

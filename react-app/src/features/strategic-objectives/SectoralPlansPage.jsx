@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
 import {ChevronDown, ChevronRight, Edit, Layers, Plus, Trash} from 'lucide-react';
-import SectoralPlanFormModal from './SectoralPlanFormModal.jsx';
-import SectoralObjectiveFormModal from './SectoralObjectiveFormModal.jsx';
+import SectoralPlanFormModal from './modals/SectoralPlanFormModal.jsx';
+import SectoralObjectiveFormModal from './modals/SectoralObjectiveFormModal.jsx';
 
 export default function SectoralPlansPage() {
     const [plans, setPlans] = useState([]);

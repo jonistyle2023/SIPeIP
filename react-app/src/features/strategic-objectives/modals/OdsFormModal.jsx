@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {api} from '../../shared/api/api.js';
+import {api} from '../../../shared/api/api.js';
 
 export default function OdsFormModal({ods, onClose, onSave}) {
     const [numero, setNumero] = useState('');
@@ -37,7 +37,7 @@ export default function OdsFormModal({ods, onClose, onSave}) {
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
                 <h2 className="text-lg font-bold mb-4">{ods ? 'Editar Objetivo de Desarrollo Sostenible' : 'Crear Nuevo Objetivo de Desarrollo Sostenible'}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">

@@ -3,17 +3,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.contenttypes.models import ContentType
-from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 from .models import (
     PlanNacionalDesarrollo, ObjetivoPND, PoliticaPND, MetaPND, IndicadorPND,
-    ObjetivoDesarrolloSostenible, EstrategiaODS, MetaODS,
+    ObjetivoDesarrolloSostenible, MetaODS, IndicadorODS,
     PlanInstitucional, ObjetivoEstrategicoInstitucional, PlanSectorial, ObjetivoSectorial, Alineacion,
     PlanInstitucionalVersion, ProgramaInstitucional
 )
 from .serializers import (
     PlanNacionalDesarrolloSerializer, ObjetivoPNDSerializer, PoliticaPNDSerializer,
-    MetaPNDSerializer, IndicadorPNDSerializer, ObjetivoDesarrolloSostenibleSerializer,
-    EstrategiaODSSerializer, MetaODSSerializer, PlanInstitucionalSerializer,
+    MetaPNDSerializer, IndicadorPNDSerializer, ObjetivoDesarrolloSostenibleSerializer, MetaODSSerializer,
+    IndicadorODSSerializer, PlanInstitucionalSerializer,
     ObjetivoEstrategicoInstitucionalSerializer, PlanSectorialSerializer, ObjetivoSectorialSerializer,
     AlineacionSerializer,
     PlanInstitucionalVersionSerializer, ProgramaInstitucionalSerializer
@@ -42,17 +41,19 @@ class IndicadorPNDViewSet(viewsets.ModelViewSet):
 
 # --- ODS ---
 class ObjetivoDesarrolloSostenibleViewSet(viewsets.ModelViewSet):
-    queryset = ObjetivoDesarrolloSostenible.objects.all().prefetch_related('estrategias__metas')
+    queryset = ObjetivoDesarrolloSostenible.objects.all().prefetch_related('metas__indicadores')
     serializer_class = ObjetivoDesarrolloSostenibleSerializer
-
-class EstrategiaODSViewSet(viewsets.ModelViewSet):
-    queryset = EstrategiaODS.objects.all().prefetch_related('metas')
-    serializer_class = EstrategiaODSSerializer
+    http_method_names = ['get', 'head', 'options']  # Hacerlo de solo lectura
 
 class MetaODSViewSet(viewsets.ModelViewSet):
-    queryset = MetaODS.objects.all()
+    queryset = MetaODS.objects.all().prefetch_related('indicadores')
     serializer_class = MetaODSSerializer
+    http_method_names = ['get', 'head', 'options']  # Hacerlo de solo lectura
 
+class IndicadorODSViewSet(viewsets.ModelViewSet):
+    queryset = IndicadorODS.objects.all()
+    serializer_class = IndicadorODSSerializer
+    http_method_names = ['get', 'head', 'options']  # Hacerlo de solo lectura
 # --- PLANES Y ALINEACIÓN ---
 class PlanInstitucionalViewSet(viewsets.ModelViewSet):
     queryset = PlanInstitucional.objects.all().prefetch_related('objetivos_estrategicos')

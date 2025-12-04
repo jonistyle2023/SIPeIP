@@ -16,8 +16,8 @@ router.register(r'objetivos-sectoriales', views.ObjetivoSectorialViewSet, basena
 
 # Rutas para ODS
 router.register(r'ods', views.ObjetivoDesarrolloSostenibleViewSet, basename='ods')
-router.register(r'ods-estrategias', views.EstrategiaODSViewSet, basename='ods-estrategia')
 router.register(r'ods-metas', views.MetaODSViewSet, basename='ods-meta')
+router.register(r'ods-indicadores', views.IndicadorODSViewSet, basename='ods-indicador')
 router.register(r'planes-institucionales', views.PlanInstitucionalViewSet, basename='plan-institucional')
 router.register(r'oei', views.ObjetivoEstrategicoInstitucionalViewSet, basename='oei')
 router.register(r'planes-sectoriales', views.PlanSectorialViewSet, basename='plan-sectorial')

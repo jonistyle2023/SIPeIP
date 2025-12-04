@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {
-    Building, SlidersHorizontal, Book, Plus, Edit, Trash2, Check, Shield,
+    Building, SlidersHorizontal, Book, Plus, Edit, Trash2,
     Database, CheckCircle, CalendarDays, Network
 } from 'lucide-react';
-import EntityFormModal from './EntityFormModal.jsx';
+import EntityFormModal from './modals/EntityFormModal.jsx';
 import CatalogManager from './CatalogManager.jsx';
 import {PeriodsManager} from './PeriodsManager.jsx';
 import UnitManager from './UnitManager.jsx';
@@ -28,6 +28,7 @@ const WorkflowStep = ({number, title, description, color}) => (
 // Tabla para mostrar las entidades
 const EntityTable = ({onEdit, refreshKey}) => {
     const [entities, setEntities] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     // ...dentro de EntityTable...
 
@@ -39,7 +40,12 @@ const EntityTable = ({onEdit, refreshKey}) => {
                 method: 'DELETE',
                 headers: {'Authorization': `Token ${token}`}
             });
-            if (!response.ok) throw new Error("No se pudo eliminar la entidad");
+            if (!response.ok) {
+                // Manejo explícito en lugar de lanzar excepción
+                alert("No se pudo eliminar la entidad.");
+                console.error("Failed to delete entity", response);
+                return;
+            }
             setEntities(prev => prev.filter(e => e.id !== entityId));
         } catch (error) {
             alert("Error al eliminar la entidad.");
@@ -53,7 +59,11 @@ const EntityTable = ({onEdit, refreshKey}) => {
             const token = localStorage.getItem('authToken');
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/v1/config/entidades/', {headers: {'Authorization': `Token ${token}`}});
-                if (!response.ok) throw new Error("Failed to fetch entities");
+                if (!response.ok) {
+                    console.error("Failed to fetch entities", response);
+                    setEntities([]);
+                    return;
+                }
                 const data = await response.json();
                 setEntities(data);
             } catch (error) {
@@ -67,8 +77,18 @@ const EntityTable = ({onEdit, refreshKey}) => {
 
     if (loading) return <p className="text-center p-4">Cargando entidades...</p>;
 
+    // Filtramos las entidades basándonos en el término de búsqueda
+    const filteredEntities = entities.filter(entity =>
+        entity.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entity.codigo_unico.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        entity.nivel_gobierno_nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (entity.subsector_nombre || '').toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
-        <div className="overflow-x-auto">
+        <div>
+            <input type="text" placeholder="Buscar por nombre, código, nivel..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full p-2 mb-4 border rounded-md" />
+            <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
                 <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
                 <tr>
@@ -81,7 +101,7 @@ const EntityTable = ({onEdit, refreshKey}) => {
                 </tr>
                 </thead>
                 <tbody>
-                {entities.map(entity => (
+                {filteredEntities.map(entity => (
                     <tr key={entity.id} className="border-b hover:bg-gray-50">
                         <td className="p-3 font-medium text-gray-800">{entity.nombre}</td>
                         <td className="p-3">{entity.codigo_unico}</td>
@@ -104,6 +124,7 @@ const EntityTable = ({onEdit, refreshKey}) => {
                 ))}
                 </tbody>
             </table>
+            </div>
         </div>
     );
 };
@@ -149,19 +170,7 @@ export default function InstitutionalContent() {
 
     return (
         <div className="space-y-8">
-            {/* --- SECCIONES INFORMATIVAS --- */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InfoCard icon={Building} title="Gestión de Entidades" subtitle="Administración de entidades del Estado"
-                          items={['Entidades vinculadas al PGE', 'Unidades organizacionales', 'Códigos únicos de creación', 'Jerarquías institucionales']}/>
-                <InfoCard icon={SlidersHorizontal} title="Parámetros del Sistema"
-                          subtitle="Control de comportamiento global"
-                          items={['Configuración general', 'Reglas de validación', 'Flujos de aprobación', 'Control de módulos']}/>
-                <InfoCard icon={Book} title="Metodologías y Estructuras" subtitle="Planificación y alineación"
-                          items={['Tipos de planes', 'Objetivos y metas', 'Indicadores', 'Estructuras jerárquicas']}/>
-                <InfoCard icon={Database} title="Catálogos y Datos Maestros" subtitle="Consistencia de información"
-                          items={['Tipos de intervención', 'Sectores y clasificaciones', 'Unidades de medida', 'ODS']}/>
-            </div>
-
+            {/* --- SECCIÓN 1: Flujo de Trabajo Principal --- */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h3 className="text-xl font-semibold mb-8 text-gray-800 text-center">Flujo de Trabajo Principal</h3>
                 <div
@@ -179,41 +188,7 @@ export default function InstitutionalContent() {
                 </div>
             </div>
 
-            <div className="bg-red-50 border-l-4 border-red-400 p-6 rounded-r-lg">
-                <h3 className="font-bold text-red-800 mb-3 flex items-center"><Shield size={20} className="mr-3"/>Gestión
-                    de Calidad de Datos</h3>
-                <p className="text-sm text-red-900 mb-4">El siguiente paso crucial es analizar cómo se gestionará la
-                    calidad de los datos ingresados, dado que la "información basura" y la "falta de rigurosidad" son
-                    problemas identificados en el sistema actual.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-                    <div><h5 className="font-semibold text-gray-800">Reglas de Validación</h5>
-                        <ul className="mt-2 space-y-1 list-disc list-inside text-gray-700">
-                            <li>Validación en tiempo real</li>
-                            <li>Campos obligatorios</li>
-                            <li>Formatos específicos</li>
-                            <li>Rangos permitidos</li>
-                        </ul>
-                    </div>
-                    <div><h5 className="font-semibold text-gray-800">Flujos de Aprobación</h5>
-                        <ul className="mt-2 space-y-1 list-disc list-inside text-gray-700">
-                            <li>Revisión multinivel</li>
-                            <li>Aprobación jerárquica</li>
-                            <li>Comentarios y observaciones</li>
-                            <li>Trazabilidad completa</li>
-                        </ul>
-                    </div>
-                    <div><h5 className="font-semibold text-gray-800">Controles de Calidad</h5>
-                        <ul className="mt-2 space-y-1 list-disc list-inside text-gray-700">
-                            <li>Auditoría de cambios</li>
-                            <li>Reportes de inconsistencias</li>
-                            <li>Métricas de calidad</li>
-                            <li>Alertas automáticas</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            {/* --- SECCIÓN FUNCIONAL --- */}
+            {/* --- SECCIÓN 2: Gestión Funcional --- */}
             <div className="bg-white p-6 rounded-lg shadow-sm mt-8">
                 <div className="flex items-center border-b pb-3 mb-4">
                     <h2 className="text-xl font-bold text-gray-800">Gestión Funcional</h2>
@@ -242,6 +217,22 @@ export default function InstitutionalContent() {
                     {activeFunctionalTab === 'unidades' && <UnitManager/>}
                     {activeFunctionalTab === 'catalogos' && <CatalogManager/>}
                     {activeFunctionalTab === 'periodos' && <PeriodsManager/>}
+                </div>
+            </div>
+
+            {/* --- SECCIÓN 3: Secciones Informativas (agrupadas al final) --- */}
+            <div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-800">Información General</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InfoCard icon={Building} title="Gestión de Entidades" subtitle="Administración de entidades del Estado"
+                              items={["Entidades vinculadas al PGE", "Unidades organizacionales", "Códigos únicos de creación", "Jerarquías institucionales"]}/>
+                    <InfoCard icon={SlidersHorizontal} title="Parámetros del Sistema"
+                              subtitle="Control de comportamiento global"
+                              items={["Configuración general", "Reglas de validación", "Flujos de aprobación", "Control de módulos"]}/>
+                    <InfoCard icon={Book} title="Metodologías y Estructuras" subtitle="Planificación y alineación"
+                              items={["Tipos de planes", "Objetivos y metas", "Indicadores", "Estructuras jerárquicas"]}/>
+                    <InfoCard icon={Database} title="Catálogos y Datos Maestros" subtitle="Disponibles en el módulo de planificación"
+                              items={["Tipos de intervención", "Sectores y clasificaciones", "Unidades de medida", "ODS"]}/>
                 </div>
             </div>
         </div>

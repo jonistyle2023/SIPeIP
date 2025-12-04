@@ -55,7 +55,7 @@ class EntidadViewSet(viewsets.ModelViewSet):
             "eventVersion": "1.0",
             "userIdentity": {
                 "id": self.request.user.id,
-                "username": self.request.user.username
+                "username": self.request.user.nombre_usuario
             },
             "changedFields": {
                 "nombre": {

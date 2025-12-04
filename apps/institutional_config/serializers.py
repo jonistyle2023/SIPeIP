@@ -48,7 +48,8 @@ class EntidadSerializer(serializers.ModelSerializer):
             'activo', 'fecha_creacion', 'fecha_modificacion'
         ]
         extra_kwargs = {
-            'nivel_gobierno': {'write_only': True},
+            'nivel_gobierno': {'required': True},
+            'subsector': {'required': False, 'allow_null': True},
         }
 
 # UnidadOrganizacional
