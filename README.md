@@ -13,6 +13,9 @@
 > - **Versión del Software:** v1 (Finalizado en Julio del 2025).
 > - **Tiempo de planificación y desarrollo:** 4 meses.
 > - **Desarrollado por:** Jonathan David Panchana Rodríguez.
+> 
+> **Versión Final:**
+> - Finalización de los módulos de Reporteria y Auditoria.
 
 ---
 

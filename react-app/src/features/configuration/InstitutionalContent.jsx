@@ -176,15 +176,15 @@ export default function InstitutionalContent() {
                 <div
                     className="flex flex-col md:flex-row justify-around items-center space-y-8 md:space-y-0 md:space-x-4">
                     <WorkflowStep number="1" title="Configuración Inicial"
-                                  description="Establecimiento de entidades y catálogos base" color="bg-blue-500"/>
-                    <WorkflowStep number="2" title="Reglas de Negocio"
-                                  description="Definición de validaciones y metodologías" color="bg-green-500"/>
-                    <WorkflowStep number="3" title="Jerarquías"
-                                  description="Alineaciones entre instrumentos de planificación" color="bg-purple-500"/>
-                    <WorkflowStep number="4" title="Períodos"
-                                  description="Gestión de ciclos de planificación y seguimiento" color="bg-orange-500"/>
-                    <WorkflowStep number="5" title="Delegación" description="Control de usuarios externos por entidad"
-                                  color="bg-red-500"/>
+                                  description="Establecimiento de entidades y catálogos base." color="bg-blue-500"/>
+                    <WorkflowStep number="2" title="Planificación"
+                                  description="Definición de objetivos, metas y alineación (PND/ODS)." color="bg-green-500"/>
+                    <WorkflowStep number="3" title="Inversión"
+                                  description="Priorizar proyectos y vincularlos al presupuesto (PAI)." color="bg-purple-500"/>
+                    <WorkflowStep number="4" title="Seguimiento"
+                                  description="Monitorear el avance físico y financiero en tiempo real." color="bg-orange-500"/>
+                    <WorkflowStep number="5" title="Evaluación/Auditoría"
+                                  description="Medir el impacto y garantizar la transparencia y trazabilidad." color="bg-red-500"/>
                 </div>
             </div>
 
@@ -224,15 +224,18 @@ export default function InstitutionalContent() {
             <div>
                 <h3 className="text-xl font-semibold mb-4 text-gray-800">Información General</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InfoCard icon={Building} title="Gestión de Entidades" subtitle="Administración de entidades del Estado"
-                              items={["Entidades vinculadas al PGE", "Unidades organizacionales", "Códigos únicos de creación", "Jerarquías institucionales"]}/>
-                    <InfoCard icon={SlidersHorizontal} title="Parámetros del Sistema"
-                              subtitle="Control de comportamiento global"
-                              items={["Configuración general", "Reglas de validación", "Flujos de aprobación", "Control de módulos"]}/>
-                    <InfoCard icon={Book} title="Metodologías y Estructuras" subtitle="Planificación y alineación"
-                              items={["Tipos de planes", "Objetivos y metas", "Indicadores", "Estructuras jerárquicas"]}/>
-                    <InfoCard icon={Database} title="Catálogos y Datos Maestros" subtitle="Disponibles en el módulo de planificación"
-                              items={["Tipos de intervención", "Sectores y clasificaciones", "Unidades de medida", "ODS"]}/>
+                    <InfoCard icon={Building} title="Gestión de Entidades"
+                              subtitle="Administración de entidades del Estado"
+                              items={["Entidades vinculadas al PGE", "Códigos únicos de creación", "Atributos clave (Nombre, Código único, el Nivel de Gobierno y su estado)", "Validación de Entidades Adscritas", "Único usuario con rol administrador por cada entidad"]}/>
+                    <InfoCard icon={SlidersHorizontal} title="Unidades Organizacionales"
+                              subtitle="Modelo jerárquico con estructura en árbol (recursividad)"
+                              items={["Definición de unidad organizacional (MacroSector y Sector)", "Atributos de la Unidad", "Validación de la jerarquía organizativa", "Se asignan roles y permisos específicos a los usuarios según la jerarquía organizativa"]}/>
+                    <InfoCard icon={Database} title="Catálogos del Sistema (Códigos)"
+                              subtitle="Disponibles para el registro de catálogos escenciales para el ciclo de planificación"
+                              items={["NIVEL_GOBIERNO", "MACROSECTOR", "TIPOS_PLAN", "TIPO_PROYECTO", "TIPOLOGIA_PROYECTO"]}/>
+                    <InfoCard icon={Book} title="Periodos de Planificación"
+                              subtitle="Necesarios para la planificación, la inversión y el seguimiento"
+                              items={["Abrir y cerrar periodos", "Incluye: nombre del período, fecha de inicio, fecha de fin, el estado", "Permite gestionar los periodos de los planes", "Permite definir los acceso par auna, varias o todas las entidades registradas"]}/>
                 </div>
             </div>
         </div>

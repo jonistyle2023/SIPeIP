@@ -69,7 +69,7 @@ export default function ConfigurationPage({ initialTab, setActivePage }) {
         <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h2 className="text-2xl font-bold text-gray-800">Módulo de Configuración</h2>
-                <p className="text-gray-600 mt-1">Administración de parámetros, usuarios y criterios del sistema.</p>
+                <p className="text-gray-600 mt-1">Administración de usuarios, instituciones y criterios del sistema.</p>
             </div>
 
             {/* Menú de Pestañas Integrado */}
