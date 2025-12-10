@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils import timezone
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.dispatch import receiver
@@ -10,6 +11,7 @@ from rest_framework.authtoken.models import Token
 class Rol(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField(blank=True, null=True)
+    fecha_creacion = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.nombre

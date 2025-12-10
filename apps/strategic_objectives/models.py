@@ -8,11 +8,11 @@ from apps.institutional_config.models import Entidad, PeriodoPlanificacion
 class PlanNacionalDesarrollo(models.Model):
     pnd_id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
-    periodo = models.CharField(max_length=50)
+    periodo = models.ForeignKey(PeriodoPlanificacion, on_delete=models.PROTECT, null=True, blank=True)
     fecha_publicacion = models.DateField()
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} ({self.periodo.nombre if self.periodo else 'Sin Periodo'})"
 
 class ObjetivoPND(models.Model):
     objetivo_pnd_id = models.AutoField(primary_key=True)
@@ -138,12 +138,12 @@ class ObjetivoEstrategicoInstitucional(models.Model):
 class PlanSectorial(models.Model):
     plan_sectorial_id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
-    periodo = models.CharField(max_length=50)
+    periodo = models.ForeignKey(PeriodoPlanificacion, on_delete=models.PROTECT, null=True, blank=True)
     entidad_responsable = models.ForeignKey(Entidad, on_delete=models.PROTECT)
     fecha_publicacion = models.DateField()
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} ({self.periodo.nombre if self.periodo else 'Sin Periodo'})"
 
 
 # --- Modelo de Alineación Genérica ---

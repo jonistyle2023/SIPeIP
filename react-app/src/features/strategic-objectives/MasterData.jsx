@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
 import {BookOpen, ChevronDown, ChevronRight, Edit, Flag, Plus, Trash2, Target, ListTree} from 'lucide-react';
 import PndFormModal from './modals/PndFormModal.jsx';
-import OdsDetailModal from './modals/OdsDetailModal.jsx'; // Importar el nuevo modal
+import OdsDetailModal from './modals/OdsDetailModal.jsx';
 import PndObjectiveFormModal from './modals/PndObjectiveFormModal.jsx';
 
 // Importar los íconos de los ODS como imágenes PNG
@@ -103,12 +103,8 @@ export default function MasterData() {
                     onClose={() => setSelectedOds(null)}
                 />
             }
-            {isPndObjectiveModalOpen &&
-                <PndObjectiveFormModal
-                    pndId={selectedPndForObjective}
-                    onClose={() => setIsPndObjectiveModalOpen(false)}
-                    onSave={fetchData}
-                />
+            {isPndModalOpen &&
+                <PndFormModal onClose={() => setIsPndModalOpen(false)} onSave={fetchData}/>
             }
             {editPnd && <PndFormModal pnd={editPnd} onClose={() => setEditPnd(null)} onSave={fetchData}/>}
             {isPndObjectiveModalOpen &&
@@ -148,14 +144,14 @@ export default function MasterData() {
                     </div>
                     <div className="space-y-2">
                         {pnds.map(pnd => (
-                            <div key={pnd.plan_id} className="border rounded-lg">
+                            <div key={pnd.pnd_id} className="border rounded-lg">
                                 <div className="flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100">
-                                    <button onClick={() => setOpenPndId(openPndId === pnd.plan_id ? null : pnd.plan_id)}
+                                    <button onClick={() => setOpenPndId(openPndId === pnd.pnd_id ? null : pnd.pnd_id)}
                                             className="flex items-center text-left flex-grow space-x-2">
-                                        {openPndId === pnd.plan_id ? <ChevronDown size={16}/> :
+                                        {openPndId === pnd.pnd_id ? <ChevronDown size={16}/> :
                                             <ChevronRight size={16}/>}
                                         <span className="font-medium text-sm text-gray-800">
-                                            {pnd.nombre} ({pnd.periodo})
+                                            {pnd.nombre} ({pnd.periodo?.nombre || 'Sin Periodo'})
                                         </span>
                                     </button>
                                     <div className="flex items-center ml-4 gap-2">
@@ -169,7 +165,7 @@ export default function MasterData() {
                                         </button>
                                     </div>
                                 </div>
-                                {openPndId === pnd.plan_id && (
+                                {openPndId === pnd.pnd_id && (
                                     <div className="p-4 border-t text-sm space-y-2">
                                         {pnd.objetivos.length > 0 ? (
                                             pnd.objetivos.map(obj =>
@@ -183,7 +179,7 @@ export default function MasterData() {
                                                         <button
                                                             onClick={() => {
                                                                 setEditObjective(obj);
-                                                                setEditObjectivePndId(pnd.plan_id);
+                                                                setEditObjectivePndId(pnd.pnd_id);
                                                             }}
                                                             className="text-blue-600 hover:underline flex items-center"
                                                         >

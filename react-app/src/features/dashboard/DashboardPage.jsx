@@ -34,7 +34,7 @@ const kpiData = [
     },
     {
         title: 'Avance Promedio',
-        value: '73%',
+        value: '90%',
         change: 'sin cambios',
         changeType: 'neutral',
         icon: CheckCircle,

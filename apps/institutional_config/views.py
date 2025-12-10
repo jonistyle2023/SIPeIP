@@ -94,7 +94,7 @@ class UnidadOrganizacionalViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         entidad_id = self.request.query_params.get('entidad')
         if entidad_id:
-            queryset = queryset.filter(entidad_id=entidad_id)
+            queryset = queryset.filter(entidad_id=entidad_id, padre__isnull=True)
         return queryset
     # permission_classes = [permissions.IsAdminUser]
 

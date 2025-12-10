@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {X} from 'lucide-react';
+import {api} from "../../../shared/api/api.js";
 
 export default function UserFormModal({user, onClose, onSave}) {
     const [formData, setFormData] = useState({
@@ -18,11 +19,7 @@ export default function UserFormModal({user, onClose, onSave}) {
         // Cargar la lista de todos los roles disponibles
         const fetchRoles = async () => {
             try {
-                const token = localStorage.getItem('authToken');
-                const response = await fetch('http://127.0.0.1:8000/api/auth/roles/', {
-                    headers: {'Authorization': `Token ${token}`}
-                });
-                const data = await response.json();
+                const data = await api.get('/auth/roles/');
                 setAllRoles(data);
             } catch (err) {
                 console.error("Error fetching roles:", err);
@@ -66,29 +63,18 @@ export default function UserFormModal({user, onClose, onSave}) {
         setIsLoading(true);
         setError('');
 
-        const token = localStorage.getItem('authToken');
-        const url = user ? `http://127.0.0.1:8000/api/auth/usuarios/${user.id}/` : 'http://127.0.0.1:8000/api/auth/usuarios/';
-        const method = user ? 'PUT' : 'POST';
-
         // No enviar la contraseña si está vacía durante la edición
         const body = {...formData};
         if (user && !body.password) {
             delete body.password;
         }
 
+        const apiCall = user
+            ? api.put(`/auth/usuarios/${user.id}/`, body)
+            : api.post('/auth/usuarios/', body);
+
         try {
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`,
-                },
-                body: JSON.stringify(body),
-            });
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(JSON.stringify(data));
-            }
+            await apiCall;
             onSave();
         } catch (err) {
             setError(err.message);

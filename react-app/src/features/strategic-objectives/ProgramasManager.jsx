@@ -52,7 +52,7 @@ const ProgramaFormModal = ({programa, onClose, onSave}) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80 p-4">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
                 <h3 className="text-lg font-semibold mb-4">{programa ? 'Editar Programa' : 'Nuevo Programa Institucional'}</h3>
                 <form onSubmit={handleSubmit} className="space-y-4">

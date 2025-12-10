@@ -3,10 +3,16 @@ from .models import Usuario, RegistroAuditoria, Rol
 import re
 
 class RolSerializer(serializers.ModelSerializer):
+    usuarios_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Rol
-        fields = ['id', 'nombre', 'descripcion']
+        fields = ['id', 'nombre', 'descripcion', 'fecha_creacion', 'usuarios_count']
+        read_only_fields = ['fecha_creacion', 'usuarios_count']
 
+    def get_usuarios_count(self, obj):
+        return obj.usuarios.count()
+    
 class UsuarioSerializer(serializers.ModelSerializer):
     roles = RolSerializer(many=True, read_only=True)
     roles_ids = serializers.PrimaryKeyRelatedField(

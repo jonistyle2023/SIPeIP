@@ -4,8 +4,9 @@ from .models import (
     PlanNacionalDesarrollo, ObjetivoPND, PoliticaPND, MetaPND, IndicadorPND,
     ObjetivoDesarrolloSostenible, MetaODS, IndicadorODS,
     PlanInstitucional, ObjetivoEstrategicoInstitucional, PlanSectorial, ObjetivoSectorial, Alineacion,
-    PlanInstitucionalVersion, ProgramaInstitucional
+    PlanInstitucionalVersion, ProgramaInstitucional,
 )
+from apps.institutional_config.models import PeriodoPlanificacion, Entidad
 
 # --- Plan Nacional de Desarrollo (PND) ---
 class IndicadorPNDSerializer(serializers.ModelSerializer):
@@ -42,14 +43,21 @@ class ObjetivoPNDSerializer(serializers.ModelSerializer):
             'objetivo_pnd_id', 'pnd', 'codigo', 'descripcion', 'politicas'
         ]
 
+class PeriodoPlanificacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PeriodoPlanificacion
+        fields = ['id', 'nombre', 'fecha_inicio', 'fecha_fin', 'estado']
+
 class PlanNacionalDesarrolloSerializer(serializers.ModelSerializer):
     objetivos = ObjetivoPNDSerializer(many=True, read_only=True)
+    periodo = PeriodoPlanificacionSerializer(read_only=True)
+    periodo_id = serializers.PrimaryKeyRelatedField(
+        queryset=PeriodoPlanificacion.objects.all(), source='periodo', write_only=True
+    )
 
     class Meta:
         model = PlanNacionalDesarrollo
-        fields = [
-            'pnd_id', 'nombre', 'periodo', 'fecha_publicacion', 'objetivos'
-        ]
+        fields = ['pnd_id', 'nombre', 'periodo', 'periodo_id', 'fecha_publicacion', 'objetivos']
 
 # --- Objetivos de Desarrollo Sostenible (ODS) ---
 class IndicadorODSSerializer(serializers.ModelSerializer):
@@ -155,12 +163,19 @@ class ObjetivoSectorialSerializer(serializers.ModelSerializer):
 # Actualiza el PlanSectorialSerializer para mostrar sus objetivos anidados
 class PlanSectorialSerializer(serializers.ModelSerializer):
     objetivos = ObjetivoSectorialSerializer(many=True, read_only=True)
+    periodo = PeriodoPlanificacionSerializer(read_only=True)
+    periodo_id = serializers.PrimaryKeyRelatedField(
+        queryset=PeriodoPlanificacion.objects.all(), source='periodo', write_only=True
+    )
+    entidad_responsable = serializers.StringRelatedField(read_only=True)
+    entidad_responsable_id = serializers.PrimaryKeyRelatedField(
+        queryset=Entidad.objects.all(), source='entidad_responsable', write_only=True
+    )
 
     class Meta:
         model = PlanSectorial
-        fields = [
-            'plan_sectorial_id', 'nombre', 'periodo', 'entidad_responsable', 'fecha_publicacion', 'objetivos'
-        ]
+        fields = ['plan_sectorial_id', 'nombre', 'periodo', 'periodo_id', 'entidad_responsable',
+                  'entidad_responsable_id', 'fecha_publicacion', 'objetivos']
 
 class ProgramaInstitucionalSerializer(serializers.ModelSerializer):
     entidad_nombre = serializers.CharField(source='entidad.nombre', read_only=True, allow_null=True)

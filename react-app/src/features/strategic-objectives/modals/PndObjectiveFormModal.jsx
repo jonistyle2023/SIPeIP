@@ -36,7 +36,7 @@ export default function PndObjectiveFormModal({pndId, objetivo, onClose, onSave}
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
                 <h2 className="text-lg font-bold mb-4">
                     {objetivo ? 'Editar Objetivo del Plan' : 'Añadir Objetivo al Plan'}

@@ -57,6 +57,7 @@ class UnidadOrganizacionalSerializer(serializers.ModelSerializer):
     entidad_nombre = serializers.CharField(source='entidad.nombre', read_only=True)
     padre_nombre = serializers.CharField(source='padre.nombre', read_only=True, allow_null=True)
     macrosector_nombre = serializers.CharField(source='macrosector.nombre', read_only=True, allow_null=True)
+    hijos = RecursiveField(many=True, read_only=True)
     sectores_nombres = serializers.SerializerMethodField()
 
     class Meta:
@@ -65,11 +66,11 @@ class UnidadOrganizacionalSerializer(serializers.ModelSerializer):
             'id', 'nombre', 'entidad', 'entidad_nombre',
             'padre', 'padre_nombre',
             'macrosector', 'macrosector_nombre',
-            'sectores', 'sectores_nombres',
+            'sectores', 'sectores_nombres', 'hijos',
             'activo'
         ]
         extra_kwargs = {
-            'padre': {'write_only': True, 'required': False, 'allow_null': True},
+            'padre': {'required': False, 'allow_null': True},
             'macrosector': {'write_only': True, 'required': False, 'allow_null': True},
             'sectores': {'write_only': True, 'required': False},
         }

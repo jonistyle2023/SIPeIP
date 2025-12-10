@@ -2,6 +2,13 @@ import React, {useState, useEffect} from 'react';
 import {Plus, Edit, Trash2} from 'lucide-react';
 import PeriodFormModal from './modals/PeriodFormModal.jsx';
 
+const statusClasses = {
+    'ABIERTO': 'bg-green-100 text-green-800',
+    'EN_CIERRE': 'bg-blue-100 text-blue-800',
+    'CERRADO': 'bg-red-100 text-red-800',
+};
+const defaultStatusClass = 'bg-gray-100 text-gray-800';
+
 export function PeriodsManager() {
     const [periods, setPeriods] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -88,7 +95,7 @@ export function PeriodsManager() {
                             <td className="p-3">{period.fecha_fin}</td>
                             <td className="p-3">
                                     <span
-                                        className={`px-2 py-1 rounded-full text-xs font-medium ${period.estado === 'ABIERTO' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                        className={`px-2 py-1 rounded-full text-xs font-medium ${statusClasses[period.estado] || defaultStatusClass}`}>
                                         {period.estado}
                                     </span>
                             </td>

@@ -3,7 +3,7 @@ import { Users, Settings, ListChecks } from 'lucide-react';
 
 import UsersContent from './UsersContent';
 import InstitutionalContent from './InstitutionalContent';
-import CriteriosManager from './CriteriosManager';
+import CriteriosManager from './CriteriosManager.jsx';
 
 // Componente para un botón de pestaña
 const TabButton = ({ icon: Icon, label, isActive, onClick }) => (
@@ -55,9 +55,9 @@ export default function ConfigurationPage({ initialTab, setActivePage }) {
     const renderContent = () => {
         switch (activeTab) {
             case 'usuarios':
-                return <UsersContent />; // <-- Ahora usa tu componente importado
+                return <UsersContent />;
             case 'institucional':
-                return <InstitutionalContent />; // <-- Ahora usa tu componente importado
+                return <InstitutionalContent />;
             case 'criterios':
                 return <CriteriosManager />;
             default:
@@ -69,7 +69,7 @@ export default function ConfigurationPage({ initialTab, setActivePage }) {
         <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">
                 <h2 className="text-2xl font-bold text-gray-800">Módulo de Configuración</h2>
-                <p className="text-gray-600 mt-1">Administración de usuarios, instituciones y criterios del sistema.</p>
+                <p className="text-gray-600 mt-1">Administración de usuarios, roles, instituciones y criterios del priorización.</p>
             </div>
 
             {/* Menú de Pestañas Integrado */}

@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import {
+    Calendar,
     Users,
     UserCheck,
     UserX,
@@ -11,9 +12,12 @@ import {
     ShieldAlert,
     Search,
     CheckCircle,
-    Lock
+    Lock,
+    Info,
 } from 'lucide-react';
+import {api} from "../../shared/api/api.js";
 import UserFormModal from './modals/UserFormModal.jsx';
+import RoleFormModal from "./modals/RoleFormModal.jsx";
 
 // Componente para las tarjetas de KPI
 const KpiCard = ({title, value, icon: Icon, color}) => (
@@ -33,28 +37,24 @@ const KpiCard = ({title, value, icon: Icon, color}) => (
 export default function UsersPage() {
     // estado para usuarios y modales
     const [users, setUsers] = useState([]);
+    const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+    const [editingRole, setEditingRole] = useState(null);
 
     // Función para obtener los usuarios del backend
-    const fetchUsers = async () => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch('http://127.0.0.1:8000/api/auth/usuarios/', {
-                headers: {'Authorization': `Token ${token}`}
-            });
-            if (!response.ok) {
-                // Manejo explícito en lugar de lanzar excepción
-                const msg = 'No se pudo obtener la lista de usuarios.';
-                setError(msg);
-                setLoading(false);
-                return;
-            }
-            const data = await response.json();
-            setUsers(data);
+            const [usersData, rolesData] = await Promise.all([
+                api.get('/auth/usuarios/'),
+                api.get('/auth/roles/')
+            ]);
+            setUsers(usersData);
+            setRoles(rolesData);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -63,7 +63,7 @@ export default function UsersPage() {
     };
 
     useEffect(() => {
-        fetchUsers();
+        fetchData();
     }, []);
 
     const handleOpenModal = (user = null) => {
@@ -78,23 +78,42 @@ export default function UsersPage() {
 
     const handleSaveUser = () => {
         handleCloseModal();
-        fetchUsers(); // Recargar la lista de usuarios después de guardar
+        fetchData();
+    };
+
+    const handleOpenRoleModal = (rol = null) => {
+        setEditingRole(rol);
+        setIsRoleModalOpen(true);
+    };
+
+    const handleCloseRoleModal = () => {
+        setIsRoleModalOpen(false);
+        setEditingRole(null);
+    };
+
+    const handleSaveRole = () => {
+        handleCloseRoleModal();
+        fetchData();
     };
 
     const handleDeleteUser = async (userId) => {
         if (window.confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
             try {
-                const token = localStorage.getItem('authToken');
-                const response = await fetch(`http://127.0.0.1:8000/api/auth/usuarios/${userId}/`, {
-                    method: 'DELETE',
-                    headers: {'Authorization': `Token ${token}`}
-                });
-                if (!response.ok) {
-                    alert('No se pudo eliminar el usuario.');
-                    return;
-                }
-                fetchUsers();
+                await api.delete(`/auth/usuarios/${userId}/`);
+                fetchData();
             } catch (err) {
+                console.error("Error deleting user:", err);
+                alert(err.message);
+            }
+        }
+    }
+    const handleDeleteRole = async (roleId) => {
+        if (window.confirm('¿Estás seguro de que quieres eliminar este rol?')) {
+            try {
+                await api.delete(`/auth/roles/${roleId}/`);
+                fetchData();
+            } catch (err) {
+                console.error("Error deleting user:", err);
                 alert(err.message);
             }
         }
@@ -108,6 +127,12 @@ export default function UsersPage() {
         const pendientes = total - activos;
         return {total, activos, pendientes, administradores};
     }, [users]);
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', {year: 'numeric', month: 'short', day: 'numeric'});
+    };
 
     if (loading) return <div>Cargando...</div>;
     if (error) return <div className="text-red-500">Error: {error}</div>;
@@ -139,8 +164,10 @@ export default function UsersPage() {
                             <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
                             <tr>
                                 <th className="p-3">Usuario</th>
-                                <th className="p-3">Rol</th>
-                                <th className="p-3">Entidad</th>
+                                <th className="p-3">Roles</th>
+                                <th className="p-3">Código de Entidad</th>
+                                <th className="p-3">Creado</th>
+                                <th className="p-3">Último Acceso</th>
                                 <th className="p-3">Estado</th>
                                 <th className="p-3">Acciones</th>
                             </tr>
@@ -157,6 +184,8 @@ export default function UsersPage() {
                                     </td>
                                     <td className="p-3">{user.roles.map(r => r.nombre).join(', ')}</td>
                                     <td className="p-3">{user.entidad_codigo || 'N/A'}</td>
+                                    <td className="p-3">{formatDate(user.fecha_creacion)}</td>
+                                    <td className="p-3">{formatDate(user.ultimo_acceso)}</td>
                                     <td className="p-3">
                       <span
                           className={`px-2 py-1 rounded-full text-xs font-medium ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
@@ -179,10 +208,56 @@ export default function UsersPage() {
                 </div>
             </div>
 
-            {/* --- SECCIÓN: Roles y Permisos del Sistema (ahora al final) --- */}
+            {/* --- SECCIÓN: Roles del Sistema --- */}
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-semibold">Lista de Roles</h4>
+                    <button onClick={() => handleOpenRoleModal()}
+                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                        <Plus size={16} className="mr-2"/>
+                        Nuevo Rol
+                    </button>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                        <tr>
+                            <th className="p-3">Rol</th>
+                            <th className="p-3">Descripción</th>
+                            <th className="p-3">Usuarios Asignados</th>
+                            <th className="p-3">Fecha de Creación</th>
+                            <th className="p-3">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {roles.map(rol => (
+                            <tr key={rol.id} className="border-b hover:bg-gray-50">
+                                <td className="p-3 font-medium text-gray-800">{rol.nombre}</td>
+                                <td className="p-3 text-gray-600">{rol.descripcion || 'Sin descripción'}</td>
+                                <td className="p-3">
+                                    <div className="flex items-center">
+                                        <Users size={16} className="mr-2 text-gray-400"/>
+                                        {rol.usuarios_count}
+                                    </div>
+                                </td>
+                                <td className="p-3">{formatDate(rol.fecha_creacion)}</td>
+                                <td className="p-3 flex items-center space-x-2">
+                                    <button onClick={() => handleOpenRoleModal(rol)}
+                                            className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
+                                    </button>
+                                    <button onClick={() => handleDeleteRole(rol.id)}
+                                            className="p-1 text-red-500 hover:text-red-700"><Trash2 size={16}/>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center"><Lock className="mr-3 text-blue-500"/>Roles
-                    y Permisos del Sistema</h3>
+                <h3 className="text-xl font-semibold mb-4 flex items-center"><Info className="mr-3 text-blue-500"/>Acerca de Roles y Permisos</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Card Administrador */}
                     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -258,6 +333,7 @@ export default function UsersPage() {
             </div>
 
             {isModalOpen && <UserFormModal user={editingUser} onClose={handleCloseModal} onSave={handleSaveUser}/>}
+            {isRoleModalOpen && <RoleFormModal rol={editingRole} onClose={handleCloseRoleModal} onSave={handleSaveRole}/>}
         </div>
     );
 }

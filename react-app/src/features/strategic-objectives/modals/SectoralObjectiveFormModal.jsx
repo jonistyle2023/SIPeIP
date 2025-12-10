@@ -38,7 +38,7 @@ export default function SectoralObjectiveFormModal({planSectorialId, objetivo, o
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
                 <h2 className="text-lg font-bold mb-4">{objetivo ? 'Editar Objetivo Sectorial' : 'Añadir Objetivo Sectorial'}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">

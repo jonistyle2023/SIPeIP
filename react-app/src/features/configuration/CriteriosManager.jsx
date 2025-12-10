@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {api} from '../../shared/api/api';
+import {api} from '../../shared/api/api.js';
 import {Plus, Edit, Trash2} from 'lucide-react';
 
 // Modal de formulario para Criterios
@@ -23,7 +23,7 @@ const CriterioFormModal = ({criterio, onClose, onSave}) => {
         }
     };
 
-    return (<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+    return (<div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80 p-4">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
                 <h3 className="text-lg font-semibold mb-4">{criterio ? 'Editar Criterio' : 'Nuevo Criterio de Priorización'}</h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
