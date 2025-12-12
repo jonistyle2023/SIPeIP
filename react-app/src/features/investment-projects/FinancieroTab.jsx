@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {PlusCircle} from 'lucide-react';
-import CronogramaFormModal from './CronogramaFormModal.jsx';
+import CronogramaFormModal from './modals/CronogramaFormModal.jsx';
 
 export default function FinancieroTab({marcoLogico, onDataChange}) {
     const [isModalOpen, setIsModalOpen] = useState(false);

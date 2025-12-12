@@ -144,7 +144,7 @@ export default function MasterData() {
                     </div>
                     <div className="space-y-2">
                         {pnds.map(pnd => (
-                            <div key={pnd.pnd_id} className="border rounded-lg">
+                            <div key={pnd.id || pnd.pnd_id} className="border rounded-lg">
                                 <div className="flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100">
                                     <button onClick={() => setOpenPndId(openPndId === pnd.pnd_id ? null : pnd.pnd_id)}
                                             className="flex items-center text-left flex-grow space-x-2">
@@ -169,7 +169,7 @@ export default function MasterData() {
                                     <div className="p-4 border-t text-sm space-y-2">
                                         {pnd.objetivos.length > 0 ? (
                                             pnd.objetivos.map(obj =>
-                                                <div key={obj.objetivo_pnd_id}
+                                                <div key={obj.id || obj.objetivo_pnd_id}
                                                      className="p-2 bg-gray-100 rounded flex justify-between items-center">
                                                     <div>
                                                         <p className="font-semibold text-gray-700">{obj.codigo}</p>
@@ -213,7 +213,7 @@ export default function MasterData() {
                             const iconImage = odsIconImages[odsItem.numero];
                             return (
                                 <button
-                                key={odsItem.ods_id}
+                                key={odsItem.id || odsItem.ods_id}
                                 onClick={() => setSelectedOds(odsItem)}
                                 className="aspect-square flex justify-center items-center rounded-lg transition-transform duration-200 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                 title={`ODS ${odsItem.numero}: ${odsItem.nombre}`}

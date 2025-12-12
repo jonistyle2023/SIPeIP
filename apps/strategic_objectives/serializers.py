@@ -61,28 +61,32 @@ class PlanNacionalDesarrolloSerializer(serializers.ModelSerializer):
 
 # --- Objetivos de Desarrollo Sostenible (ODS) ---
 class IndicadorODSSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='indicador_ods_id')
+
     class Meta:
         model = IndicadorODS
         fields = [
-            'indicador_ods_id', 'meta_ods', 'codigo', 'descripcion'
+            'id', 'meta_ods', 'codigo', 'descripcion'
         ]
 
 class MetaODSSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='meta_ods_id')
     indicadores = IndicadorODSSerializer(many=True, read_only=True)
 
     class Meta:
         model = MetaODS
         fields = [
-            'meta_ods_id', 'ods', 'codigo', 'descripcion', 'indicadores'
+            'id', 'ods', 'codigo', 'descripcion', 'indicadores'
         ]
 
 class ObjetivoDesarrolloSostenibleSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='ods_id')
     metas = MetaODSSerializer(many=True, read_only=True)
 
     class Meta:
         model = ObjetivoDesarrolloSostenible
         fields = [
-            'ods_id', 'numero', 'nombre', 'descripcion', 'metas'
+            'id', 'numero', 'nombre', 'descripcion', 'metas'
         ]
 
 # --- PLANES INSTITUCIONALES Y ALINEACIÓN

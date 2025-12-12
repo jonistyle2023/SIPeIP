@@ -3,7 +3,7 @@ import {Edit, Plus, Target, Trash2} from 'lucide-react';
 
 const IndicadorCard = ({indicador, onEdit, onDelete}) => (
     <div className="border rounded-lg p-3 text-sm">
-        <p className="font-semibold text-gray-800">{indicador.descripcion}</p>
+        <p className="font-semibold text-gray-800">{indicador.descripcion_sin_prefijo || indicador.descripcion}</p>
         <div className="flex justify-between items-center mt-2 text-gray-600">
             <div>
                 <p><strong>Meta:</strong> {indicador.meta.valor_meta} {indicador.unidad_medida}</p>
@@ -21,7 +21,20 @@ const IndicadorCard = ({indicador, onEdit, onDelete}) => (
 );
 
 
-export default function IndicadorList({title, indicadores, onAdd, onEdit, onDelete}) {
+export default function IndicadorList({title, indicadores, tipoIndicador, onAdd, onEdit, onDelete}) {
+    const normalize = (str) => {
+        return (str || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    };
+
+    const filteredIndicadores = tipoIndicador
+        ? (indicadores || []).filter(ind => {
+            const desc = normalize(ind.descripcion);
+            const type = normalize(tipoIndicador);
+            // Flexibilizar: acepta "Fin:", "Fin " (espacio) o variantes
+            return desc.startsWith(type + ':') || desc.startsWith(type + ' ');
+        })
+        : (indicadores || []);
+
     return (
         <div>
             <div className="flex justify-between items-center mb-2">
@@ -33,8 +46,8 @@ export default function IndicadorList({title, indicadores, onAdd, onEdit, onDele
                 </button>
             </div>
             <div className="space-y-3 pl-6 border-l-2">
-                {indicadores && indicadores.length > 0 ? (
-                    indicadores.map(ind => <IndicadorCard key={ind.indicador_id} indicador={ind} onEdit={onEdit}
+                {filteredIndicadores.length > 0 ? (
+                    filteredIndicadores.map(ind => <IndicadorCard key={ind.indicador_id} indicador={ind} onEdit={onEdit}
                                                           onDelete={onDelete}/>)
                 ) : (
                     <p className="text-xs text-gray-500 italic">No hay indicadores definidos.</p>

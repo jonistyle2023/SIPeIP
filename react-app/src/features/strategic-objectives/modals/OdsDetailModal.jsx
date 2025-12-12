@@ -25,7 +25,7 @@ export default function OdsDetailModal({ ods, iconSrc, onClose }) {
                     <div className="space-y-4">
                         {ods.metas.length > 0 ? (
                             ods.metas.map(meta => (
-                                <div key={meta.meta_ods_id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <div key={meta.id || meta.meta_ods_id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                                     <p className="font-semibold text-gray-800">{meta.codigo}: <span className="font-normal text-gray-700">{meta.descripcion}</span></p>
 
                                     {meta.indicadores.length > 0 && (
@@ -33,7 +33,7 @@ export default function OdsDetailModal({ ods, iconSrc, onClose }) {
                                             <h4 className="font-semibold text-sm text-gray-600 flex items-center mb-2"><ListTree className="mr-1.5"/>Indicadores</h4>
                                             <ul className="list-disc list-inside space-y-1 text-gray-600 pl-4">
                                                 {meta.indicadores.map(indicador => (
-                                                    <li key={indicador.indicador_ods_id}>
+                                                    <li key={indicador.id || indicador.indicador_ods_id}>
                                                         <span className="font-medium text-gray-700">{indicador.codigo}:</span> {indicador.descripcion}
                                                     </li>
                                                 ))}

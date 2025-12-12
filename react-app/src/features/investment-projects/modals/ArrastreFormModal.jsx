@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import {api} from '../../shared/api/api.js';
+import {api} from '../../../shared/api/api.js';
 import {X} from 'lucide-react';
 
-export default function ActividadFormModal({componente, onClose, onSave}) {
+export default function ArrastreFormModal({projectId, onClose, onSave}) {
     const [formData, setFormData] = useState({
-        descripcion: '',
-        fecha_inicio: '',
-        fecha_fin: '',
+        contrato_info: '',
+        monto_devengado: '',
+        monto_por_devengar: '',
     });
     const [error, setError] = useState('');
 
@@ -17,67 +17,64 @@ export default function ActividadFormModal({componente, onClose, onSave}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        if (new Date(formData.fecha_fin) < new Date(formData.fecha_inicio)) {
-            setError('La fecha de fin no puede ser anterior a la fecha de inicio.');
-            return;
-        }
         try {
             const payload = {
                 ...formData,
-                componente: componente.componente_id,
+                proyecto: projectId,
             };
-            await api.post('/investment-projects/actividades/', payload);
+            await api.post('/investment-projects/arrastres/', payload);
             onSave();
         } catch (err) {
-            setError(err.message || 'Error al guardar la actividad.');
+            setError(err.message || 'Error al guardar el arrastre.');
         }
     };
 
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-xl">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
                 <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">Nueva Actividad</h3>
+                    <h3 className="text-lg font-semibold">Nuevo Arrastre de Inversión</h3>
                     <button onClick={onClose}><X/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
                         <div>
-                            <p className="text-sm font-medium text-gray-700">Componente</p>
-                            <p className="text-sm text-gray-600 bg-gray-100 p-2 rounded mt-1">{componente.nombre}</p>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Descripción de la
-                                Actividad</label>
-                            <textarea
-                                name="descripcion"
-                                value={formData.descripcion}
+                            <label className="block text-sm font-medium text-gray-700">Información del Contrato</label>
+                            <input
+                                type="text"
+                                name="contrato_info"
+                                value={formData.contrato_info}
                                 onChange={handleChange}
-                                rows="3"
                                 className="w-full p-2 border rounded mt-1"
+                                placeholder="Ej: Contrato N° 123-ABC"
                                 required
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
+                                <label className="block text-sm font-medium text-gray-700">Monto Devengado ($)</label>
                                 <input
-                                    type="date"
-                                    name="fecha_inicio"
-                                    value={formData.fecha_inicio}
+                                    type="number"
+                                    name="monto_devengado"
+                                    step="0.01"
+                                    value={formData.monto_devengado}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded mt-1"
+                                    placeholder="Ej: 150000.00"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Fecha de Fin</label>
+                                <label className="block text-sm font-medium text-gray-700">Monto por Devengar
+                                    ($)</label>
                                 <input
-                                    type="date"
-                                    name="fecha_fin"
-                                    value={formData.fecha_fin}
+                                    type="number"
+                                    name="monto_por_devengar"
+                                    step="0.01"
+                                    value={formData.monto_por_devengar}
                                     onChange={handleChange}
                                     className="w-full p-2 border rounded mt-1"
+                                    placeholder="Ej: 350000.00"
                                     required
                                 />
                             </div>
@@ -87,7 +84,7 @@ export default function ActividadFormModal({componente, onClose, onSave}) {
                     <div className="p-4 border-t flex justify-end space-x-2">
                         <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar
                         </button>
-                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar Actividad
+                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar Arrastre
                         </button>
                     </div>
                 </form>

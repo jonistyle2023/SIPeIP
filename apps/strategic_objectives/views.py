@@ -54,6 +54,23 @@ class IndicadorODSViewSet(viewsets.ModelViewSet):
     queryset = IndicadorODS.objects.all()
     serializer_class = IndicadorODSSerializer
     http_method_names = ['get', 'head', 'options']  # Hacerlo de solo lectura
+
+    def get_queryset(self):
+        """
+        Filtra los indicadores por el ID de la meta ODS si se proporciona
+        el parámetro `meta_id` en la URL.
+        """
+        queryset = super().get_queryset()
+        meta_id = self.request.query_params.get('meta_id')
+        if meta_id:
+            try:
+                # El campo en el modelo es meta_ods, por lo que el filtro por ID es meta_ods_id
+                meta_id_int = int(meta_id)
+                queryset = queryset.filter(meta_ods_id=meta_id_int)
+            except (ValueError, TypeError):
+                # Si meta_id no es un entero válido, no devolvemos nada.
+                return queryset.none()
+        return queryset
 # --- PLANES Y ALINEACIÓN ---
 class PlanInstitucionalViewSet(viewsets.ModelViewSet):
     queryset = PlanInstitucional.objects.all().prefetch_related('objetivos_estrategicos')

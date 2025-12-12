@@ -50,11 +50,10 @@ class IndicadorSerializer(serializers.ModelSerializer):
         tipo_de_contenido = ContentType.objects.get(id=content_type_id)
 
         # Prefijo automático para Fin/Propósito
-        if tipo_de_contenido.model == 'marcologico':
-            if tipo_indicador == 'Fin' and not descripcion_indicador.lower().startswith('fin:'):
-                descripcion_indicador = 'Fin: ' + descripcion_indicador
-            elif tipo_indicador == 'Proposito' and not descripcion_indicador.lower().startswith('propósito:'):
-                descripcion_indicador = 'Propósito: ' + descripcion_indicador
+        if tipo_indicador == 'Fin' and not descripcion_indicador.lower().startswith('fin:'):
+            descripcion_indicador = 'Fin: ' + descripcion_indicador
+        elif tipo_indicador == 'Proposito' and not descripcion_indicador.lower().startswith('propósito:'):
+            descripcion_indicador = 'Propósito: ' + descripcion_indicador
 
         nuevo_indicador = Indicador.objects.create(
             content_type=tipo_de_contenido,
@@ -123,32 +122,48 @@ class ActividadSerializer(serializers.ModelSerializer):
     cronograma = CronogramaValoradoSerializer(many=True, read_only=True)
     class Meta:
         model = Actividad
-        # AÑADIR 'cronograma' a la lista de campos
         fields = ['actividad_id', 'componente', 'descripcion', 'fecha_inicio', 'fecha_fin', 'cronograma']
 
 class ComponenteSerializer(serializers.ModelSerializer):
     actividades = ActividadSerializer(many=True, read_only=True)
     indicadores = serializers.SerializerMethodField()
+    content_type_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Componente
-        fields = ['componente_id', 'marco_logico', 'nombre', 'descripcion', 'ponderacion', 'actividades', 'indicadores']
+        fields = ['componente_id', 'marco_logico', 'nombre', 'descripcion', 'ponderacion', 'actividades', 'indicadores', 'content_type_id']
+
+    def get_content_type_id(self, obj):
+        return ContentType.objects.get_for_model(obj).id
 
     def get_indicadores(self, obj):
+        ct = ContentType.objects.get_for_model(obj)
         indicadores_del_componente = Indicador.objects.filter(
-            content_type_id=9,
+            content_type=ct,
             object_id=obj.pk
         )
-
         return IndicadorSerializer(indicadores_del_componente, many=True).data
 
 class MarcoLogicoSerializer(serializers.ModelSerializer):
     componentes = ComponenteSerializer(many=True, read_only=True)
-    indicadores = IndicadorSerializer(many=True, read_only=True)
+    indicadores = serializers.SerializerMethodField()
+    content_type_id = serializers.SerializerMethodField()
 
     class Meta:
         model = MarcoLogico
-        fields = ['marco_logico_id', 'proyecto', 'fin', 'proposito', 'componentes', 'indicadores']
+        fields = ['marco_logico_id', 'proyecto', 'fin', 'proposito', 'componentes', 'indicadores', 'content_type_id']
+
+    def get_content_type_id(self, obj):
+        return ContentType.objects.get_for_model(obj).id
+
+    def get_indicadores(self, obj):
+        # Obtener indicadores asociados mediante GenericForeignKey
+        ct = ContentType.objects.get_for_model(obj)
+        indicadores = Indicador.objects.filter(
+            content_type=ct,
+            object_id=obj.pk
+        )
+        return IndicadorSerializer(indicadores, many=True).data
 
 # --- Serializer Principal del Proyecto de Inversión ---
 class ArrastreInversionSerializer(serializers.ModelSerializer):

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {PlusCircle, Edit, Trash2} from 'lucide-react';
-import ArrastreFormModal from './ArrastreFormModal.jsx';
+import ArrastreFormModal from './modals/ArrastreFormModal.jsx';
 
 export default function ArrastresTab({project, onDataChange}) {
     const [isModalOpen, setIsModalOpen] = useState(false);

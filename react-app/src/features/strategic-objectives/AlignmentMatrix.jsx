@@ -89,7 +89,7 @@ export default function AlignmentMatrix() {
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                         {alignments.map(item => (
-                            <tr key={item.alineacion_id} className="hover:bg-gray-50">
+                            <tr key={item.id || item.alineacion_id} className="hover:bg-gray-50">
                                 <td className="p-3 font-medium text-gray-800">
                                     {item.instrumento_origen?.description || 'N/A'}
                                 </td>
@@ -99,7 +99,7 @@ export default function AlignmentMatrix() {
                                 <td className="p-3 text-gray-600">
                                     {item.ods_vinculados && item.ods_vinculados.length > 0
                                         ? item.ods_vinculados.map(ods => (
-                                            <span key={ods.ods_id}
+                                            <span key={ods.id || ods.ods_id}
                                                   className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">
                                               ODS {ods.numero}: {ods.nombre}
                                             </span>
@@ -122,7 +122,7 @@ export default function AlignmentMatrix() {
                                     </button>
                                     <button
                                         className="p-2 text-red-600 hover:bg-red-100 rounded-full"
-                                        onClick={() => handleDelete(item.alineacion_id)}
+                                        onClick={() => handleDelete(item.id || item.alineacion_id)}
                                     >
                                         <Trash2 size={16}/>
                                     </button>

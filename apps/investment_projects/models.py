@@ -19,7 +19,7 @@ class ProyectoInversion(models.Model):
                                            related_name='proyectos_por_tipologia',
                                            limit_choices_to={'catalogo__codigo': 'TIPOLOGIA_PROYECTO'})
     sector = models.ForeignKey(ItemCatalogo, on_delete=models.PROTECT, related_name='proyectos_por_sector',
-                               limit_choices_to={'catalogo__codigo': 'SECTORES'})
+                               limit_choices_to={'catalogo__codigo': 'MACROSECTOR'})
     estado = models.CharField(max_length=50,
                               default='EN_FORMULACION')
     # Versionamiento
@@ -51,6 +51,46 @@ class ProyectoInversion(models.Model):
         null=True,
         help_text="Observaciones de la última revisión del proyecto."
     )
+
+    # Nuevo: asegurar eliminación de dependencias ligadas por GenericForeignKey/GenericRelation
+    def delete(self, *args, **kwargs):
+        """
+        Elimina indicadores/metas ligados al marco lógico y componentes asociados
+        antes de realizar el borrado del proyecto. También limpia colecciones relacionadas
+        que podrían quedar huérfanas. Finalmente llama a super().delete() para
+        que se aplique el borrado en cascada normal del ORM.
+        """
+        try:
+            ml = getattr(self, 'marco_logico', None)
+            if ml:
+                # Indicadores directamente asociados al marco lógico
+                for ind in ml.indicadores.all():
+                    ind.delete()  # eliminará también Meta por on_delete CASCADE en Meta.indicador
+
+                # Componentes y sus indicadores
+                for comp in ml.componentes.all():
+                    for ind in comp.indicadores.all():
+                        ind.delete()
+                    # eliminar componente (esto cascada eliminará actividades y cronogramas)
+                    comp.delete()
+
+                # eliminar el marco lógico
+                ml.delete()
+        except Exception:
+            # No detener el flujo de eliminación si algo falla aquí; registrar si se desea.
+            pass
+
+        # Limpieza explícita de otras relaciones por seguridad (aunque muchas usan CASCADE)
+        try:
+            self.arrastres.all().delete()
+            self.dictamenes.all().delete()
+            self.puntuaciones.all().delete()
+            self.versiones.all().delete()
+        except Exception:
+            pass
+
+        # Finalmente, borrar el propio proyecto
+        super().delete(*args, **kwargs)
 
 class ProyectoInversionVersion(models.Model):
     ESTADO_CHOICES = [
@@ -90,7 +130,6 @@ class Componente(models.Model):
     nombre = models.CharField(max_length=500)
     descripcion = models.TextField(blank=True, null=True)
     ponderacion = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
-    # AÑADIR ESTA LÍNEA
     indicadores = GenericRelation('Indicador')
 
     def __str__(self):
@@ -106,13 +145,11 @@ class Actividad(models.Model):
     def __str__(self):
         return self.descripcion[:100]
 
-# Modelos genéricos para Indicadores y Metas, adaptados de tu script
 class Indicador(models.Model):
     indicador_id = models.AutoField(primary_key=True)
     descripcion = models.TextField()
     formula = models.TextField(blank=True, null=True)
     unidad_medida = models.CharField(max_length=100)
-    # Relación genérica para vincularse a cualquier otro modelo
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     objeto_asociado = GenericForeignKey('content_type', 'object_id')
@@ -128,7 +165,6 @@ class Meta(models.Model):
     def __str__(self):
         return f"Meta: {self.valor_meta} {self.indicador.unidad_medida}"
 
-# --- Componentes Financieros y Administrativos ---
 class CronogramaValorado(models.Model):
     """Registro del cronograma valorado de actividades o componentes."""
     cronograma_id = models.AutoField(primary_key=True)

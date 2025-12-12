@@ -3,20 +3,15 @@ import {api} from '../../shared/api/api.js';
 import {Anchor, ArrowLeft, FileText, HardHat, Link2, Plus, Send, Target, AlertCircle, History} from 'lucide-react';
 import IndicadorList from './IndicadorList.jsx';
 import AuditTrail from '../audit/components/AuditTrail.jsx';
-import IndicadorFormModal from './IndicadorFormModal.jsx';
-import MarcoLogicoFormModal from './MarcoLogicoFormModal.jsx';
+import IndicadorFormModal from './modals/IndicadorFormModal.jsx';
+import MarcoLogicoFormModal from './modals/MarcoLogicoFormModal.jsx';
 import FinancieroTab from './FinancieroTab.jsx';
-import ActividadFormModal from './ActividadFormModal.jsx';
-import ComponenteFormModal from './ComponenteFormModal.jsx';
+import ActividadFormModal from './modals/ActividadFormModal.jsx';
+import ComponenteFormModal from './modals/ComponenteFormModal.jsx';
 import ArrastresTab from './ArrastresTab.jsx';
 import AlineacionTab from './AlineacionTab.jsx';
 import PriorizacionTab from './PriorizacionTab';
 import { Star } from 'lucide-react';
-
-const CONTENT_TYPE_IDS = {
-    MARCO_LOGICO: 32,
-    COMPONENTE: 9,
-};
 
 const TabButton = ({label, icon: Icon, isActive, onClick}) => (
     <button onClick={onClick}
@@ -75,14 +70,6 @@ export default function ProjectDetail({project, onReturnToList}) {
         fetchData();
     }, [fetchData]);
 
-    const {finIndicadores, propositoIndicadores} = useMemo(() => {
-        const indicadoresML = marcoLogico?.indicadores || [];
-        return {
-            finIndicadores: indicadoresML.filter(i => i.descripcion?.toLowerCase().startsWith('fin:')),
-            propositoIndicadores: indicadoresML.filter(i => i.descripcion?.toLowerCase().startsWith('propósito:')),
-        };
-    }, [marcoLogico]);
-
     const getTipoIndicador = (indicador) => {
         if (indicador.descripcion.toLowerCase().startsWith('fin:')) return 'Fin';
         if (indicador.descripcion.toLowerCase().startsWith('propósito:')) return 'Proposito';
@@ -97,13 +84,14 @@ export default function ProjectDetail({project, onReturnToList}) {
             parentData = {
                 name: tipo,
                 objectId: marcoLogico.marco_logico_id,
-                contentTypeId: CONTENT_TYPE_IDS.MARCO_LOGICO
+                contentTypeId: marcoLogico.content_type_id
             };
         } else {
+            const comp = marcoLogico.componentes.find(c => c.componente_id === indicador.objeto_asociado.componente_id);
             parentData = {
                 name: indicador.objeto_asociado.nombre,
                 objectId: indicador.objeto_asociado.componente_id,
-                contentTypeId: CONTENT_TYPE_IDS.COMPONENTE
+                contentTypeId: comp ? comp.content_type_id : null
             };
         }
 
@@ -129,13 +117,13 @@ export default function ProjectDetail({project, onReturnToList}) {
             parentData = {
                 name: parentType,
                 objectId: parentObject.marco_logico_id,
-                contentTypeId: CONTENT_TYPE_IDS.MARCO_LOGICO
+                contentTypeId: parentObject.content_type_id
             };
         } else {
             parentData = {
                 name: parentObject.nombre,
                 objectId: parentObject.componente_id,
-                contentTypeId: CONTENT_TYPE_IDS.COMPONENTE
+                contentTypeId: parentObject.content_type_id
             };
         }
         setModalParent(parentData);
@@ -184,10 +172,11 @@ export default function ProjectDetail({project, onReturnToList}) {
                                 <div className="mt-3">
                                     <IndicadorList
                                         title="Indicadores de Fin"
-                                        indicadores={finIndicadores}
+                                        indicadores={marcoLogico.indicadores}
+                                        tipoIndicador="Fin"
                                         onAdd={() => handleAddIndicador('Fin', marcoLogico)}
                                         onEdit={handleEditIndicador}
-                                        onDelete={indicador => handleDeleteIndicador(indicador.indicador_id)}
+                                        onDelete={handleDeleteIndicador}
                                     />
                                 </div>
                             </div>
@@ -198,10 +187,11 @@ export default function ProjectDetail({project, onReturnToList}) {
                                 <div className="mt-3">
                                     <IndicadorList
                                         title="Indicadores de Propósito"
-                                        indicadores={propositoIndicadores}
+                                        indicadores={marcoLogico.indicadores}
+                                        tipoIndicador="Proposito"
                                         onAdd={() => handleAddIndicador('Proposito', marcoLogico)}
                                         onEdit={handleEditIndicador}
-                                        onDelete={indicador => handleDeleteIndicador(indicador.indicador_id)}
+                                        onDelete={handleDeleteIndicador}
                                     />
                                 </div>
                             </div>
@@ -243,7 +233,7 @@ export default function ProjectDetail({project, onReturnToList}) {
                                                     indicadores={comp.indicadores}
                                                     onAdd={() => handleAddIndicador('Componente', comp)}
                                                     onEdit={handleEditIndicador}
-                                                    onDelete={indicador => handleDeleteIndicador(indicador.indicador_id)}
+                                                    onDelete={handleDeleteIndicador}
                                                 />
                                             </div>
                                         </div>

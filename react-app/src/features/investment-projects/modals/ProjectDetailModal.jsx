@@ -1,6 +1,6 @@
 import React from 'react';
 import {X} from 'lucide-react';
-import ProjectDetail from './ProjectDetail.jsx';
+import ProjectDetail from '../ProjectDetail.jsx';
 
 export default function ProjectDetailModal({project, onClose}) {
     return (

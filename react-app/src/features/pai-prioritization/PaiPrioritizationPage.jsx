@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {api} from '../../shared/api/api.js';
 import {CheckSquare, Eye, ThumbsUp, CornerUpLeft, ListChecks} from 'lucide-react';
-import ProjectDetailModal from '../investment-projects/ProjectDetailModal.jsx';
+import ProjectDetailModal from '../investment-projects/modals/ProjectDetailModal.jsx';
 
 // Modal para las observaciones al devolver un proyecto
 const DevolverModal = ({project, onClose, onConfirm}) => {

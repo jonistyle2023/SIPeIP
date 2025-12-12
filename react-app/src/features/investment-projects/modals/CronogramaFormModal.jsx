@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {api} from '../../shared/api/api.js';
+import {api} from '../../../shared/api/api.js';
 import {X} from 'lucide-react';
 
 export default function CronogramaFormModal({actividad, onClose, onSave}) {

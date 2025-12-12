@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {api} from '../../shared/api/api.js';
-import {Briefcase, Car, Edit, Eye, Filter, Hospital, Search, University} from 'lucide-react';
+import {Briefcase, Car, Edit, Filter, Hospital, Search, University} from 'lucide-react';
 
 const statusStyles = {
     'EN_FORMULACION': 'bg-blue-100 text-blue-800',
@@ -13,7 +13,7 @@ const iconMap = {
     'Educación': {icon: University, color: 'purple'}
 };
 
-const ProjectCard = ({project, onEdit, onViewDetail}) => {
+const ProjectCard = ({project, onEdit, onViewDetail, onDelete, viewButtonLabel}) => {
     const IconComponent = iconMap[project.sector_nombre]?.icon || Briefcase;
     const iconColor = iconMap[project.sector_nombre]?.color || 'gray';
 
@@ -41,27 +41,51 @@ const ProjectCard = ({project, onEdit, onViewDetail}) => {
                 </div>
             </div>
             <div className="flex items-center space-x-2">
-                <button onClick={() => onViewDetail(project)} className="p-2 text-gray-500 hover:text-gray-800"><Eye
-                    size={18}/></button>
-                <button onClick={() => onEdit(project)} className="p-2 text-gray-500 hover:text-gray-800"><Edit
-                    size={18}/></button>
+                {/* Botón de texto en lugar de icono */}
+                <button
+                    onClick={() => onViewDetail(project)}
+                    className="px-3 py-1 text-blue-600 font-semibold hover:underline"
+                >
+                    {viewButtonLabel}
+                </button>
+
+                {/* Editar */}
+                <button onClick={() => onEdit(project)}
+                        className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-400">
+                    Editar
+                </button>
+
+                {/* Eliminar */}
+                <button onClick={() => onDelete(project)}
+                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500">
+                    Eliminar
+                </button>
             </div>
         </div>
     );
 };
 
-export default function ProjectList({onEdit, onViewDetail, key: refreshKey}) {
+export default function ProjectList({
+    refreshKey = 0,
+    onEdit = () => {},
+    onViewDetail = () => {},
+    onDelete = () => {},
+    viewButtonLabel = 'Ver detalles'
+}) {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const fetchProjects = useCallback(async () => {
         setLoading(true);
+        setError(null);
         try {
             const data = await api.get('/investment-projects/proyectos/');
             const enhancedData = data.map(p => ({...p, monto: Math.floor(Math.random() * 100000000)}));
             setProjects(enhancedData);
         } catch (error) {
             console.error("Error fetching projects:", error);
+            setError('No se pudo cargar la lista de proyectos.');
         } finally {
             setLoading(false);
         }
@@ -72,6 +96,8 @@ export default function ProjectList({onEdit, onViewDetail, key: refreshKey}) {
     }, [fetchProjects]);
 
     if (loading) return <div className="text-center p-6 bg-white rounded-lg shadow-sm">Cargando proyectos...</div>;
+    if (error) return <div className="text-red-600">{error}</div>;
+    if (!projects || projects.length === 0) return <div>No hay proyectos registrados.</div>;
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -87,8 +113,16 @@ export default function ProjectList({onEdit, onViewDetail, key: refreshKey}) {
                 </div>
             </div>
             <div className="space-y-4">
-                {projects.map(project => (<ProjectCard key={project.proyecto_id} project={project} onEdit={onEdit}
-                                                       onViewDetail={onViewDetail}/>))}
+                {projects.map(project => (
+                    <ProjectCard
+                        key={project.proyecto_id}
+                        project={project}
+                        onEdit={onEdit}
+                        onViewDetail={onViewDetail}
+                        onDelete={onDelete}
+                        viewButtonLabel={viewButtonLabel}
+                    />
+                ))}
             </div>
             <div className="mt-6 flex justify-between items-center text-sm text-gray-600">
                 <p>Mostrando {projects.length} de {projects.length} proyectos</p>
