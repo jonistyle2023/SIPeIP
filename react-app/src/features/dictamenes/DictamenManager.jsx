@@ -67,17 +67,17 @@ export default function DictamenManager() {
         }
     };
 
-    if (loading) return <div className="text-center p-6 bg-white rounded-lg shadow-sm">Cargando dictámenes...</div>;
+    if (loading) return <div className="text-center p-6 bg-white dark:bg-slate-800 dark:text-white rounded-lg shadow-sm">Cargando dictámenes...</div>;
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
             {isCreateModalOpen && <DictamenFormModal onClose={() => setIsCreateModalOpen(false)} onSave={handleSave}/>}
             {isStatusModalOpen && <DictamenStatusModal dictamen={selectedDictamen} action={currentAction}
                                                        onClose={() => setIsStatusModalOpen(false)}
                                                        onSave={handleSave}/>}
 
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-lg flex items-center"><FileCheck className="mr-2 text-gray-500"/>Gestión
+                <h3 className="font-semibold text-lg flex items-center dark:text-white"><FileCheck className="mr-2 text-gray-500 dark:text-gray-400"/>Gestión
                     de Dictámenes de Prioridad</h3>
                 <button onClick={() => setIsCreateModalOpen(true)}
                         className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
@@ -86,7 +86,7 @@ export default function DictamenManager() {
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                    <thead className="bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                     <tr>
                         <th className="p-3">Proyecto</th>
                         <th className="p-3">Fecha Solicitud</th>
@@ -94,13 +94,13 @@ export default function DictamenManager() {
                         <th className="p-3 text-right">Acciones</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                     {dictamenes.map(d => (
-                        <tr key={d.dictamen_id} className="border-b hover:bg-gray-50">
-                            <td className="p-3 font-medium">{d.proyecto_nombre}</td>
-                            <td className="p-3">{new Date(d.fecha_solicitud).toLocaleDateString()}</td>
+                        <tr key={d.dictamen_id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td className="p-3 font-medium dark:text-white">{d.proyecto_nombre}</td>
+                            <td className="p-3 dark:text-gray-300">{new Date(d.fecha_solicitud).toLocaleDateString()}</td>
                             <td className="p-3"><span
-                                className={`px-2 py-1 font-semibold rounded-full text-xs ${statusStyles[d.estado] || 'bg-gray-100'}`}>{d.estado}</span>
+                                className={`px-2 py-1 font-semibold rounded-full text-xs ${statusStyles[d.estado] || 'bg-gray-100 dark:bg-slate-700 dark:text-gray-300'}`}>{d.estado}</span>
                             </td>
                             <td className="p-3">
                                 <div className="flex justify-end space-x-2">

@@ -78,20 +78,20 @@ export default function SectoralPlanFormModal({plan, onClose, onSave}) {
 
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-                <h2 className="text-lg font-bold mb-4">{plan ? 'Editar Plan Sectorial' : 'Crear Nuevo Plan Sectorial'}</h2>
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-xl w-full max-w-lg border dark:border-slate-700">
+                <h2 className="text-lg font-bold mb-4 dark:text-white">{plan ? 'Editar Plan Sectorial' : 'Crear Nuevo Plan Sectorial'}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input name="nombre" value={formData.nombre} onChange={handleChange} placeholder="Nombre del Plan"
-                           required className="block w-full p-2 border rounded-md"/>
+                           required className="block w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"/>
                     <select name="periodo_id" value={formData.periodo_id} onChange={handleChange} required
-                            className="block w-full p-2 border rounded-md">
+                            className="block w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                         <option value="">Seleccione un Período</option>
                         {periodos.map(p => (
                             <option key={p.id} value={p.id}>{p.nombre}</option>
                         ))}
                     </select>
                     <select name="entidad_responsable_id" value={formData.entidad_responsable_id}
-                            onChange={handleChange} required className="block w-full p-2 border rounded-md">
+                            onChange={handleChange} required className="block w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                         <option value="">Seleccione la Entidad Responsable</option>
                         {entidades.map(entidad => (
                             <option key={entidad.id}
@@ -99,13 +99,13 @@ export default function SectoralPlanFormModal({plan, onClose, onSave}) {
                         ))}
                     </select>
                     <div>
-                        <label className="text-sm text-gray-600">Fecha de Publicación</label>
+                        <label className="text-sm text-gray-600 dark:text-gray-300">Fecha de Publicación</label>
                         <input name="fecha_publicacion" type="date" value={formData.fecha_publicacion}
-                               onChange={handleChange} required className="block w-full p-2 border rounded-md"/>
+                               onChange={handleChange} required className="block w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"/>
                     </div>
                     {error && <p className="text-red-500 text-sm">{error}</p>}
                     <div className="mt-6 flex justify-end space-x-3">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-md">Cancelar
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit" disabled={isSaving}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-blue-300">

@@ -119,12 +119,12 @@ export default function UnitManager() {
         <div>
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center space-x-4">
-                    <label htmlFor="entity-select" className="font-semibold">Seleccione una Entidad:</label>
+                    <label htmlFor="entity-select" className="font-semibold dark:text-white">Seleccione una Entidad:</label>
                     <select
                         id="entity-select"
                         value={selectedEntityId}
                         onChange={(e) => setSelectedEntityId(e.target.value)}
-                        className="p-2 border rounded-md"
+                        className="p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                     >
                         <option value="">-- Elija una entidad --</option>
                         {entities.map(entity => (
@@ -141,16 +141,16 @@ export default function UnitManager() {
                 )}
             </div>
 
-            {loading && <p className="text-center p-4">Cargando unidades...</p>}
+            {loading && <p className="text-center p-4 dark:text-gray-300">Cargando unidades...</p>}
 
             {selectedEntityId && !loading && units.length === 0 && (
-                <p className="text-center p-4 text-gray-500">No hay unidades organizacionales registradas.</p>
+                <p className="text-center p-4 text-gray-500 dark:text-gray-400">No hay unidades organizacionales registradas.</p>
             )}
 
             {selectedEntityId && units.length > 0 && !loading && (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                        <thead className="bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                         <tr>
                             <th className="p-3">Nombre de la Unidad</th>
                             <th className="p-3">Entidad</th>
@@ -161,18 +161,18 @@ export default function UnitManager() {
                             <th className="p-3">Acciones</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                         {units.map(unit => (
-                            <tr key={unit.id} className="border-b hover:bg-gray-50">
-                                <td className="p-3 font-medium text-gray-800">{unit.nombre}</td>
-                                <td className="p-3">{unit.entidad_nombre || '-'}</td>
-                                <td className="p-3">{unit.macrosector_nombre || '-'}</td>
-                                <td className="p-3">
+                            <tr key={unit.id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                                <td className="p-3 font-medium text-gray-800 dark:text-white">{unit.nombre}</td>
+                                <td className="p-3 dark:text-gray-300">{unit.entidad_nombre || '-'}</td>
+                                <td className="p-3 dark:text-gray-300">{unit.macrosector_nombre || '-'}</td>
+                                <td className="p-3 dark:text-gray-300">
                                     {unit.sectores_nombres && unit.sectores_nombres.length > 0
                                         ? unit.sectores_nombres.join(', ')
                                         : '-'}
                                 </td>
-                                <td className="p-3">{unit.padre_nombre || 'Nivel Principal'}</td>
+                                <td className="p-3 dark:text-gray-300">{unit.padre_nombre || 'Nivel Principal'}</td>
                                 <td className="p-3">
                                     <span
                                         className={`px-2 py-1 rounded-full text-xs font-medium ${unit.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>

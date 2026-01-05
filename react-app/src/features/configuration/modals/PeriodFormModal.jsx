@@ -37,41 +37,41 @@ export default function PeriodFormModal({period, onClose, onSave}) {
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-80">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">{period ? 'Editar Período' : 'Nuevo Período'}</h3>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full"><X size={20}/></button>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-lg border dark:border-slate-700">
+                <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold dark:text-white">{period ? 'Editar Período' : 'Nuevo Período'}</h3>
+                    <button onClick={onClose} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full dark:text-gray-300"><X size={20}/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
                         <input type="text" name="nombre" placeholder="Nombre del Período" value={formData.nombre}
-                               onChange={handleChange} className="w-full p-2 border rounded" required/>
+                               onChange={handleChange} className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                         <div>
-                            <label className="text-sm">Fecha de Inicio</label>
+                            <label className="text-sm dark:text-gray-300">Fecha de Inicio</label>
                             <input type="date" name="fecha_inicio" value={formData.fecha_inicio} onChange={handleChange}
-                                   className="w-full p-2 border rounded" required/>
+                                   className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                         </div>
                         <div>
-                            <label className="text-sm">Fecha de Fin</label>
+                            <label className="text-sm dark:text-gray-300">Fecha de Fin</label>
                             <input type="date" name="fecha_fin" value={formData.fecha_fin} onChange={handleChange}
-                                   className="w-full p-2 border rounded" required/>
+                                   className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                         </div>
                         <select name="estado" value={formData.estado} onChange={handleChange}
-                                className="w-full p-2 border rounded">
+                                className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                             <option value="ABIERTO">Abierto</option>
                             <option value="EN_CIERRE">En Cierre</option>
                             <option value="CERRADO">Cerrado</option>
                         </select>
-                        <label className="flex items-center space-x-2">
+                        <label className="flex items-center space-x-2 dark:text-gray-300">
                             <input type="checkbox" name="es_activo_para_carga" checked={formData.es_activo_para_carga}
                                    onChange={handleChange}/>
                             <span>Activo para carga de información</span>
                         </label>
                     </div>
                     {error && <p className="text-red-500 text-sm text-center px-6 pb-2">{error}</p>}
-                    <div className="p-4 border-t flex justify-end space-x-2">
+                    <div className="p-4 border-t dark:border-slate-700 flex justify-end space-x-2">
                         <button type="button" onClick={onClose}
-                                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancelar
+                                className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit"
                                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Guardar

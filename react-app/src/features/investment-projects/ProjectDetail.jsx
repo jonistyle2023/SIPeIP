@@ -15,7 +15,7 @@ import { Star } from 'lucide-react';
 
 const TabButton = ({label, icon: Icon, isActive, onClick}) => (
     <button onClick={onClick}
-            className={`flex items-center px-4 py-2 text-sm font-medium transition-colors duration-200 ${isActive ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
+            className={`flex items-center px-4 py-2 text-sm font-medium transition-colors duration-200 ${isActive ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>
         <Icon size={16} className="mr-2"/>
         {label}
     </button>
@@ -23,8 +23,8 @@ const TabButton = ({label, icon: Icon, isActive, onClick}) => (
 
 const PlaceholderContent = ({tabName, onAction}) => (
     <div className="text-center py-16">
-        <h3 className="text-lg font-semibold text-gray-700">{tabName === "Marco Lógico" ? "No hay un Marco Lógico definido" : `Funcionalidad de "${tabName}"`}</h3>
-        <p className="text-gray-500 mt-2">{tabName === "Marco Lógico" ? "Crea uno para empezar a añadir componentes e indicadores." : "Este panel está en construcción."}</p>
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">{tabName === "Marco Lógico" ? "No hay un Marco Lógico definido" : `Funcionalidad de "${tabName}"`}</h3>
+        <p className="text-gray-500 dark:text-gray-400 mt-2">{tabName === "Marco Lógico" ? "Crea uno para empezar a añadir componentes e indicadores." : "Este panel está en construcción."}</p>
         {tabName === "Marco Lógico" && (
             <button onClick={onAction}
                     className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center mx-auto">
@@ -159,7 +159,7 @@ export default function ProjectDetail({project, onReturnToList}) {
         projectDetails.dictamenes?.some(d => d.estado === 'APROBADO');
 
     const renderContent = () => {
-        if (loading) return <p className="text-center p-4">Cargando...</p>;
+        if (loading) return <p className="text-center p-4 dark:text-gray-300">Cargando...</p>;
 
         switch (activeTab) {
             case 'marco_logico':
@@ -167,8 +167,8 @@ export default function ProjectDetail({project, onReturnToList}) {
                     return (
                         <div className="space-y-6">
                             <div>
-                                <h3 className="font-bold text-xl text-gray-800">Fin</h3>
-                                <p className="text-gray-700 italic mt-1">{marcoLogico.fin}</p>
+                                <h3 className="font-bold text-xl text-gray-800 dark:text-white">Fin</h3>
+                                <p className="text-gray-700 dark:text-gray-300 italic mt-1">{marcoLogico.fin}</p>
                                 <div className="mt-3">
                                     <IndicadorList
                                         title="Indicadores de Fin"
@@ -180,10 +180,10 @@ export default function ProjectDetail({project, onReturnToList}) {
                                     />
                                 </div>
                             </div>
-                            <hr/>
+                            <hr className="dark:border-slate-700"/>
                             <div>
-                                <h3 className="font-bold text-xl text-gray-800">Propósito</h3>
-                                <p className="text-gray-700 italic mt-1">{marcoLogico.proposito}</p>
+                                <h3 className="font-bold text-xl text-gray-800 dark:text-white">Propósito</h3>
+                                <p className="text-gray-700 dark:text-gray-300 italic mt-1">{marcoLogico.proposito}</p>
                                 <div className="mt-3">
                                     <IndicadorList
                                         title="Indicadores de Propósito"
@@ -195,10 +195,10 @@ export default function ProjectDetail({project, onReturnToList}) {
                                     />
                                 </div>
                             </div>
-                            <hr/>
+                            <hr className="dark:border-slate-700"/>
                             <div>
                                 <div className="flex justify-between items-center mb-2">
-                                    <h3 className="font-bold text-xl text-gray-800">Componentes</h3>
+                                    <h3 className="font-bold text-xl text-gray-800 dark:text-white">Componentes</h3>
                                     <button onClick={() => setIsComponenteModalOpen(true)}
                                             className="flex items-center text-sm px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                                         <Plus size={16} className="mr-1"/>Añadir Componente
@@ -206,25 +206,25 @@ export default function ProjectDetail({project, onReturnToList}) {
                                 </div>
                                 <div className="space-y-4 mt-2">
                                     {marcoLogico.componentes?.map(comp => (
-                                        <div key={comp.componente_id} className="p-4 bg-gray-50 rounded-lg">
+                                        <div key={comp.componente_id} className="p-4 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
                                             <div className="flex justify-between items-start">
                                                 <div>
-                                                    <p className="font-semibold">{comp.nombre}</p>
-                                                    <p className="text-xs text-gray-500">Ponderación: {comp.ponderacion}%</p>
+                                                    <p className="font-semibold dark:text-white">{comp.nombre}</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Ponderación: {comp.ponderacion}%</p>
                                                 </div>
                                                 <button onClick={() => handleAddActividad(comp)}
                                                         className="flex items-center text-xs px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600">
                                                     <Plus size={14} className="mr-1"/>Añadir Actividad
                                                 </button>
                                             </div>
-                                            <div className="mt-4 space-y-2 pl-4 border-l-2">
-                                                <h5 className="text-sm font-semibold">Actividades:</h5>
+                                            <div className="mt-4 space-y-2 pl-4 border-l-2 dark:border-slate-600">
+                                                <h5 className="text-sm font-semibold dark:text-gray-200">Actividades:</h5>
                                                 {comp.actividades?.length > 0 ? comp.actividades.map(act => (
-                                                    <div key={act.actividad_id} className="text-sm text-gray-700">
+                                                    <div key={act.actividad_id} className="text-sm text-gray-700 dark:text-gray-300">
                                                         <p>- {act.descripcion}</p>
-                                                        <p className="text-xs text-gray-500 ml-4">({act.fecha_inicio} al {act.fecha_fin})</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 ml-4">({act.fecha_inicio} al {act.fecha_fin})</p>
                                                     </div>
-                                                )) : <p className="text-xs text-gray-500 italic">No hay actividades
+                                                )) : <p className="text-xs text-gray-500 dark:text-gray-400 italic">No hay actividades
                                                     definidas.</p>}
                                             </div>
                                             <div className="mt-4">
@@ -297,16 +297,16 @@ export default function ProjectDetail({project, onReturnToList}) {
 
             {/* --- AVISO DE OBSERVACIONES --- */}
             {projectDetails.estado === 'EN_FORMULACION' && projectDetails.ultimas_observaciones && (
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-600 p-4 rounded-r-lg">
                     <div className="flex">
                         <div className="flex-shrink-0">
                             <AlertCircle className="h-5 w-5 text-yellow-400"/>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm font-semibold text-yellow-800">
+                            <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
                                 Este proyecto fue devuelto para corrección.
                             </p>
-                            <div className="mt-2 text-sm text-yellow-700">
+                            <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                                 <p><strong>Observaciones:</strong> {projectDetails.ultimas_observaciones}</p>
                             </div>
                         </div>
@@ -315,17 +315,17 @@ export default function ProjectDetail({project, onReturnToList}) {
             )}
 
             <button onClick={onReturnToList}
-                    className="flex items-center text-sm text-blue-600 font-semibold hover:underline">
+                    className="flex items-center text-sm text-blue-600 dark:text-blue-400 font-semibold hover:underline">
                 <ArrowLeft size={16} className="mr-1"/>
                 Volver al Pipeline
             </button>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-800">{projectDetails.nombre}</h2>
-                        <p className="text-sm text-gray-500">CUP: {projectDetails.cup || 'N/A'} • {projectDetails.sector_nombre}</p>
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{projectDetails.nombre}</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">CUP: {projectDetails.cup || 'N/A'} • {projectDetails.sector_nombre}</p>
                         <span
-                            className={`mt-2 inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800`}>
+                            className={`mt-2 inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200`}>
                             {projectDetails.estado?.replace('_', ' ')}
                         </span>
                     </div>
@@ -341,7 +341,7 @@ export default function ProjectDetail({project, onReturnToList}) {
                 </div>
             </div>
 
-            <div className="border-b flex">
+            <div className="border-b dark:border-slate-700 flex">
                 <TabButton label="Marco Lógico" icon={Target} isActive={activeTab === 'marco_logico'}
                            onClick={() => setActiveTab('marco_logico')}/>
                 <TabButton label="Financiero" icon={HardHat} isActive={activeTab === 'financiero'}
@@ -358,7 +358,7 @@ export default function ProjectDetail({project, onReturnToList}) {
                            onClick={() => setActiveTab('auditoria')}/>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm min-h-[300px]">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm min-h-[300px] transition-colors">
                 {renderContent()}
             </div>
         </div>

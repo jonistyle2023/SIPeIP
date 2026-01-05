@@ -31,41 +31,41 @@ export default function ArrastreFormModal({projectId, onClose, onSave}) {
 
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">Nuevo Arrastre de Inversión</h3>
-                    <button onClick={onClose}><X/></button>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-lg border dark:border-slate-700">
+                <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold dark:text-white">Nuevo Arrastre de Inversión</h3>
+                    <button onClick={onClose} className="dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full p-1"><X/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Información del Contrato</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Información del Contrato</label>
                             <input
                                 type="text"
                                 name="contrato_info"
                                 value={formData.contrato_info}
                                 onChange={handleChange}
-                                className="w-full p-2 border rounded mt-1"
+                                className="w-full p-2 border rounded mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                 placeholder="Ej: Contrato N° 123-ABC"
                                 required
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Monto Devengado ($)</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto Devengado ($)</label>
                                 <input
                                     type="number"
                                     name="monto_devengado"
                                     step="0.01"
                                     value={formData.monto_devengado}
                                     onChange={handleChange}
-                                    className="w-full p-2 border rounded mt-1"
+                                    className="w-full p-2 border rounded mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                     placeholder="Ej: 150000.00"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Monto por Devengar
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto por Devengar
                                     ($)</label>
                                 <input
                                     type="number"
@@ -73,7 +73,7 @@ export default function ArrastreFormModal({projectId, onClose, onSave}) {
                                     step="0.01"
                                     value={formData.monto_por_devengar}
                                     onChange={handleChange}
-                                    className="w-full p-2 border rounded mt-1"
+                                    className="w-full p-2 border rounded mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                     placeholder="Ej: 350000.00"
                                     required
                                 />
@@ -81,8 +81,8 @@ export default function ArrastreFormModal({projectId, onClose, onSave}) {
                         </div>
                     </div>
                     {error && <p className="text-red-500 text-center pb-4">{error}</p>}
-                    <div className="p-4 border-t flex justify-end space-x-2">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar
+                    <div className="p-4 border-t dark:border-slate-700 flex justify-end space-x-2">
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar Arrastre
                         </button>

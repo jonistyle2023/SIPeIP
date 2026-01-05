@@ -27,7 +27,7 @@ export default function ArrastresTab({project, onDataChange}) {
 
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+                    <thead className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                     <tr>
                         <th className="p-3">Información del Contrato</th>
                         <th className="p-3 text-right">Monto Devengado ($)</th>
@@ -35,12 +35,12 @@ export default function ArrastresTab({project, onDataChange}) {
                         <th className="p-3 text-right">Acciones</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                     {arrastres.map(arr => (
-                        <tr key={arr.arrastre_id} className="border-b hover:bg-gray-50">
-                            <td className="p-3 font-medium">{arr.contrato_info}</td>
-                            <td className="p-3 text-right font-mono">{parseFloat(arr.monto_devengado).toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
-                            <td className="p-3 text-right font-mono">{parseFloat(arr.monto_por_devengar).toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                        <tr key={arr.arrastre_id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td className="p-3 font-medium dark:text-white">{arr.contrato_info}</td>
+                            <td className="p-3 text-right font-mono dark:text-gray-300">{parseFloat(arr.monto_devengado).toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
+                            <td className="p-3 text-right font-mono dark:text-gray-300">{parseFloat(arr.monto_por_devengar).toLocaleString('es-BO', {minimumFractionDigits: 2})}</td>
                             <td className="p-3 text-right">
                                 <div className="flex justify-end space-x-2">
                                     <button className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/></button>
@@ -51,7 +51,7 @@ export default function ArrastresTab({project, onDataChange}) {
                     ))}
                     {arrastres.length === 0 && (
                         <tr>
-                            <td colSpan="4" className="text-center p-6 text-gray-500 italic">No hay arrastres de
+                            <td colSpan="4" className="text-center p-6 text-gray-500 dark:text-gray-400 italic">No hay arrastres de
                                 inversión registrados para este proyecto.
                             </td>
                         </tr>

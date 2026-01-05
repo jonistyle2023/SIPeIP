@@ -53,25 +53,25 @@ const ProgramaFormModal = ({programa, onClose, onSave}) => {
 
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80 p-4">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
-                <h3 className="text-lg font-semibold mb-4">{programa ? 'Editar Programa' : 'Nuevo Programa Institucional'}</h3>
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-xl w-full max-w-2xl border dark:border-slate-700">
+                <h3 className="text-lg font-semibold mb-4 dark:text-white">{programa ? 'Editar Programa' : 'Nuevo Programa Institucional'}</h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Nombre del Programa</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Programa</label>
                         <input
                             type="text"
                             value={nombre}
                             onChange={(e) => setNombre(e.target.value)}
-                            className="w-full p-2 border rounded mt-1"
+                            className="w-full p-2 border rounded mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Entidad Responsable</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Entidad Responsable</label>
                         <select
                             value={entidad}
                             onChange={(e) => setEntidad(e.target.value)}
-                            className="w-full p-2 border rounded mt-1"
+                            className="w-full p-2 border rounded mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             required
                         >
                             <option value="">-- Seleccione una entidad --</option>
@@ -79,22 +79,22 @@ const ProgramaFormModal = ({programa, onClose, onSave}) => {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">OEI Alineados</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">OEI Alineados</label>
                         <select
                             multiple
                             value={oeiAlineados}
                             onChange={handleOeiChange}
-                            className="w-full p-2 border rounded mt-1 h-32"
+                            className="w-full p-2 border rounded mt-1 h-32 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                         >
                             {oeiList.map(oei => <option key={oei.oei_id}
                                                         value={oei.oei_id}>{oei.codigo} - {oei.descripcion}</option>)}
                         </select>
-                        <p className="text-xs text-gray-500 mt-1">Puedes seleccionar varios manteniendo presionada la
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Puedes seleccionar varios manteniendo presionada la
                             tecla Ctrl (o Cmd).</p>
                     </div>
                     {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
                     <div className="flex justify-end mt-4 space-x-2">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
                     </div>
@@ -140,13 +140,13 @@ export default function ProgramasManager() {
     }
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
             {isModalOpen && <ProgramaFormModal programa={editingPrograma} onClose={() => {
                 setIsModalOpen(false);
                 setEditingPrograma(null);
             }} onSave={handleSave}/>}
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-lg flex items-center"><Layers className="mr-2 text-green-500"/>Programas
+                <h3 className="font-semibold text-lg flex items-center dark:text-white"><Layers className="mr-2 text-green-500"/>Programas
                     Institucionales</h3>
                 <button onClick={() => {
                     setEditingPrograma(null);
@@ -158,7 +158,7 @@ export default function ProgramasManager() {
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                    <thead className="bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                     <tr>
                         <th className="p-3">Nombre del Programa</th>
                         <th className="p-3">Entidad</th>
@@ -166,12 +166,12 @@ export default function ProgramasManager() {
                         <th className="p-3 text-right">Acciones</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                     {programas.map(p => (
-                        <tr key={p.programa_id} className="border-b">
-                            <td className="p-3 font-medium">{p.nombre}</td>
-                            <td className="p-3 text-gray-600">{p.entidad_nombre}</td>
-                            <td className="p-3 text-blue-600 font-semibold">
+                        <tr key={p.programa_id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td className="p-3 font-medium dark:text-white">{p.nombre}</td>
+                            <td className="p-3 text-gray-600 dark:text-gray-300">{p.entidad_nombre}</td>
+                            <td className="p-3 text-blue-600 dark:text-blue-400 font-semibold">
                                 <Link2 size={14} className="inline mr-1"/>
                                 {p.oei_alineados.map(oei => (
                                     <span key={oei.oei_id}>{oei.codigo} - {oei.descripcion}<br/></span>

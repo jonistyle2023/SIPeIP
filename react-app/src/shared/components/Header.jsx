@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {FiCalendar, FiMenu, FiX} from 'react-icons/fi';
 import {LogOut} from 'lucide-react';
+import {ThemeToggle} from './ThemeToggle';
 
 const Header = ({user, onLogout, pageTitle, onOpenSidebar, sidebarOpen}) => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -12,10 +13,10 @@ const Header = ({user, onLogout, pageTitle, onOpenSidebar, sidebarOpen}) => {
     }, [sidebarOpen]);
 
     return (
-        <header className="flex items-center justify-between p-4 bg-white shadow-md relative z-[70]">
+        <header className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 shadow-md relative z-[70] transition-colors duration-200">
             <div className="flex items-center gap-3">
                 <button
-                    className="text-gray-700 bg-white border shadow rounded-full p-2.5 transition-colors hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 border dark:border-slate-600 shadow rounded-full p-2.5 transition-colors hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onClick={() => {
                         onOpenSidebar?.();
                         setIsSidebarOpen(v => !v);
@@ -30,44 +31,48 @@ const Header = ({user, onLogout, pageTitle, onOpenSidebar, sidebarOpen}) => {
                     )}
                 </button>
                 <div>
-                    <h2 className="text-2xl font-semibold text-gray-800">{pageTitle}</h2>
-                    <p className="text-sm text-gray-500">Seguimiento Integral de planificación e inversión pública del País</p>
+                    <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">{pageTitle}</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Seguimiento Integral de planificación e inversión pública del País</p>
                 </div>
             </div>
             <button
-                className="lg:hidden ml-2 text-gray-700"
+                className="lg:hidden ml-2 text-gray-700 dark:text-gray-200"
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="Abrir menú de usuario"
             >
                 {menuOpen ? <FiX size={24}/> : <FiMenu size={24}/>}
             </button>
             <div className="hidden lg:flex items-center space-x-4">
-                <div className="flex items-center px-3 py-2 bg-gray-100 rounded-md">
-                    <FiCalendar className="text-gray-600"/>
-                    <span className="ml-2 text-sm font-medium text-gray-700 hidden sm:block">{dateString}</span>
+                <ThemeToggle />
+                <div className="flex items-center px-3 py-2 bg-gray-100 dark:bg-slate-700 rounded-md transition-colors">
+                    <FiCalendar className="text-gray-600 dark:text-gray-300"/>
+                    <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:block">{dateString}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                     <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
                     <div>
-                        <p className="font-semibold text-sm text-gray-800">{user?.nombre_usuario || 'Usuario'}</p>
-                        <p className="text-xs text-gray-500">{user?.roles?.join(', ') || 'Rol'}</p>
+                        <p className="font-semibold text-sm text-gray-800 dark:text-white">{user?.nombre_usuario || 'Usuario'}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{user?.roles?.join(', ') || 'Rol'}</p>
                     </div>
-                    <LogOut size={20} className="text-gray-600 cursor-pointer" onClick={onLogout}/>
+                    <LogOut size={20} className="text-gray-600 dark:text-gray-300 cursor-pointer hover:text-red-500 dark:hover:text-red-400" onClick={onLogout}/>
                 </div>
             </div>
             {menuOpen && (
-                <div className="absolute top-full right-0 w-64 bg-white shadow-lg rounded-lg p-4 flex flex-col space-y-4 lg:hidden z-50">
+                <div className="absolute top-full right-0 w-64 bg-white dark:bg-slate-800 shadow-lg rounded-lg p-4 flex flex-col space-y-4 lg:hidden z-50 border dark:border-slate-700">
+                    <div className="flex justify-end">
+                        <ThemeToggle />
+                    </div>
                     <div className="flex items-center">
-                        <FiCalendar className="text-gray-600"/>
-                        <span className="ml-2 text-sm font-medium text-gray-700">{dateString}</span>
+                        <FiCalendar className="text-gray-600 dark:text-gray-300"/>
+                        <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-200">{dateString}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                         <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
                         <div>
-                            <p className="font-semibold text-sm text-gray-800">{user?.nombre_usuario || 'Usuario'}</p>
-                            <p className="text-xs text-gray-500">{user?.roles?.join(', ') || 'Rol'}</p>
+                            <p className="font-semibold text-sm text-gray-800 dark:text-white">{user?.nombre_usuario || 'Usuario'}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{user?.roles?.join(', ') || 'Rol'}</p>
                         </div>
-                        <LogOut size={20} className="text-gray-600 cursor-pointer" onClick={onLogout}/>
+                        <LogOut size={20} className="text-gray-600 dark:text-gray-300 cursor-pointer" onClick={onLogout}/>
                     </div>
                 </div>
             )}

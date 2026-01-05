@@ -12,7 +12,7 @@ const TabButton = ({ icon: Icon, label, isActive, onClick }) => (
         className={`flex items-center px-4 py-2 text-sm font-medium ${
             isActive
                 ? 'border-b-2 border-blue-500 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
         }`}
     >
         <Icon size={16} className="mr-2" />
@@ -67,13 +67,13 @@ export default function ConfigurationPage({ initialTab, setActivePage }) {
 
     return (
         <div className="space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-800">Módulo de Configuración</h2>
-                <p className="text-gray-600 mt-1">Administración de usuarios, roles, instituciones y criterios del priorización.</p>
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Módulo de Configuración</h2>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">Administración de usuarios, roles, instituciones y criterios del priorización.</p>
             </div>
 
             {/* Menú de Pestañas Integrado */}
-            <div className="border-b flex flex-wrap">
+            <div className="border-b dark:border-slate-700 flex flex-wrap">
                 <TabButton label="Gestión de Usuarios" icon={Users} isActive={activeTab === 'usuarios'} onClick={() => handleTabClick('usuarios', 'Usuarios')} />
                 <TabButton label="Configuración Institucional" icon={Settings} isActive={activeTab === 'institucional'} onClick={() => handleTabClick('institucional', 'Institucional')} />
                 <TabButton label="Criterios de Priorización" icon={ListChecks} isActive={activeTab === 'criterios'} onClick={() => handleTabClick('criterios', 'Institucional')} />

@@ -31,7 +31,7 @@ export default function ItemTable({items, onEditItem, onDeleteItem}) {
     return (
         <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                <thead className="bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                 <tr>
                     <th className="p-3">
                         <button onClick={() => requestSort('nombre')} className="flex items-center font-semibold">
@@ -46,14 +46,14 @@ export default function ItemTable({items, onEditItem, onDeleteItem}) {
                     <th className="p-3 text-right font-semibold">Acciones</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                 {sortedItems.map(item => (
-                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                        <td className="p-3 font-medium text-gray-800"
+                    <tr key={item.id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td className="p-3 font-medium text-gray-800 dark:text-white"
                             style={{paddingLeft: `${12 + item.level * 20}px`}}>
                             {item.nombre}
                         </td>
-                        <td className="p-3 text-gray-600">{item.codigo || 'S/C'}</td>
+                        <td className="p-3 text-gray-600 dark:text-gray-400">{item.codigo || 'S/C'}</td>
                         <td className="p-3 text-right">
                             <button onClick={() => onEditItem(item)} title="Editar ítem" className="p-1 text-blue-500">
                                 <Edit size={14}/></button>

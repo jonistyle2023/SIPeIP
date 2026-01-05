@@ -65,36 +65,36 @@ export default function EntityFormModal({entity, onClose, onSave}) {
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-80">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">{entity ? 'Editar Entidad' : 'Nueva Entidad'}</h3>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full"><X size={20}/></button>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-lg border dark:border-slate-700">
+                <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold dark:text-white">{entity ? 'Editar Entidad' : 'Nueva Entidad'}</h3>
+                    <button onClick={onClose} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full dark:text-gray-300"><X size={20}/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
                         <input type="text" name="nombre" placeholder="Nombre de la Entidad" value={formData.nombre}
-                               onChange={handleChange} className="w-full p-2 border rounded" required/>
+                               onChange={handleChange} className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                         <input type="text" name="codigo_unico" placeholder="Código Único" value={formData.codigo_unico}
-                               onChange={handleChange} className="w-full p-2 border rounded" required/>
+                               onChange={handleChange} className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                         <select name="nivel_gobierno" value={formData.nivel_gobierno} onChange={handleChange}
-                                className="w-full p-2 border rounded" required>
+                                className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required>
                             <option value="">Seleccione Nivel de Gobierno</option>
                             {nivelesGobierno.map(n => <option key={n.id} value={n.id}>{n.nombre}</option>)}
                         </select>
                         <select name="subsector" value={formData.subsector} onChange={handleChange}
-                                className="w-full p-2 border rounded">
+                                className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                             <option value="">Seleccione Subsector (Opcional)</option>
                             {subsectores.map(s => <option key={s.id} value={s.id}>{s.nombre}</option>)}
                         </select>
-                        <label className="flex items-center space-x-2">
+                        <label className="flex items-center space-x-2 dark:text-gray-300">
                             <input type="checkbox" name="activo" checked={formData.activo} onChange={handleChange}/>
                             <span>Activo</span>
                         </label>
                     </div>
                     {error && <p className="text-red-500 text-sm text-center px-6 pb-2">{error}</p>}
-                    <div className="p-4 border-t flex justify-end space-x-2">
+                    <div className="p-4 border-t dark:border-slate-700 flex justify-end space-x-2">
                         <button type="button" onClick={onClose}
-                                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancelar
+                                className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit"
                                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Guardar

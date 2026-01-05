@@ -3,3 +3,17 @@
 :root {
     --tw-font-sans: 'Roboto', ui-sans-serif, system-ui;
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+    --tw-font-sans: 'Roboto', ui-sans-serif, system-ui;
+    --bg-primary: #ffffff;
+    --text-primary: #1f2937;
+}
+
+.dark {
+    --bg-primary: #0f172a;
+    --text-primary: #f8fafc;
+    color-scheme: dark;
+}

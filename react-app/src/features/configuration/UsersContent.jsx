@@ -21,14 +21,14 @@ import RoleFormModal from "./modals/RoleFormModal.jsx";
 
 // Componente para las tarjetas de KPI
 const KpiCard = ({title, value, icon: Icon, color}) => (
-    <div className={`bg-white p-6 rounded-lg shadow-sm border-l-4 ${color}`}>
+    <div className={`bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border-l-4 ${color} transition-colors`}>
         <div className="flex items-center">
-            <div className="p-3 rounded-full bg-gray-100 mr-4">
-                <Icon className="h-6 w-6 text-gray-600"/>
+            <div className="p-3 rounded-full bg-gray-100 dark:bg-slate-700 mr-4">
+                <Icon className="h-6 w-6 text-gray-600 dark:text-gray-300"/>
             </div>
             <div>
-                <p className="text-3xl font-bold text-gray-800">{value}</p>
-                <p className="text-sm text-gray-500">{title}</p>
+                <p className="text-3xl font-bold text-gray-800 dark:text-white">{value}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
             </div>
         </div>
     </div>
@@ -139,9 +139,8 @@ export default function UsersPage() {
 
     return (
         <div className="space-y-8">
-            {/* --- SECCIÓN: KPIs de Gestión de Usuarios (ahora primera) --- */}
             <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center"><Users className="mr-3 text-blue-500"/>Usuarios del Sistema</h3>
+                <h3 className="text-xl font-semibold mb-4 flex items-center dark:text-white"><Users className="mr-3 text-blue-500"/>Usuarios del Sistema</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <KpiCard title="Total Usuarios" value={kpis.total} icon={Users} color="border-blue-500"/>
                     <KpiCard title="Usuarios Activos" value={kpis.activos} icon={UserCheck} color="border-green-500"/>
@@ -150,9 +149,9 @@ export default function UsersPage() {
                              color="border-purple-500"/>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                     <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-semibold">Lista de Usuarios</h4>
+                        <h4 className="font-semibold dark:text-white">Lista de Usuarios</h4>
                         <button onClick={() => handleOpenModal()}
                                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
                             <Plus size={16} className="mr-2"/>
@@ -161,7 +160,7 @@ export default function UsersPage() {
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                            <thead className="bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                             <tr>
                                 <th className="p-3">Usuario</th>
                                 <th className="p-3">Roles</th>
@@ -172,20 +171,20 @@ export default function UsersPage() {
                                 <th className="p-3">Acciones</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                             {users.map(user => (
-                                <tr key={user.id} className="border-b hover:bg-gray-50">
+                                <tr key={user.id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
                                     <td className="p-3 flex items-center">
-                                        <div className="w-8 h-8 rounded-full bg-gray-200 mr-3"></div>
+                                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-slate-600 mr-3"></div>
                                         <div>
-                                            <p className="font-medium text-gray-800">{user.datos_basicos?.nombre || user.nombre_usuario}</p>
-                                            <p className="text-gray-500">{user.nombre_usuario}</p>
+                                            <p className="font-medium text-gray-800 dark:text-white">{user.datos_basicos?.nombre || user.nombre_usuario}</p>
+                                            <p className="text-gray-500 dark:text-gray-400">{user.nombre_usuario}</p>
                                         </div>
                                     </td>
-                                    <td className="p-3">{user.roles.map(r => r.nombre).join(', ')}</td>
-                                    <td className="p-3">{user.entidad_codigo || 'N/A'}</td>
-                                    <td className="p-3">{formatDate(user.fecha_creacion)}</td>
-                                    <td className="p-3">{formatDate(user.ultimo_acceso)}</td>
+                                    <td className="p-3 dark:text-gray-300">{user.roles.map(r => r.nombre).join(', ')}</td>
+                                    <td className="p-3 dark:text-gray-300">{user.entidad_codigo || 'N/A'}</td>
+                                    <td className="p-3 dark:text-gray-300">{formatDate(user.fecha_creacion)}</td>
+                                    <td className="p-3 dark:text-gray-300">{formatDate(user.ultimo_acceso)}</td>
                                     <td className="p-3">
                       <span
                           className={`px-2 py-1 rounded-full text-xs font-medium ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
@@ -209,9 +208,9 @@ export default function UsersPage() {
             </div>
 
             {/* --- SECCIÓN: Roles del Sistema --- */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                 <div className="flex justify-between items-center mb-4">
-                    <h4 className="font-semibold">Lista de Roles</h4>
+                    <h4 className="font-semibold dark:text-white">Lista de Roles</h4>
                     <button onClick={() => handleOpenRoleModal()}
                             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
                         <Plus size={16} className="mr-2"/>
@@ -220,7 +219,7 @@ export default function UsersPage() {
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                        <thead className="bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                         <tr>
                             <th className="p-3">Rol</th>
                             <th className="p-3">Descripción</th>
@@ -229,18 +228,18 @@ export default function UsersPage() {
                             <th className="p-3">Acciones</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                         {roles.map(rol => (
-                            <tr key={rol.id} className="border-b hover:bg-gray-50">
-                                <td className="p-3 font-medium text-gray-800">{rol.nombre}</td>
-                                <td className="p-3 text-gray-600">{rol.descripcion || 'Sin descripción'}</td>
+                            <tr key={rol.id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                                <td className="p-3 font-medium text-gray-800 dark:text-white">{rol.nombre}</td>
+                                <td className="p-3 text-gray-600 dark:text-gray-400">{rol.descripcion || 'Sin descripción'}</td>
                                 <td className="p-3">
-                                    <div className="flex items-center">
+                                    <div className="flex items-center dark:text-gray-300">
                                         <Users size={16} className="mr-2 text-gray-400"/>
                                         {rol.usuarios_count}
                                     </div>
                                 </td>
-                                <td className="p-3">{formatDate(rol.fecha_creacion)}</td>
+                                <td className="p-3 dark:text-gray-300">{formatDate(rol.fecha_creacion)}</td>
                                 <td className="p-3 flex items-center space-x-2">
                                     <button onClick={() => handleOpenRoleModal(rol)}
                                             className="p-1 text-blue-500 hover:text-blue-700"><Edit size={16}/>
@@ -257,74 +256,74 @@ export default function UsersPage() {
             </div>
 
             <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center"><Info className="mr-3 text-blue-500"/>Acerca de Roles y Permisos</h3>
+                <h3 className="text-xl font-semibold mb-4 flex items-center dark:text-white"><Info className="mr-3 text-blue-500"/>Acerca de Roles y Permisos</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Card Administrador */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                         <div className="flex items-center mb-4"><ShieldCheck className="text-purple-500 mr-3"
                                                                              size={24}/><h3
-                            className="font-bold text-lg">Administrador</h3></div>
-                        <p className="text-xs text-gray-500 mb-4">Super Admin / Admin TI</p>
-                        <div className="space-y-3 text-sm">
+                            className="font-bold text-lg dark:text-white">Administrador</h3></div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Super Admin / Admin TI</p>
+                        <div className="space-y-3 text-sm dark:text-gray-300">
                             <div><h5 className="font-semibold">Gestión de Usuarios</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>CRUD
                                 completo</p></div>
                             <div><h5 className="font-semibold">Config. Institucional</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>Acceso
                                 completo</p></div>
                             <div><h5 className="font-semibold">Gestión Objetivos</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>Configuración
                                 sistema</p></div>
                             <div><h5 className="font-semibold">Proyectos Inversión</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>Config.
                                 reglas y flujos</p></div>
                         </div>
                     </div>
                     {/* Card Editor */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                         <div className="flex items-center mb-4"><Edit className="text-blue-500 mr-3" size={24}/><h3
-                            className="font-bold text-lg">Editor</h3></div>
-                        <p className="text-xs text-gray-500 mb-4">Usuarios Funcionales</p>
-                        <div className="space-y-3 text-sm">
-                            <div className="p-2 bg-blue-50 rounded-md text-blue-800">Admin de Entidad</div>
-                            <div className="p-2 bg-blue-50 rounded-md text-blue-800">Técnico Planificación</div>
-                            <div className="p-2 bg-blue-50 rounded-md text-blue-800">Revisor Institucional</div>
-                            <div className="p-2 bg-blue-50 rounded-md text-blue-800">Usuario Externo</div>
-                            <div className="p-2 bg-blue-50 rounded-md text-blue-800">Consultor/Formulador</div>
-                            <div><h5 className="font-semibold mt-2">Acceso Variable</h5><p
-                                className="flex items-center text-gray-600"><ShieldAlert size={14}
+                            className="font-bold text-lg dark:text-white">Editor</h3></div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Usuarios Funcionales</p>
+                        <div className="space-y-3 text-sm dark:text-gray-300">
+                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md text-blue-800 dark:text-blue-200">Admin de Entidad</div>
+                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md text-blue-800 dark:text-blue-200">Técnico Planificación</div>
+                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md text-blue-800 dark:text-blue-200">Revisor Institucional</div>
+                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md text-blue-800 dark:text-blue-200">Usuario Externo</div>
+                            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md text-blue-800 dark:text-blue-200">Consultor/Formulador</div>
+                            <div><h5 className="font-semibold mt-2 dark:text-white">Acceso Variable</h5><p
+                                className="flex items-center text-gray-600 dark:text-gray-400"><ShieldAlert size={14}
                                                                                          className="mr-2 text-yellow-500"/>Según
                                 rol específico</p></div>
-                            <div><h5 className="font-semibold">Reportes</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                            <div><h5 className="font-semibold dark:text-white">Reportes</h5><p
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>Generación
                                 y visualización</p></div>
                         </div>
                     </div>
                     {/* Card Auditor */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                         <div className="flex items-center mb-4"><Search className="text-gray-500 mr-3" size={24}/><h3
-                            className="font-bold text-lg">Auditor</h3></div>
-                        <p className="text-xs text-gray-500 mb-4">Control Interno</p>
-                        <div className="space-y-3 text-sm">
+                            className="font-bold text-lg dark:text-white">Auditor</h3></div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Control Interno</p>
+                        <div className="space-y-3 text-sm dark:text-gray-300">
                             <div><h5 className="font-semibold">Acceso de Lectura</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>Solo
                                 consulta</p></div>
                             <div><h5 className="font-semibold">Reportes Auditoría</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>Generación
                                 completa</p></div>
                             <div><h5 className="font-semibold">Bitácoras</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>Acceso
                                 historial</p></div>
                             <div><h5 className="font-semibold">Versiones</h5><p
-                                className="flex items-center text-gray-600"><CheckCircle size={14}
+                                className="flex items-center text-gray-600 dark:text-gray-400"><CheckCircle size={14}
                                                                                          className="mr-2 text-green-500"/>Consulta
                                 versiones</p></div>
                         </div>

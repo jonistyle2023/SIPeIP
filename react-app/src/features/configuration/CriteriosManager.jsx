@@ -24,17 +24,17 @@ const CriterioFormModal = ({criterio, onClose, onSave}) => {
     };
 
     return (<div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80 p-4">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-                <h3 className="text-lg font-semibold mb-4">{criterio ? 'Editar Criterio' : 'Nuevo Criterio de Priorización'}</h3>
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-xl w-full max-w-lg border dark:border-slate-700">
+                <h3 className="text-lg font-semibold mb-4 dark:text-white">{criterio ? 'Editar Criterio' : 'Nuevo Criterio de Priorización'}</h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input type="text" value={nombre} onChange={e => setNombre(e.target.value)}
-                           placeholder="Nombre del Criterio (Ej: Impacto Social)" className="w-full p-2 border rounded"
+                           placeholder="Nombre del Criterio (Ej: Impacto Social)" className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                            required/>
                     <input type="number" step="0.01" value={ponderacion} onChange={e => setPonderacion(e.target.value)}
-                           placeholder="Ponderación (Ej: 25.00)" className="w-full p-2 border rounded" required/>
+                           placeholder="Ponderación (Ej: 25.00)" className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                     {error && <p className="text-red-500 text-sm">{error}</p>}
                     <div className="flex justify-end mt-4 space-x-2">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
                     </div>
@@ -70,11 +70,11 @@ export default function CriteriosManager() {
         }
     };
 
-    return (<div className="bg-white p-6 rounded-lg shadow-sm">
+    return (<div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
             {isModalOpen && <CriterioFormModal criterio={editingCriterio} onClose={() => setIsModalOpen(false)}
                                                onSave={handleSave}/>}
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-lg">Criterios de Priorización</h3>
+                <h3 className="font-semibold text-lg dark:text-white">Criterios de Priorización</h3>
                 <button onClick={() => {
                     setEditingCriterio(null);
                     setIsModalOpen(true);
@@ -84,17 +84,17 @@ export default function CriteriosManager() {
                 </button>
             </div>
             <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-left">
+                <thead className="bg-gray-50 dark:bg-slate-700 text-left dark:text-gray-200">
                 <tr>
                     <th className="p-3">Nombre</th>
                     <th className="p-3">Ponderación (%)</th>
                     <th className="p-3 text-right">Acciones</th>
                 </tr>
                 </thead>
-                <tbody>
-                {criterios.map(c => (<tr key={c.criterio_id} className="border-b">
-                        <td className="p-3">{c.nombre}</td>
-                        <td className="p-3">{c.ponderacion}</td>
+                <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
+                {criterios.map(c => (<tr key={c.criterio_id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td className="p-3 dark:text-white">{c.nombre}</td>
+                        <td className="p-3 dark:text-gray-300">{c.ponderacion}</td>
                         <td className="p-3 text-right">
                             <button onClick={() => {
                                 setEditingCriterio(c);

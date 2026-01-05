@@ -113,15 +113,15 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
     };
 
     return (
-        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
-                <h2 className="text-xl font-bold mb-4">{isEdit ? 'Editar Alineación Estratégica' : 'Nueva Alineación Estratégica'}</h2>
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-xl w-full max-w-2xl border dark:border-slate-700">
+                <h2 className="text-xl font-bold mb-4 dark:text-white">{isEdit ? 'Editar Alineación Estratégica' : 'Nueva Alineación Estratégica'}</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {loading && <p>Cargando opciones...</p>}
+                    {loading && <p className="dark:text-gray-300">Cargando opciones...</p>}
                     {!loading && (
                         <>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Instrumento Origen <span
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Instrumento Origen <span
                                     className="text-red-500">*</span></label>
                                 <select
                                     value={selectedOriginType}
@@ -130,7 +130,7 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                                         setSelectedOriginId('');
                                     }}
                                     required
-                                    className={`mt-1 block w-full p-2 border rounded-md ${!selectedOriginType && error ? 'border-red-500' : ''}`}
+                                    className={`mt-1 block w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white ${!selectedOriginType && error ? 'border-red-500' : ''}`}
                                 >
                                     <option value="">Seleccione tipo...</option>
                                     <option value="oei">Objetivo Estratégico Institucional</option>
@@ -142,13 +142,13 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                             </div>
                             {selectedOriginType && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         {selectedOriginType === 'oei' ? 'Seleccionar OEI' : 'Seleccionar Objetivo Sectorial'}
                                     </label>
                                     <select
                                         value={selectedOriginId}
                                         onChange={e => setSelectedOriginId(e.target.value)}
-                                        className="mt-1 block w-full p-2 border rounded-md"
+                                        className="mt-1 block w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                     >
                                         <option value="">Seleccione...</option>
                                         {(selectedOriginType === 'oei' ? oeiList : sectorialList).map(obj => (
@@ -161,12 +161,12 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Instrumento Destino (Objetivo
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Instrumento Destino (Objetivo
                                     PND)</label>
                                 <select
                                     value={selectedDestId}
                                     onChange={e => setSelectedDestId(e.target.value)}
-                                    className="mt-1 block w-full p-2 border rounded-md"
+                                    className="mt-1 block w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                 >
                                     <option value="">Seleccione...</option>
                                     {pndObjectives.map(obj => (
@@ -177,13 +177,13 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Vinculación a Metas Globales
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Vinculación a Metas Globales
                                     (ODS)</label>
                                 <select
                                     multiple
                                     value={selectedOds}
                                     onChange={handleOdsChange}
-                                    className="mt-1 block w-full p-2 border rounded-md h-32"
+                                    className="mt-1 block w-full p-2 border rounded-md h-32 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                 >
                                     {odsList.map(ods => (
                                         <option key={ods.ods_id} value={ods.ods_id}>
@@ -191,10 +191,10 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                                         </option>
                                     ))}
                                 </select>
-                                <p className="text-xs text-gray-500 mt-1">Puede seleccionar varios ODS (Ctrl+Click).</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Puede seleccionar varios ODS (Ctrl+Click).</p>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Porcentaje de Contribución
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Porcentaje de Contribución
                                     (%)</label>
                                 <input
                                     type="number"
@@ -203,14 +203,14 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
                                     max="100"
                                     value={contribution}
                                     onChange={e => setContribution(e.target.value)}
-                                    className="mt-1 block w-full p-2 border rounded-md"
+                                    className="mt-1 block w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                     placeholder="Ej: 75.50"
                                 />
                             </div>
                         </>
                     )}
                     <div className="flex justify-end pt-4 space-x-3">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-md">Cancelar
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit" disabled={loading}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-blue-300">

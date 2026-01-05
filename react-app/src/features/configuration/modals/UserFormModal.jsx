@@ -85,33 +85,33 @@ export default function UserFormModal({user, onClose, onSave}) {
 
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">{user ? 'Editar Usuario' : 'Nuevo Usuario'}</h3>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full"><X size={20}/></button>
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-2xl border dark:border-slate-700">
+                <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold dark:text-white">{user ? 'Editar Usuario' : 'Nuevo Usuario'}</h3>
+                    <button onClick={onClose} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full dark:text-gray-300"><X size={20}/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input type="text" name="nombre" placeholder="Nombre" value={formData.datos_basicos.nombre}
-                               onChange={handleChange} className="p-2 border rounded" required/>
+                               onChange={handleChange} className="p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                         <input type="text" name="apellido" placeholder="Apellido"
                                value={formData.datos_basicos.apellido} onChange={handleChange}
-                               className="p-2 border rounded" required/>
+                               className="p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                         <input type="text" name="nombre_usuario" placeholder="Nombre de Usuario"
-                               value={formData.nombre_usuario} onChange={handleChange} className="p-2 border rounded"
+                               value={formData.nombre_usuario} onChange={handleChange} className="p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                required/>
                         <input type="password" name="password"
                                placeholder={user ? "Nueva Contraseña (opcional)" : "Contraseña"}
-                               value={formData.password} onChange={handleChange} className="p-2 border rounded"
+                               value={formData.password} onChange={handleChange} className="p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                required={!user}/>
                         <input type="text" name="entidad_codigo" placeholder="Código de Entidad"
-                               value={formData.entidad_codigo} onChange={handleChange} className="p-2 border rounded"/>
+                               value={formData.entidad_codigo} onChange={handleChange} className="p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"/>
 
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium mb-2">Roles</label>
+                            <label className="block text-sm font-medium mb-2 dark:text-gray-300">Roles</label>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                 {allRoles.map(role => (
-                                    <label key={role.id} className="flex items-center space-x-2 p-2 border rounded-md">
+                                    <label key={role.id} className="flex items-center space-x-2 p-2 border rounded-md dark:border-slate-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer">
                                         <input type="checkbox" checked={formData.roles_ids.includes(role.id)}
                                                onChange={() => handleRoleChange(role.id)}/>
                                         <span>{role.nombre}</span>
@@ -121,9 +121,9 @@ export default function UserFormModal({user, onClose, onSave}) {
                         </div>
                     </div>
                     {error && <p className="text-red-500 text-sm text-center px-6 pb-2">{error}</p>}
-                    <div className="p-4 border-t flex justify-end space-x-2">
+                    <div className="p-4 border-t dark:border-slate-700 flex justify-end space-x-2">
                         <button type="button" onClick={onClose}
-                                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancelar
+                                className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit" disabled={isLoading}
                                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400">{isLoading ? 'Guardando...' : 'Guardar'}</button>

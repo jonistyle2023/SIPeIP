@@ -5,10 +5,10 @@ import ProjectDetail from '../ProjectDetail.jsx';
 export default function ProjectDetailModal({project, onClose}) {
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl h-[90vh] flex flex-col">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">Detalle del Proyecto Postulado</h3>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-6xl h-[90vh] flex flex-col border dark:border-slate-700">
+                <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold dark:text-white">Detalle del Proyecto Postulado</h3>
+                    <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full dark:text-gray-300">
                         <X size={24}/>
                     </button>
                 </div>

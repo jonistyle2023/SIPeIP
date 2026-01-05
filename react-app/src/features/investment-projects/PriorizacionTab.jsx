@@ -48,21 +48,21 @@ export default function PriorizacionTab({ project }) {
     return (
         <div className="space-y-4">
             {criterios.length === 0 ? (
-                <div className="text-center text-gray-500 py-10">
+                <div className="text-center text-gray-500 dark:text-gray-400 py-10">
                     No hay criterios de priorización configurados o activos.
                 </div>
             ) : (
                 criterios.map(c => (
-                    <div key={c.criterio_id} className="p-4 border rounded-lg">
-                        <label className="font-semibold">{c.nombre} <span className="font-normal text-gray-500">({c.ponderacion}%)</span></label>
-                        <p className="text-sm text-gray-600 mb-2">{c.descripcion}</p>
+                    <div key={c.criterio_id} className="p-4 border rounded-lg dark:border-slate-700">
+                        <label className="font-semibold dark:text-white">{c.nombre} <span className="font-normal text-gray-500 dark:text-gray-400">({c.ponderacion}%)</span></label>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{c.descripcion}</p>
                         <input
                             type="number"
                             min="0"
                             max="100"
                             value={puntuaciones[c.criterio_id]?.score || ''}
                             onChange={e => handleScoreChange(c.criterio_id, e.target.value)}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             placeholder="Asignar puntuación (0-100)"
                     />
                 </div>

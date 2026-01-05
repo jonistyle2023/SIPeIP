@@ -83,7 +83,7 @@ export default function InstitutionalPlans() {
         }
     };
 
-    if (loading) return <div className="p-6 bg-white rounded-lg shadow-sm text-center">Cargando planes...</div>;
+    if (loading) return <div className="p-6 bg-white dark:bg-slate-800 dark:text-white rounded-lg shadow-sm text-center">Cargando planes...</div>;
 
     return (
         <>
@@ -112,12 +112,12 @@ export default function InstitutionalPlans() {
 
             {/* Modal de confirmación para eliminar plan */}
             {deletingPlanId && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
-                    <div className="bg-white p-6 rounded shadow-lg">
-                        <p>¿Seguro que deseas eliminar este plan institucional?</p>
+                <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-80">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded shadow-lg border dark:border-slate-700">
+                        <p className="dark:text-white">¿Seguro que deseas eliminar este plan institucional?</p>
                         <div className="mt-4 flex justify-end gap-2">
                             <button onClick={() => setDeletingPlanId(null)}
-                                    className="px-3 py-1 bg-gray-200 rounded">Cancelar
+                                    className="px-3 py-1 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                             </button>
                             <button onClick={confirmDeletePlan}
                                     className="px-3 py-1 bg-red-600 text-white rounded">Eliminar
@@ -129,12 +129,12 @@ export default function InstitutionalPlans() {
 
             {/* Modal de confirmación para eliminar OEI */}
             {deletingOeiId && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
-                    <div className="bg-white p-6 rounded shadow-lg">
-                        <p>¿Seguro que deseas eliminar este objetivo estratégico?</p>
+                <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-80">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded shadow-lg border dark:border-slate-700">
+                        <p className="dark:text-white">¿Seguro que deseas eliminar este objetivo estratégico?</p>
                         <div className="mt-4 flex justify-end gap-2">
                             <button onClick={() => setDeletingOeiId(null)}
-                                    className="px-3 py-1 bg-gray-200 rounded">Cancelar
+                                    className="px-3 py-1 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                             </button>
                             <button onClick={confirmDeleteOei}
                                     className="px-3 py-1 bg-red-600 text-white rounded">Eliminar
@@ -144,9 +144,9 @@ export default function InstitutionalPlans() {
                 </div>
             )}
 
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold text-lg flex items-center">
+                    <h3 className="font-semibold text-lg flex items-center dark:text-white">
                         <Layers className="mr-2 text-purple-500"/>Planes Institucionales
                     </h3>
                     <button
@@ -161,65 +161,65 @@ export default function InstitutionalPlans() {
                 </div>
                 <div className="space-y-2">
                     {plans.length === 0 ? (
-                        <p className="text-center text-gray-500 py-4">No hay planes institucionales creados.</p>
+                        <p className="text-center text-gray-500 dark:text-gray-400 py-4">No hay planes institucionales creados.</p>
                     ) : (
                         plans.map(plan => (
-                            <div key={plan.plan_institucional_id} className="border rounded-lg">
-                                <div className="flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100">
+                            <div key={plan.plan_institucional_id} className="border rounded-lg dark:border-slate-700">
+                                <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
                                     <button
                                         onClick={() => setOpenPlanId(openPlanId === plan.plan_institucional_id ? null : plan.plan_institucional_id)}
-                                        className="flex items-center text-left flex-grow space-x-2"
+                                        className="flex items-center text-left flex-grow space-x-2 dark:text-gray-200"
                                     >
                                         {openPlanId === plan.plan_institucional_id ? <ChevronDown size={16}/> :
                                             <ChevronRight size={16}/>}
-                                        <span className="font-medium text-sm text-gray-800">
+                                        <span className="font-medium text-sm text-gray-800 dark:text-white">
                                             {plan.nombre}
                                         </span>
                                     </button>
                                     <div className="flex items-center ml-4 gap-2">
                                         <button
                                             onClick={() => handleEditPlan(plan)}
-                                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
+                                            className="p-2 text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-full"
                                             title="Editar plan"
                                         >
                                             <Edit size={16}/>
                                         </button>
                                         <button
                                             onClick={() => handleDeletePlan(plan.plan_institucional_id)}
-                                            className="p-2 text-red-600 hover:bg-red-100 rounded-full"
+                                            className="p-2 text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30 rounded-full"
                                             title="Eliminar plan"
                                         >
                                             <Trash size={16}/>
                                         </button>
                                         <button
                                             onClick={() => handleOpenOeiModal(plan.plan_institucional_id)}
-                                            className="text-xs flex items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-md hover:bg-blue-200"
+                                            className="text-xs flex items-center bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800/50"
                                         >
                                             <Plus size={14} className="mr-1"/>Añadir OEI
                                         </button>
                                     </div>
                                 </div>
                                 {openPlanId === plan.plan_institucional_id && (
-                                    <div className="p-4 border-t text-sm space-y-2">
+                                    <div className="p-4 border-t dark:border-slate-600 text-sm space-y-2">
                                         {plan.objetivos_estrategicos && plan.objetivos_estrategicos.length > 0 ? (
                                             plan.objetivos_estrategicos.map(oei =>
                                                 <div key={oei.oei_id}
-                                                     className="flex justify-between items-center p-2 bg-gray-100 rounded">
+                                                     className="flex justify-between items-center p-2 bg-gray-100 dark:bg-slate-600 rounded">
                                                     <div>
-                                                        <p className="font-semibold text-gray-700">{oei.codigo}</p>
-                                                        <p className="text-gray-600">{oei.descripcion}</p>
+                                                        <p className="font-semibold text-gray-700 dark:text-white">{oei.codigo}</p>
+                                                        <p className="text-gray-600 dark:text-gray-300">{oei.descripcion}</p>
                                                     </div>
                                                     <div className="flex gap-2">
                                                         <button
                                                             onClick={() => handleEditOei(oei)}
-                                                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
+                                                            className="p-2 text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-full"
                                                             title="Editar OEI"
                                                         >
                                                             <Edit size={16}/>
                                                         </button>
                                                         <button
                                                             onClick={() => handleDeleteOei(oei.oei_id)}
-                                                            className="p-2 text-red-600 hover:bg-red-100 rounded-full"
+                                                            className="p-2 text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30 rounded-full"
                                                             title="Eliminar OEI"
                                                         >
                                                             <Trash size={16}/>
@@ -228,7 +228,7 @@ export default function InstitutionalPlans() {
                                                 </div>
                                             )
                                         ) : (
-                                            <p className="text-gray-500 italic">Este plan no tiene objetivos
+                                            <p className="text-gray-500 dark:text-gray-400 italic">Este plan no tiene objetivos
                                                 definidos.</p>
                                         )}
                                     </div>

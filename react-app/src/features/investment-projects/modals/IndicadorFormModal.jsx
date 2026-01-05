@@ -286,47 +286,47 @@ export default function IndicadorFormModal({parent, onClose, onSave, indicador})
     // Render
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-2xl border dark:border-slate-700">
+                <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold dark:text-white">
                         {indicador ? "Editar Indicador" : `Nuevo Indicador para ${parent.name}`}
                     </h3>
-                    <button onClick={onClose}><X size={24}/></button>
+                    <button onClick={onClose} className="dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full p-1"><X size={24}/></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
                         {tipoIndicador !== 'Fin' && (
                             <>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Descripción del Indicador</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción del Indicador</label>
                                     <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows="3"
-                                              className="w-full p-2 border rounded mt-1" required/>
+                                              className="w-full p-2 border rounded mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <input name="formula" value={formData.formula} onChange={handleChange}
-                                           placeholder="Fórmula (Opcional)" className="w-full p-2 border rounded"/>
+                                           placeholder="Fórmula (Opcional)" className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"/>
                                     <input name="unidad_medida" value={formData.unidad_medida} onChange={handleChange}
-                                           placeholder="Unidad de Medida" className="w-full p-2 border rounded" required/>
+                                           placeholder="Unidad de Medida" className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                                 </div>
-                                <hr/>
-                                <h4 className="text-md font-semibold">Meta del Indicador</h4>
+                                <hr className="dark:border-slate-700"/>
+                                <h4 className="text-md font-semibold dark:text-white">Meta del Indicador</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <input name="linea_base" type="number" value={formData.meta.linea_base}
                                            onChange={handleMetaChange} placeholder="Línea Base"
-                                           className="w-full p-2 border rounded" required/>
+                                           className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                                     <input name="valor_meta" type="number" value={formData.meta.valor_meta}
                                            onChange={handleMetaChange} placeholder="Valor de la Meta"
-                                           className="w-full p-2 border rounded" required/>
+                                           className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                                     <input name="periodo_anualizado" type="number" value={formData.meta.periodo_anualizado}
                                            onChange={handleMetaChange} placeholder="Año de la Meta"
-                                           className="w-full p-2 border rounded" required/>
+                                           className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white" required/>
                                 </div>
                             </>
                         )}
 
                         {tipoIndicador === 'Fin' && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Seleccionar ODS</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Seleccionar ODS</label>
                                 <div className="mt-2 flex items-center space-x-2">
                                     <select
                                         value={selectedOdsId ?? ''}
@@ -335,7 +335,7 @@ export default function IndicadorFormModal({parent, onClose, onSave, indicador})
                                             setSelectedOdsId(val === '' ? null : (isNaN(val) ? val : Number(val)));
                                             setSelectedOdsIndicatorIds(new Set()); // limpiar selección al cambiar ODS
                                         }}
-                                        className="p-2 border rounded"
+                                        className="p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                     >
                                         <option value="">-- Seleccione un ODS --</option>
                                         {odsList.map((o, idx) => {
@@ -344,11 +344,11 @@ export default function IndicadorFormModal({parent, onClose, onSave, indicador})
                                             return <option key={`ods-${id}`} value={id}>{label}</option>;
                                         })}
                                     </select>
-                                    {loadingOdsData && <span className="text-sm text-gray-500">Cargando metas/indicadores...</span>}
+                                    {loadingOdsData && <span className="text-sm text-gray-500 dark:text-gray-400">Cargando metas/indicadores...</span>}
                                 </div>
 
-                                <div className="mt-4 space-y-4 max-h-64 overflow-auto border p-2 rounded">
-                                    {metasList.length === 0 && !loadingOdsData && <p className="text-sm text-gray-500">No se encontraron metas para este ODS.</p>}
+                                <div className="mt-4 space-y-4 max-h-64 overflow-auto border p-2 rounded dark:border-slate-600 dark:bg-slate-700/50">
+                                    {metasList.length === 0 && !loadingOdsData && <p className="text-sm text-gray-500 dark:text-gray-400">No se encontraron metas para este ODS.</p>}
                                     {metasList.map((m, metaIdx) => {
                                         const metaIdRaw = resolveId(m, 'id', 'pk', 'meta_id', 'ods_meta_id', 'meta_ods_id');
                                         const metaId = metaIdRaw ?? `meta_fallback_${metaIdx}`;
@@ -356,16 +356,16 @@ export default function IndicadorFormModal({parent, onClose, onSave, indicador})
                                         const metaTitle = m.nombre || m.titulo || m.title || m.descripcion || `Meta ${metaId}`;
                                         const indicadores = indicadoresPorMeta[String(metaId)] || [];
                                         return (
-                                            <div key={metaKey} className="border-b pb-2">
-                                                <h5 className="font-semibold text-gray-800">{metaTitle}</h5>
-                                                {indicadores.length === 0 && <p className="text-sm text-gray-500">Sin indicadores para esta meta.</p>}
+                                            <div key={metaKey} className="border-b dark:border-slate-600 pb-2">
+                                                <h5 className="font-semibold text-gray-800 dark:text-white">{metaTitle}</h5>
+                                                {indicadores.length === 0 && <p className="text-sm text-gray-500 dark:text-gray-400">Sin indicadores para esta meta.</p>}
                                                 <div className="mt-2 space-y-1">
                                                     {indicadores.map((ind, indIdx) => {
                                                         const indIdRaw = resolveId(ind, 'id', 'pk', 'indicador_id', 'ods_indicador_id', 'indicador_ods_id');
                                                         const indId = indIdRaw ?? `generated-${metaId}-${indIdx}`;
                                                         const indLabel = ind.nombre || ind.title || ind.descripcion || `Indicador ${indId}`;
                                                         return (
-                                                            <label key={`ind-${indId}`} className="flex items-center space-x-2 text-sm">
+                                                            <label key={`ind-${indId}`} className="flex items-center space-x-2 text-sm dark:text-gray-300">
                                                                 <input
                                                                     type="checkbox"
                                                                     checked={selectedOdsIndicatorIds.has(String(indId))}
@@ -382,15 +382,15 @@ export default function IndicadorFormModal({parent, onClose, onSave, indicador})
                                     })}
                                 </div>
 
-                                <p className="text-sm text-gray-500 mt-2">
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                     Seleccione uno o más indicadores pertenecientes a las metas del ODS. El sistema registrará únicamente los indicadores seleccionados.
                                 </p>
                             </div>
                         )}
                     </div>
                     {error && <p className="text-red-500 text-center pb-4">{error}</p>}
-                    <div className="p-4 border-t flex justify-end space-x-2">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded">Cancelar
+                    <div className="p-4 border-t dark:border-slate-700 flex justify-end space-x-2">
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500">Cancelar
                         </button>
                         <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
                             {tipoIndicador === 'Fin' ? 'Registrar indicadores seleccionados' : 'Guardar Indicador'}

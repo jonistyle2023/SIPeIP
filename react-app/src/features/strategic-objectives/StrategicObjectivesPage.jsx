@@ -9,13 +9,13 @@ import ProgramasManager from './ProgramasManager.jsx';
 // Tarjeta para acciones rápidas
 const ActionCard = ({title, subtitle, icon: Icon, onClick}) => (
     <button onClick={onClick}
-            className="bg-white p-4 rounded-lg shadow-sm flex items-center w-full text-left hover:bg-gray-50 transition-colors">
-        <div className="p-3 bg-blue-100 rounded-lg mr-4">
-            <Icon className="text-blue-600"/>
+            className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm flex items-center w-full text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-4">
+            <Icon className="text-blue-600 dark:text-blue-400"/>
         </div>
         <div>
-            <h4 className="font-semibold text-gray-800">{title}</h4>
-            <p className="text-xs text-gray-500">{subtitle}</p>
+            <h4 className="font-semibold text-gray-800 dark:text-white">{title}</h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{subtitle}</p>
         </div>
     </button>
 );
@@ -36,11 +36,11 @@ const StatsCard = ({title, value, icon: Icon, color}) => {
         );
     }
     return (
-        <div className="flex items-center p-3 bg-white rounded-lg shadow-sm">
-            <Icon className="text-gray-500 mr-3" size={24}/>
+        <div className="flex items-center p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+            <Icon className="text-gray-500 dark:text-gray-400 mr-3" size={24}/>
             <div>
-                <p className="font-bold text-xl text-gray-800">{value}</p>
-                <p className="text-xs text-gray-500">{title}</p>
+                <p className="font-bold text-xl text-gray-800 dark:text-white">{value}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{title}</p>
             </div>
         </div>
     );
@@ -70,7 +70,7 @@ export default function StrategicObjectivesPage() {
     return (
         <div className="space-y-6 p-4 md:p-6">
             {/* Banner superior: título + descripción + estadísticas integradas */}
-            <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div className="bg-blue-600 dark:bg-blue-800 text-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center transition-colors">
                 <div className="flex-1">
                     <div>
                         <h2 className="text-2xl font-bold">Módulo de Gestión de Objetivos Estratégicos</h2>
@@ -93,24 +93,24 @@ export default function StrategicObjectivesPage() {
             </div>
 
             <div className="space-y-6">
-                <div className="flex border-b mb-4">
+                <div className="flex border-b mb-4 dark:border-slate-700">
                     <button onClick={() => setActiveTab('planes')}
-                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'planes' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Planes
+                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'planes' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>Planes
                         y OEI
                     </button>
                     <button onClick={() => setActiveTab('programas')}
-                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'programas' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Programas
+                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'programas' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>Programas
                     </button>
                     <button onClick={() => setActiveTab('sectoriales')}
-                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'sectoriales' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Planes
+                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'sectoriales' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>Planes
                         Sectoriales
                     </button>
                     <button onClick={() => setActiveTab('alineacion')}
-                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'alineacion' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Matriz
+                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'alineacion' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>Matriz
                         de Alineación
                     </button>
                     <button onClick={() => setActiveTab('maestros')}
-                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'maestros' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}>Datos
+                            className={`px-4 py-2 text-sm font-medium ${activeTab === 'maestros' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>Datos
                         Maestros
                     </button>
                 </div>

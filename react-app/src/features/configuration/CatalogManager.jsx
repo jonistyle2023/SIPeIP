@@ -11,8 +11,8 @@ const ItemNode = ({ item, level = 0, onAddItem, onEditItem, onDeleteItem }) => {
 
     return (
         <div style={{ marginLeft: `${level * 20}px` }}>
-            <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
-                <div className="flex items-center">
+            <div className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-slate-700/50 rounded transition-colors">
+                <div className="flex items-center dark:text-gray-200">
                     {item.hijos && item.hijos.length > 0 && (
                         <button onClick={() => setIsOpen(!isOpen)} className="p-1">
                             {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -160,15 +160,15 @@ export default function CatalogManager() {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1 bg-white p-4 rounded-lg shadow-sm">
-                <h4 className="font-semibold mb-3">Catálogos del Sistema</h4>
-                {loading ? <p>Cargando...</p> : (
+            <div className="md:col-span-1 bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm transition-colors">
+                <h4 className="font-semibold mb-3 dark:text-white">Catálogos del Sistema</h4>
+                {loading ? <p className="dark:text-gray-300">Cargando...</p> : (
                     <>
                         <ul className="space-y-1">
                             {catalogs.map(cat => (
                                 <li key={cat.id} className="flex items-center">
                                     <button onClick={() => handleSelectCatalog(cat)}
-                                            className={`flex-1 text-left p-2 rounded text-sm ${selectedCatalog?.id === cat.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100'}`}>
+                                            className={`flex-1 text-left p-2 rounded text-sm ${selectedCatalog?.id === cat.id ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold' : 'hover:bg-gray-100 dark:hover:bg-slate-700 dark:text-gray-300'}`}>
                                         {cat.nombre}
                                     </button>
                                     <button
@@ -197,18 +197,18 @@ export default function CatalogManager() {
                     </>
                 )}
             </div>
-            <div className="md:col-span-2 bg-white p-6 rounded-lg shadow-sm">
+            <div className="md:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                 {selectedCatalog ? (
                     <>
                         <div className="flex justify-between items-center mb-4">
                             <div>
-                                <h4 className="font-semibold">Jerarquía de: <span className="text-blue-600">{selectedCatalog.nombre}</span></h4>
+                                <h4 className="font-semibold dark:text-white">Jerarquía de: <span className="text-blue-600 dark:text-blue-400">{selectedCatalog.nombre}</span></h4>
                                 {/* --- INTERRUPTOR DE VISTA --- */}
                                 <div className="flex gap-2 mt-2">
-                                    <button onClick={() => setViewMode('tree')} className={`px-3 py-1 text-xs flex items-center rounded-full ${viewMode === 'tree' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
+                                    <button onClick={() => setViewMode('tree')} className={`px-3 py-1 text-xs flex items-center rounded-full ${viewMode === 'tree' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-700 dark:text-gray-300'}`}>
                                         <GitMerge size={14} className="mr-1"/> Vista Jerárquica
                                     </button>
-                                    <button onClick={() => setViewMode('table')} className={`px-3 py-1 text-xs flex items-center rounded-full ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
+                                    <button onClick={() => setViewMode('table')} className={`px-3 py-1 text-xs flex items-center rounded-full ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-700 dark:text-gray-300'}`}>
                                         <List size={14} className="mr-1"/> Vista de Tabla
                                     </button>
                                 </div>
@@ -219,7 +219,7 @@ export default function CatalogManager() {
                         </div>
 
                         {/* --- RENDERIZADO CONDICIONAL DE LA VISTA --- */}
-                        {loading ? <p>Cargando...</p> : (
+                        {loading ? <p className="dark:text-gray-300">Cargando...</p> : (
                             viewMode === 'tree' ? (
                                 <div className="space-y-1">
                                     {items.map(item => (
@@ -241,7 +241,7 @@ export default function CatalogManager() {
                             )
                         )}
                     </>
-                ) : <p>Seleccione un catálogo.</p>}
+                ) : <p className="dark:text-gray-400">Seleccione un catálogo.</p>}
             </div>
 
             {isItemModalOpen &&

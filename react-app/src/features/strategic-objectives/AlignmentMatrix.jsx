@@ -46,7 +46,7 @@ export default function AlignmentMatrix() {
         setEditAlignment(null);
     };
 
-    if (loading && !isModalOpen) return <div className="p-6 bg-white rounded-lg shadow-sm text-center">Cargando
+    if (loading && !isModalOpen) return <div className="p-6 bg-white dark:bg-slate-800 dark:text-white rounded-lg shadow-sm text-center">Cargando
         matriz...</div>;
 
     return (
@@ -60,9 +60,9 @@ export default function AlignmentMatrix() {
                 />
             )}
 
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors duration-200">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold text-lg flex items-center">
+                    <h3 className="font-semibold text-lg flex items-center dark:text-white">
                         <Link2 className="mr-2 text-red-500"/>Matriz de Alineación
                     </h3>
                     <button
@@ -77,7 +77,7 @@ export default function AlignmentMatrix() {
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+                        <thead className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                         <tr>
                             <th className="p-3 font-semibold">Instrumento Origen (OEI)</th>
                             <th className="p-3 font-semibold">Instrumento Destino (PND/ODS)</th>
@@ -87,16 +87,16 @@ export default function AlignmentMatrix() {
                             <th className="p-3 font-semibold">Acciones</th>
                         </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                         {alignments.map(item => (
-                            <tr key={item.id || item.alineacion_id} className="hover:bg-gray-50">
-                                <td className="p-3 font-medium text-gray-800">
+                            <tr key={item.id || item.alineacion_id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                                <td className="p-3 font-medium text-gray-800 dark:text-gray-200">
                                     {item.instrumento_origen?.description || 'N/A'}
                                 </td>
-                                <td className="p-3 text-gray-600">
+                                <td className="p-3 text-gray-600 dark:text-gray-400">
                                     {item.instrumento_destino?.description || 'N/A'}
                                 </td>
-                                <td className="p-3 text-gray-600">
+                                <td className="p-3 text-gray-600 dark:text-gray-400">
                                     {item.ods_vinculados && item.ods_vinculados.length > 0
                                         ? item.ods_vinculados.map(ods => (
                                             <span key={ods.id || ods.ods_id}
@@ -106,7 +106,7 @@ export default function AlignmentMatrix() {
                                         ))
                                         : 'N/A'}
                                 </td>
-                                <td className="p-3 text-gray-600">
+                                <td className="p-3 text-gray-600 dark:text-gray-400">
                                     {item.contribucion_porcentaje ? `${item.contribucion_porcentaje}%` : 'N/A'}
                                 </td>
                                 <td className="p-3">
@@ -115,13 +115,13 @@ export default function AlignmentMatrix() {
                                 </td>
                                 <td className="p-3 flex items-center space-x-2">
                                     <button
-                                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
+                                        className="p-2 text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-full"
                                         onClick={() => handleEdit(item)}
                                     >
                                         <Edit size={16}/>
                                     </button>
                                     <button
-                                        className="p-2 text-red-600 hover:bg-red-100 rounded-full"
+                                        className="p-2 text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30 rounded-full"
                                         onClick={() => handleDelete(item.id || item.alineacion_id)}
                                     >
                                         <Trash2 size={16}/>
@@ -132,7 +132,7 @@ export default function AlignmentMatrix() {
                         </tbody>
                     </table>
                     {alignments.length === 0 && !loading && (
-                        <div className="text-center py-10 text-gray-500">
+                        <div className="text-center py-10 text-gray-500 dark:text-gray-400">
                             No hay alineaciones para mostrar. ¡Crea una nueva!
                         </div>
                     )}

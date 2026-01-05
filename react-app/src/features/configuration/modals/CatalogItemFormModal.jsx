@@ -39,10 +39,10 @@ export default function CatalogItemFormModal({item, catalogId, parentItem, allIt
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-80">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">{item ? 'Editar Ítem' : 'Nuevo Ítem'}</h3>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-md border dark:border-slate-700">
+                <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold dark:text-white">{item ? 'Editar Ítem' : 'Nuevo Ítem'}</h3>
+                    <button onClick={onClose} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full dark:text-gray-300">
                         <X size={20}/>
                     </button>
                 </div>
@@ -54,7 +54,7 @@ export default function CatalogItemFormModal({item, catalogId, parentItem, allIt
                             placeholder="Nombre del Ítem"
                             value={formData.nombre}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             required
                         />
                         <input
@@ -63,16 +63,16 @@ export default function CatalogItemFormModal({item, catalogId, parentItem, allIt
                             placeholder="Código (Opcional)"
                             value={formData.codigo}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                         />
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Padre (Jerarquía)</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Padre (Jerarquía)</label>
                             <select
                                 name="padre"
                                 value={formData.padre || ''}
                                 onChange={handleChange}
-                                className="w-full p-2 border rounded mt-1"
+                                className="w-full p-2 border rounded mt-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             >
                                 <option value="">-- Ítem Raíz (Sin Padre) --</option>
                                 {allItems && allItems.filter(i => !item || i.id !== item.id).map(i => (
@@ -83,7 +83,7 @@ export default function CatalogItemFormModal({item, catalogId, parentItem, allIt
                             </select>
                         </div>
 
-                        <label className="flex items-center space-x-2">
+                        <label className="flex items-center space-x-2 dark:text-gray-300">
                             <input
                                 type="checkbox"
                                 name="activo"
@@ -94,11 +94,11 @@ export default function CatalogItemFormModal({item, catalogId, parentItem, allIt
                         </label>
                     </div>
                     {error && <p className="text-red-500 text-sm text-center px-6 pb-2">{error}</p>}
-                    <div className="p-4 border-t flex justify-end space-x-2">
+                    <div className="p-4 border-t dark:border-slate-700 flex justify-end space-x-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                            className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500"
                         >
                             Cancelar
                         </button>

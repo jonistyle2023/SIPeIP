@@ -70,7 +70,7 @@ export default function InvestmentProjectsPage() {
     return (
         <div className="space-y-6">
 
-            <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg">
+            <div className="bg-blue-600 dark:bg-blue-800 text-white p-6 rounded-lg shadow-lg transition-colors">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                     <div>
                         <h2 className="text-2xl font-bold">Módulo de Gestión de Proyectos de
@@ -81,7 +81,7 @@ export default function InvestmentProjectsPage() {
                         setEditingProject(null);
                         setIsModalOpen(true);
                     }}
-                            className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition-colors">
+                            className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-white dark:bg-slate-200 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition-colors">
                         <Plus size={20} className="mr-2"/>
                         Nuevo Proyecto
                     </button>
@@ -95,16 +95,16 @@ export default function InvestmentProjectsPage() {
             </div>
 
             {/* Pestañas */}
-            <div className="flex border-b mb-4">
+            <div className="flex border-b mb-4 dark:border-slate-700">
                 <button
                     onClick={() => setActiveTab('pipeline')}
-                    className={`px-4 py-2 text-sm font-medium ${activeTab === 'pipeline' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+                    className={`px-4 py-2 text-sm font-medium ${activeTab === 'pipeline' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                 >
                     Pipeline de Proyectos
                 </button>
                 <button
                     onClick={() => setActiveTab('dictamenes')}
-                    className={`px-4 py-2 text-sm font-medium ${activeTab === 'dictamenes' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+                    className={`px-4 py-2 text-sm font-medium ${activeTab === 'dictamenes' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                 >
                     Gestión de Dictámenes
                 </button>

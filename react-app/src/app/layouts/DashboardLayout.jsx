@@ -59,7 +59,7 @@ export default function DashboardLayout({ user, onLogout }) {
     };
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-gray-100 dark:bg-slate-900 transition-colors duration-200">
             <Sidebar
                 activePage={activePage}
                 setActivePage={setActivePage}

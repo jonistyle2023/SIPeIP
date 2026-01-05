@@ -51,40 +51,40 @@ export default function OeiFormModal({planId, oei, onClose, onSave}) {
 
     return (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-80">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
-                <h2 className="text-lg font-bold mb-4">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-xl w-full max-w-lg border dark:border-slate-700">
+                <h2 className="text-lg font-bold mb-4 dark:text-white">
                     {oei ? 'Editar Objetivo Estratégico (OEI)' : 'Crear Nuevo Objetivo Estratégico (OEI)'}
                 </h2>
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="codigo" className="block text-sm font-medium text-gray-700">Código</label>
+                            <label htmlFor="codigo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Código</label>
                             <input
                                 type="text"
                                 id="codigo"
                                 value={codigo}
                                 onChange={(e) => setCodigo(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
                                 placeholder="Ej: OEI.01"
                             />
                         </div>
                         <div>
                             <label htmlFor="descripcion"
-                                   className="block text-sm font-medium text-gray-700">Descripción</label>
+                                   className="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
                             <textarea
                                 id="descripcion"
                                 value={descripcion}
                                 onChange={(e) => setDescripcion(e.target.value)}
                                 rows="4"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
                                 placeholder="Describa el objetivo estratégico..."
                             ></textarea>
                         </div>
                     </div>
                     {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
-                    <div className="mt-6 flex justify-end space-x-3">
+                    <div className="mt-6 flex justify-end space-x-3 dark:border-slate-700">
                         <button type="button" onClick={onClose}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                                className="px-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-slate-500">
                             Cancelar
                         </button>
                         <button type="submit" disabled={isSaving}

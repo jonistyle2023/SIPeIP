@@ -65,7 +65,7 @@ export function PeriodsManager() {
         }
     };
 
-    if (loading) return <p className="text-center p-4">Cargando períodos...</p>;
+    if (loading) return <p className="text-center p-4 dark:text-gray-300">Cargando períodos...</p>;
 
     return (
         <div>
@@ -78,7 +78,7 @@ export function PeriodsManager() {
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                    <thead className="bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                     <tr>
                         <th className="p-3">Nombre del Período</th>
                         <th className="p-3">Fecha Inicio</th>
@@ -87,12 +87,12 @@ export function PeriodsManager() {
                         <th className="p-3">Acciones</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                     {periods.map(period => (
-                        <tr key={period.id} className="border-b hover:bg-gray-50">
-                            <td className="p-3 font-medium text-gray-800">{period.nombre}</td>
-                            <td className="p-3">{period.fecha_inicio}</td>
-                            <td className="p-3">{period.fecha_fin}</td>
+                        <tr key={period.id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                            <td className="p-3 font-medium text-gray-800 dark:text-white">{period.nombre}</td>
+                            <td className="p-3 dark:text-gray-300">{period.fecha_inicio}</td>
+                            <td className="p-3 dark:text-gray-300">{period.fecha_fin}</td>
                             <td className="p-3">
                                     <span
                                         className={`px-2 py-1 rounded-full text-xs font-medium ${statusClasses[period.estado] || defaultStatusClass}`}>

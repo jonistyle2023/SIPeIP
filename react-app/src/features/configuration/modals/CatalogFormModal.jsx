@@ -86,12 +86,12 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-80">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-md border dark:border-slate-700">
+                <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
+                    <h3 className="text-lg font-semibold dark:text-white">
                         {catalogToEdit ? 'Editar Catálogo' : 'Nuevo Catálogo'}
                     </h3>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full">
+                    <button onClick={onClose} className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-full dark:text-gray-300">
                         <X size={20}/>
                     </button>
                 </div>
@@ -103,16 +103,16 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
                             placeholder="Nombre del catálogo"
                             value={formData.nombre}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             required
                         />
                         <div>
-                            <label className="block text-xs mb-1">Código del catálogo</label>
+                            <label className="block text-xs mb-1 dark:text-gray-300">Código del catálogo</label>
                             <select
                                 name="codigo"
                                 value={formData.codigo}
                                 onChange={handleChange}
-                                className="w-full p-2 border rounded mb-2"
+                                className="w-full p-2 border rounded mb-2 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             >
                                 <option value="">-- Seleccione un código existente --</option>
                                 {codigosExistentes.map(cod => (
@@ -125,7 +125,7 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
                                 placeholder="O escriba un nuevo código"
                                 value={formData.codigo}
                                 onChange={handleChange}
-                                className="w-full p-2 border rounded"
+                                className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                 required
                             />
                         </div>
@@ -135,9 +135,9 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
                             placeholder="Descripción (opcional)"
                             value={formData.descripcion}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                         />
-                        <label className="flex items-center space-x-2">
+                        <label className="flex items-center space-x-2 dark:text-gray-300">
                             <input
                                 type="checkbox"
                                 name="activo"
@@ -148,7 +148,7 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
                         </label>
                     </div>
                     {error && <p className="text-red-500 text-sm text-center px-6 pb-2">{error}</p>}
-                    <div className="p-4 border-t flex justify-between items-center">
+                    <div className="p-4 border-t dark:border-slate-700 flex justify-between items-center">
                         <div>
                             {catalogToEdit &&
                                 <button
@@ -164,7 +164,7 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                                className="px-4 py-2 bg-gray-200 dark:bg-slate-600 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-slate-500"
                             >
                                 Cancelar
                             </button>

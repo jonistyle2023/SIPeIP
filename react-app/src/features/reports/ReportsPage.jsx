@@ -5,11 +5,11 @@ import {FileText, BarChart3, Bell, History, Download, FileJson, FileSpreadsheet,
 const ExportCard = ({icon: Icon, title, format, onExport}) => (
     <button
         onClick={() => onExport(format)}
-        className="bg-gray-50 p-4 rounded-lg flex flex-col items-center justify-center text-center hover:bg-blue-100 hover:shadow-md transition-all duration-300"
+        className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg flex flex-col items-center justify-center text-center hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:shadow-md transition-all duration-300"
     >
         <Icon className="w-10 h-10 text-blue-600 mb-2"/>
-        <h4 className="font-semibold text-gray-800">{title}</h4>
-        <p className="text-xs text-gray-500 mt-1">Exportar datos en formato .{format}</p>
+        <h4 className="font-semibold text-gray-800 dark:text-white">{title}</h4>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Exportar datos en formato .{format}</p>
     </button>
 );
 
@@ -58,10 +58,10 @@ export default function ReportsPage() {
     };
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="p-6 bg-gray-100 dark:bg-slate-900 min-h-screen transition-colors">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">PROC08 - Reportes y Visualización</h1>
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">PROC08 - Reportes y Visualización</h1>
                     <button onClick={() => handleExport('pdf')}
                             className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center shadow hover:bg-blue-700">
                         <Download className="w-4 h-4 mr-2"/>
@@ -72,31 +72,31 @@ export default function ReportsPage() {
                 {/* Módulo de Reportes y Visualización */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {/* Tarjetas de Módulo */}
-                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><FileText
+                    <div className="bg-white dark:bg-slate-800 p-5 rounded-lg shadow flex items-center transition-colors"><FileText
                         className="w-8 h-8 text-green-500 mr-4"/>
-                        <div><h3 className="font-bold">Exportación</h3><p className="text-sm text-gray-500">PDF, Excel,
+                        <div><h3 className="font-bold dark:text-white">Exportación</h3><p className="text-sm text-gray-500 dark:text-gray-400">PDF, Excel,
                             JSON, CSV</p></div>
                     </div>
-                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><BarChart3
+                    <div className="bg-white dark:bg-slate-800 p-5 rounded-lg shadow flex items-center transition-colors"><BarChart3
                         className="w-8 h-8 text-yellow-500 mr-4"/>
-                        <div><h3 className="font-bold">Visualización</h3><p className="text-sm text-gray-500">Dashboards
+                        <div><h3 className="font-bold dark:text-white">Visualización</h3><p className="text-sm text-gray-500 dark:text-gray-400">Dashboards
                             dinámicos</p></div>
                     </div>
-                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><Bell
+                    <div className="bg-white dark:bg-slate-800 p-5 rounded-lg shadow flex items-center transition-colors"><Bell
                         className="w-8 h-8 text-red-500 mr-4"/>
-                        <div><h3 className="font-bold">Alertas</h3><p className="text-sm text-gray-500">Reportes
+                        <div><h3 className="font-bold dark:text-white">Alertas</h3><p className="text-sm text-gray-500 dark:text-gray-400">Reportes
                             dinámicos</p></div>
                     </div>
-                    <div className="bg-white p-5 rounded-lg shadow flex items-center"><History
+                    <div className="bg-white dark:bg-slate-800 p-5 rounded-lg shadow flex items-center transition-colors"><History
                         className="w-8 h-8 text-purple-500 mr-4"/>
-                        <div><h3 className="font-bold">Histórico</h3><p className="text-sm text-gray-500">Desde 2011</p>
+                        <div><h3 className="font-bold dark:text-white">Histórico</h3><p className="text-sm text-gray-500 dark:text-gray-400">Desde 2011</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Capacidades de Exportación */}
-                <div className="bg-white p-6 rounded-lg shadow mb-8">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-700">Capacidades de Exportación</h2>
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow mb-8 transition-colors">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Capacidades de Exportación</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <ExportCard icon={FileType} title="PDF" format="pdf" onExport={handleExport}/>
                         <ExportCard icon={FileSpreadsheet} title="Excel" format="excel" onExport={handleExport}/>
@@ -107,12 +107,12 @@ export default function ReportsPage() {
 
                 {/* Paneles de información estáticos (como en el diseño) */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">Funcionalidades Principales</h2>
+                    <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow transition-colors">
+                        <h2 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Funcionalidades Principales</h2>
                         {/* ... Aquí iría el contenido estático de funcionalidades ... */}
                     </div>
-                    <div className="bg-white p-6 rounded-lg shadow">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">Alineación PND</h2>
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow transition-colors">
+                        <h2 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Alineación PND</h2>
                         {/* ... Contenido estático de alineación ... */}
                     </div>
                 </div>

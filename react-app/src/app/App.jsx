@@ -1,9 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {BrowserRouter as Router, Routes, Route, Navigate, useNavigate} from 'react-router-dom';
-import HomePage from '../features/home/HomePage.jsx';
-import LoginPage from '../features/auth/LoginPage.jsx';
-import DashboardLayout from './layouts/DashboardLayout.jsx';
+import {BrowserRouter as Router} from 'react-router-dom';
 import '../shared/styles/App.css';
+import {AppRouter} from './AppRouter.jsx';
 
 export default function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -34,27 +32,12 @@ export default function App() {
 
     return (
         <Router>
-            <Routes>
-                <Route
-                    path="/"
-                    element={<HomePageWrapper isAuthenticated={isAuthenticated}/>}
-                />
-                <Route
-                    path="/login"
-                    element={isAuthenticated ? <Navigate to="/dashboard"/> :
-                        <LoginPage onLoginSuccess={handleLoginSuccess}/>}
-                />
-                <Route
-                    path="/dashboard"
-                    element={isAuthenticated ? <DashboardLayout user={user} onLogout={handleLogout}/> :
-                        <Navigate to="/"/>}
-                />
-            </Routes>
+            <AppRouter 
+                isAuthenticated={isAuthenticated} 
+                user={user} 
+                onLoginSuccess={handleLoginSuccess} 
+                onLogout={handleLogout} 
+            />
         </Router>
     );
-}
-
-function HomePageWrapper({isAuthenticated}) {
-    const navigate = useNavigate();
-    return isAuthenticated ? <Navigate to="/dashboard"/> : <HomePage onNavigateToLogin={() => navigate('/login')}/>;
 }

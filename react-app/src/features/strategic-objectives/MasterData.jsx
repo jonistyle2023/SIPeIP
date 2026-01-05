@@ -91,7 +91,7 @@ export default function MasterData() {
         setIsPndObjectiveModalOpen(true);
     }
 
-    if (loading) return <div className="p-6 bg-white rounded-lg shadow-sm text-center">Cargando datos maestros...</div>;
+    if (loading) return <div className="p-6 bg-white dark:bg-slate-800 dark:text-white rounded-lg shadow-sm text-center">Cargando datos maestros...</div>;
 
     return (
         <>
@@ -132,9 +132,9 @@ export default function MasterData() {
 
             <div className="space-y-6">
                 {/* PND */}
-                <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-semibold text-lg flex items-center">
+                        <h3 className="font-semibold text-lg flex items-center dark:text-white">
                             <Flag className="mr-2 text-green-500"/>Plan Nacional de Desarrollo (PND)
                         </h3>
                         <button onClick={() => setIsPndModalOpen(true)}
@@ -144,13 +144,13 @@ export default function MasterData() {
                     </div>
                     <div className="space-y-2">
                         {pnds.map(pnd => (
-                            <div key={pnd.id || pnd.pnd_id} className="border rounded-lg">
-                                <div className="flex justify-between items-center p-3 bg-gray-50 hover:bg-gray-100">
+                            <div key={pnd.id || pnd.pnd_id} className="border rounded-lg dark:border-slate-700">
+                                <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
                                     <button onClick={() => setOpenPndId(openPndId === pnd.pnd_id ? null : pnd.pnd_id)}
-                                            className="flex items-center text-left flex-grow space-x-2">
+                                            className="flex items-center text-left flex-grow space-x-2 dark:text-gray-200">
                                         {openPndId === pnd.pnd_id ? <ChevronDown size={16}/> :
                                             <ChevronRight size={16}/>}
-                                        <span className="font-medium text-sm text-gray-800">
+                                        <span className="font-medium text-sm text-gray-800 dark:text-white">
                                             {pnd.nombre} ({pnd.periodo?.nombre || 'Sin Periodo'})
                                         </span>
                                     </button>
@@ -166,14 +166,14 @@ export default function MasterData() {
                                     </div>
                                 </div>
                                 {openPndId === pnd.pnd_id && (
-                                    <div className="p-4 border-t text-sm space-y-2">
+                                    <div className="p-4 border-t dark:border-slate-600 text-sm space-y-2">
                                         {pnd.objetivos.length > 0 ? (
                                             pnd.objetivos.map(obj =>
                                                 <div key={obj.id || obj.objetivo_pnd_id}
-                                                     className="p-2 bg-gray-100 rounded flex justify-between items-center">
+                                                     className="p-2 bg-gray-100 dark:bg-slate-600 rounded flex justify-between items-center">
                                                     <div>
-                                                        <p className="font-semibold text-gray-700">{obj.codigo}</p>
-                                                        <p className="text-gray-600">{obj.descripcion}</p>
+                                                        <p className="font-semibold text-gray-700 dark:text-white">{obj.codigo}</p>
+                                                        <p className="text-gray-600 dark:text-gray-300">{obj.descripcion}</p>
                                                     </div>
                                                     <div className="flex items-center space-x-2 ml-4">
                                                         <button
@@ -190,7 +190,7 @@ export default function MasterData() {
                                                 </div>
                                             )
                                         ) : (
-                                            <p className="text-gray-500 italic">Este plan no tiene objetivos
+                                            <p className="text-gray-500 dark:text-gray-400 italic">Este plan no tiene objetivos
                                                 definidos.</p>
                                         )}
                                     </div>
@@ -201,12 +201,12 @@ export default function MasterData() {
                 </div>
 
                 {/* ODS */}
-                <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-semibold text-lg flex items-center">
+                        <h3 className="font-semibold text-lg flex items-center dark:text-white">
                             <BookOpen className="mr-2 text-blue-500"/>Objetivos de Desarrollo Sostenible (ODS)
                         </h3>
-                        <p className="text-sm text-gray-500">Haz clic en un objetivo para ver sus metas e indicadores.</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Haz clic en un objetivo para ver sus metas e indicadores.</p>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 mt-4">
                         {ods.map(odsItem => {

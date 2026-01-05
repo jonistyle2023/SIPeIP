@@ -9,21 +9,21 @@ import {PeriodsManager} from './PeriodsManager.jsx';
 import UnitManager from './UnitManager.jsx';
 
 // --- Sub-componentes para la UI ---
-const InfoCard = ({icon: Icon, title, subtitle, items}) => (<div className="bg-white p-6 rounded-lg shadow-sm h-full">
+const InfoCard = ({icon: Icon, title, subtitle, items}) => (<div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm h-full transition-colors">
     <div className="flex items-center mb-4">
-        <div className="p-3 bg-blue-100 rounded-full mr-4"><Icon className="text-blue-600" size={24}/></div>
-        <div><h4 className="font-bold text-lg text-gray-800">{title}</h4><p
-            className="text-xs text-gray-500">{subtitle}</p></div>
+        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full mr-4"><Icon className="text-blue-600 dark:text-blue-400" size={24}/></div>
+        <div><h4 className="font-bold text-lg text-gray-800 dark:text-white">{title}</h4><p
+            className="text-xs text-gray-500 dark:text-gray-400">{subtitle}</p></div>
     </div>
-    <ul className="space-y-2 text-sm text-gray-700">{items.map(item => <li key={item} className="flex items-center">
+    <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">{items.map(item => <li key={item} className="flex items-center">
         <CheckCircle size={16} className="mr-2 text-green-500 flex-shrink-0"/>{item}</li>)}</ul>
 </div>);
 const WorkflowStep = ({number, title, description, color}) => (
     <div className="flex flex-col items-center text-center w-40">
         <div
             className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white mb-3 shadow-md ${color}`}> {number}</div>
-        <h5 className="font-semibold text-gray-800">{title}</h5><p
-        className="text-xs text-gray-500 mt-1">{description}</p></div>);
+        <h5 className="font-semibold text-gray-800 dark:text-white">{title}</h5><p
+        className="text-xs text-gray-500 dark:text-gray-400 mt-1">{description}</p></div>);
 
 // Tabla para mostrar las entidades
 const EntityTable = ({onEdit, refreshKey}) => {
@@ -87,10 +87,10 @@ const EntityTable = ({onEdit, refreshKey}) => {
 
     return (
         <div>
-            <input type="text" placeholder="Buscar por nombre, código, nivel..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full p-2 mb-4 border rounded-md" />
+            <input type="text" placeholder="Buscar por nombre, código, nivel..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full p-2 mb-4 border rounded-md dark:bg-slate-700 dark:border-slate-600 dark:text-white" />
             <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                <thead className="bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
                 <tr>
                     <th className="p-3">Nombre de la Entidad</th>
                     <th className="p-3">Código Único</th>
@@ -100,13 +100,13 @@ const EntityTable = ({onEdit, refreshKey}) => {
                     <th className="p-3">Acciones</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
                 {filteredEntities.map(entity => (
-                    <tr key={entity.id} className="border-b hover:bg-gray-50">
-                        <td className="p-3 font-medium text-gray-800">{entity.nombre}</td>
-                        <td className="p-3">{entity.codigo_unico}</td>
-                        <td className="p-3">{entity.nivel_gobierno_nombre}</td>
-                        <td className="p-3">{entity.subsector_nombre || '-'}</td>
+                    <tr key={entity.id} className="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td className="p-3 font-medium text-gray-800 dark:text-white">{entity.nombre}</td>
+                        <td className="p-3 dark:text-gray-300">{entity.codigo_unico}</td>
+                        <td className="p-3 dark:text-gray-300">{entity.nivel_gobierno_nombre}</td>
+                        <td className="p-3 dark:text-gray-300">{entity.subsector_nombre || '-'}</td>
                         <td className="p-3"><span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${entity.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{entity.activo ? 'Activo' : 'Inactivo'}</span>
                         </td>
@@ -171,8 +171,8 @@ export default function InstitutionalContent() {
     return (
         <div className="space-y-8">
             {/* --- SECCIÓN 1: Flujo de Trabajo Principal --- */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-semibold mb-8 text-gray-800 text-center">Flujo de Trabajo Principal</h3>
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">
+                <h3 className="text-xl font-semibold mb-8 text-gray-800 dark:text-white text-center">Flujo de Trabajo Principal</h3>
                 <div
                     className="flex flex-col md:flex-row justify-around items-center space-y-8 md:space-y-0 md:space-x-4">
                     <WorkflowStep number="1" title="Configuración Inicial"
@@ -189,25 +189,25 @@ export default function InstitutionalContent() {
             </div>
 
             {/* --- SECCIÓN 2: Gestión Funcional --- */}
-            <div className="bg-white p-6 rounded-lg shadow-sm mt-8">
-                <div className="flex items-center border-b pb-3 mb-4">
-                    <h2 className="text-xl font-bold text-gray-800">Gestión Funcional</h2>
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm mt-8 transition-colors">
+                <div className="flex items-center border-b dark:border-slate-700 pb-3 mb-4">
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-white">Gestión Funcional</h2>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-4">
                     <button onClick={() => setActiveFunctionalTab('entidades')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${activeFunctionalTab === 'entidades' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${activeFunctionalTab === 'entidades' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-600'}`}>
                         <Building size={16} className="mr-2"/>Gestión de Entidades
                     </button>
                     <button onClick={() => setActiveFunctionalTab('unidades')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${activeFunctionalTab === 'unidades' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${activeFunctionalTab === 'unidades' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-600'}`}>
                         <Network size={16} className="mr-2"/>Unidades Organizacionales
                     </button>
                     <button onClick={() => setActiveFunctionalTab('catalogos')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${activeFunctionalTab === 'catalogos' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${activeFunctionalTab === 'catalogos' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-600'}`}>
                         <SlidersHorizontal size={16} className="mr-2"/>Catálogos
                     </button>
                     <button onClick={() => setActiveFunctionalTab('periodos')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${activeFunctionalTab === 'periodos' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
+                            className={`px-4 py-2 rounded-md text-sm font-medium flex items-center ${activeFunctionalTab === 'periodos' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-600'}`}>
                         <CalendarDays size={16} className="mr-2"/>Períodos
                     </button>
                 </div>
@@ -222,7 +222,7 @@ export default function InstitutionalContent() {
 
             {/* --- SECCIÓN 3: Secciones Informativas (agrupadas al final) --- */}
             <div>
-                <h3 className="text-xl font-semibold mb-4 text-gray-800">Información General</h3>
+                <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Información General</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <InfoCard icon={Building} title="Gestión de Entidades"
                               subtitle="Administración de entidades del Estado"
