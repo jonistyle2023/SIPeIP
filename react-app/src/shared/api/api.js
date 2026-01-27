@@ -3,6 +3,7 @@ const BASE_URL = 'http://127.0.0.1:8000/api/v1';
 const getAuthToken = () => localStorage.getItem('authToken');
 
 const request = async (endpoint, options = {}) => {
+    {/* Autenticación por token */}
     const token = getAuthToken();
     const headers = {'Content-Type': 'application/json', ...options.headers};
     if (token) {
@@ -16,6 +17,7 @@ const request = async (endpoint, options = {}) => {
     return response.status === 204 ? null : response.json();
 };
 
+{/* ENDPOINTS */}
 export const api = {
     get: (endpoint) => request(endpoint),
     post: (endpoint, body) => request(endpoint, {method: 'POST', body: JSON.stringify(body)}),

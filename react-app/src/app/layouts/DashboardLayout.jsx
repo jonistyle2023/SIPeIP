@@ -64,17 +64,18 @@ export default function DashboardLayout({ user, onLogout }) {
                 activePage={activePage}
                 setActivePage={setActivePage}
                 sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-            />
+                setSidebarOpen={setSidebarOpen}/>
+
             <div className="flex-1 flex flex-col overflow-hidden">
                 <Header
                     user={user}
                     onLogout={onLogout}
-                    onOpenSidebar={() => setSidebarOpen(!sidebarOpen)} // Alterna el estado del Sidebar
-                />
+                    onOpenSidebar={() => setSidebarOpen(!sidebarOpen)}/>
+
                 <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
                     {renderContent()}
                 </main>
+
             </div>
         </div>
     );

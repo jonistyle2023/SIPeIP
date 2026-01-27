@@ -1,13 +1,16 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.db.models import Sum, Count, Avg, F, Q
 from rest_framework import request
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
 import pandas as pd
 from weasyprint import HTML
 import datetime
 
 from apps.authentication.permissions import IsAdmin
+from apps.investment_projects.models import ProyectoInversion
 from apps.strategic_objectives.models import Alineacion, ObjetivoEstrategicoInstitucional, PlanInstitucional
 
 class ExportReportView(APIView):
@@ -83,3 +86,68 @@ class ExportReportView(APIView):
             response = HttpResponse(content_type='application/json')
             df.to_json(response, orient='records', indent=4)
             return response
+
+class DashboardStatsView(APIView):
+    """
+    Vista para entregar datos agregados para los gráficos del Dashboard.
+    """
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # 1. Inversión Total por Sector
+        # Agrupa por el catálogo 'sector' y suma el cronograma valorado (inversión programada)
+        # Asumimos que ItemCatalogo tiene un campo 'descripcion' o 'nombre'. Usaremos 'descripcion'.
+        qs_sector = ProyectoInversion.objects.values(
+            'sector__descripcion'
+        ).annotate(
+            total=Sum('marco_logico__componentes__actividades__cronograma__valor_programado'),
+            cantidad=Count('proyecto_id', distinct=True)
+        ).order_by('-total')
+
+        inversion_sector_data = [
+            {
+                'sector': item['sector__descripcion'] or 'Sin Sector Asignado',
+                'total': item['total'] or 0,
+                'cantidad': item['cantidad']
+            }
+            for item in qs_sector
+        ]
+
+        # 2. Avance Físico y Financiero por Entidad
+        # Nota: El modelo ProyectoInversion no tiene campos directos de 'avance'.
+        # Calculamos el avance financiero basado en Arrastres (Devengado / Total) si existen.
+        qs_entidad = ProyectoInversion.objects.values(
+            'entidad_ejecutora__nombre'
+        ).annotate(
+            devengado=Sum('arrastres__monto_devengado'),
+            por_devengar=Sum('arrastres__monto_por_devengar'),
+            total_proyectos=Count('proyecto_id', distinct=True)
+        ).order_by('-devengado')[:5]
+
+        avance_entidad_data = []
+        for item in qs_entidad:
+            dev = item['devengado'] or 0
+            por_dev = item['por_devengar'] or 0
+            total_arrastre = dev + por_dev
+            financiero = (dev / total_arrastre * 100) if total_arrastre > 0 else 0
+
+            avance_entidad_data.append({
+                'entidad_responsable': item['entidad_ejecutora__nombre'],
+                'promedio_fisico': 0, # No hay datos de avance físico en el modelo actual
+                'promedio_financiero': round(financiero, 2)
+            })
+
+        # 3. Alineación (Usando Programa Institucional como proxy de estrategia)
+        alineacion_data = ProyectoInversion.objects.values(
+            'programa_institucional__nombre'
+        ).annotate(
+            total_proyectos=Count('proyecto_id')
+        ).order_by('-total_proyectos')
+
+        data = {
+            'inversion_sector': inversion_sector_data,
+            'avance_entidad': avance_entidad_data,
+            'alineacion_ods': list(alineacion_data),
+        }
+
+        return Response(data)
