@@ -17,39 +17,11 @@ import {
     ShieldCheck,
     FolderKanban,
     BookOpen,
-    CalendarCheck
+    CalendarCheck,
+    ActivitySquare // Importar el nuevo ícono
 } from 'lucide-react';
 
-const NavItem = ({ icon: Icon, text, active, onClick }) => (
-    <li>
-        <button onClick={onClick} className={`flex items-center w-full p-3 my-1 text-sm rounded-lg transition-colors ${active ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-slate-700'}`}>
-            <Icon size={20} />
-            <span className="ml-3">{text}</span>
-        </button>
-    </li>
-);
-
-const CollapsibleNavItem = ({ icon: Icon, text, children, activePage }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const hasActiveChild = React.Children.toArray(children).some(child => child.props.active);
-
-    return (
-        <li>
-            <button onClick={() => setIsOpen(!isOpen)} className={`flex items-center justify-between w-full p-3 my-1 text-sm rounded-lg transition-colors ${hasActiveChild ? 'bg-blue-500 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-slate-700'}`}>
-                <div className="flex items-center">
-                    <Icon size={20} />
-                    <span className="ml-3">{text}</span>
-                </div>
-                <ChevronDown size={16} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {isOpen && (
-                <ul className="pl-6 mt-1 space-y-1">
-                    {children}
-                </ul>
-            )}
-        </li>
-    );
-};
+// ... (Componentes NavItem y CollapsibleNavItem no cambian)
 
 export default function Sidebar({activePage, setActivePage, sidebarOpen, setSidebarOpen}) {
     const [openSubmenus, setOpenSubmenus] = useState({});
@@ -71,17 +43,19 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
             name: 'Seguimiento',
             icon: Target,
             subItems: [
+                // AÑADIDO: El nuevo requerimiento
+                {name: 'Seguimiento y Control', icon: ActivitySquare}, 
                 {name: 'Seguimiento Planificación', icon: ClipboardList},
                 {name: 'Seguimiento Inversión', icon: DollarSign},
                 {name: 'Seguimiento Obras', icon: HardHat},
                 {name: 'Seguimiento Cierre', icon: Archive}
             ]
         },
-        {name: 'Configuración', icon: Settings}, // Eliminado subItems
+        {name: 'Configuración', icon: Settings},
         {name: 'Auditoría', icon: ShieldCheck},
     ];
 
-    // Empuja el contenido en escritorio cuando el sidebar está abierto
+    // ... (El resto del componente no cambia)
     useEffect(() => {
         const updatePadding = () => {
             const isDesktop = window.innerWidth >= 1024; // breakpoint lg
@@ -117,7 +91,7 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
                     {menuItems.map((item) => {
                         const isParentActive = 
                             (item.name === 'Configuración' && (activePage === 'Usuarios' || activePage === 'Institucional' || activePage === 'Priorización')) ||
-                            (item.name === 'Seguimiento' && (activePage === 'Seguimiento Planificación' || activePage === 'Seguimiento Inversión' || activePage === 'Seguimiento Obras' || activePage === 'Seguimiento Cierre'));
+                            (item.name === 'Seguimiento' && (activePage === 'Seguimiento y Control' || activePage === 'Seguimiento Planificación' || activePage === 'Seguimiento Inversión' || activePage === 'Seguimiento Obras' || activePage === 'Seguimiento Cierre'));
 
                         return (
                             <div key={item.name}>

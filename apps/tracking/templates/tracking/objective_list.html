@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Objetivos</title>
+</head>
+<body>
+    <h1>Lista de Objetivos</h1>
+    <a href="{% url 'objective-create' %}">Crear Objetivo</a>
+    <ul>
+        {% for objective in objectives %}
+            <li>
+                {{ objective.name }} - {{ objective.compliance_status }}
+                <a href="{% url 'objective-update' objective.pk %}">Editar</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

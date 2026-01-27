@@ -36,7 +36,7 @@ export default function App() {
                 isAuthenticated={isAuthenticated} 
                 user={user} 
                 onLoginSuccess={handleLoginSuccess} 
-                onLogout={handleLogout} 
+                onLogout={handleLogout}
             />
         </Router>
     );

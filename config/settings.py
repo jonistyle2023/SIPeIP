@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.investment_projects',
     'apps.reports',
     'apps.audit',
+    'apps.tracking',
 ]
 
 MIDDLEWARE = [

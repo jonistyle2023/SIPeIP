@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Actividades</title>
+</head>
+<body>
+    <h1>Lista de Actividades</h1>
+    <a href="{% url 'activity-create' %}">Crear Actividad</a>
+    <ul>
+        {% for activity in activities %}
+            <li>
+                {{ activity.name }} - {{ activity.get_reported_status_display }}
+                <a href="{% url 'activity-update' activity.pk %}">Editar</a>
+                <a href="{% url 'activity-delete' activity.pk %}">Eliminar</a>
+                <br>
+                <small>
+                    Avance: {{ activity.progress_indicator|floatformat:2 }}% |
+                    Variación de Tiempo: {{ activity.time_variation_indicator }} días
+                </small>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

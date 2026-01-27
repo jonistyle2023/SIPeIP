@@ -72,10 +72,10 @@ class LoginView(APIView):
     BLOQUEO_MINUTOS = 5
 
     def post(self, request):
-        nombre_usuario = request.data.get("nombre_usuario")
-        password = request.data.get("clave") # Aceptamos 'clave' del frontend
+        username = request.data.get("username") # CAMBIADO: Ahora espera 'username'
+        password = request.data.get("password") # CAMBIADO: Ahora espera 'password'
         try:
-            usuario = Usuario.objects.get(nombre_usuario=nombre_usuario)
+            usuario = Usuario.objects.get(nombre_usuario=username) # Buscar por nombre_usuario en el modelo
         except Usuario.DoesNotExist:
             return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
         if not usuario.is_active:
@@ -89,7 +89,7 @@ class LoginView(APIView):
                 usuario.intentos_fallidos = 0
                 usuario.save()
 
-        user_authenticated = authenticate(request, username=nombre_usuario, password=password)
+        user_authenticated = authenticate(request, username=username, password=password) # Usar 'username' y 'password' para authenticate
 
         if user_authenticated:
             usuario.intentos_fallidos = 0
@@ -99,7 +99,7 @@ class LoginView(APIView):
             return Response({
                 "mensaje": "Inicio de sesión exitoso",
                 "token": token.key,
-                "usuario": {"id": usuario.id, "nombre_usuario": usuario.nombre_usuario, "roles": [rol.nombre for rol in usuario.roles.all()]}
+                "user": {"id": usuario.id, "username": usuario.nombre_usuario, "roles": [rol.nombre for rol in usuario.roles.all()]}
             }, status=status.HTTP_200_OK)
         else:
             usuario.intentos_fallidos += 1
@@ -152,4 +152,3 @@ class RegistroAuditoriaViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['usuario__nombre_usuario', 'accion', 'modulo']
     search_fields = ['detalles', 'accion']
-

@@ -45,6 +45,10 @@ export default function DashboardLayout({ user, onLogout }) {
                 return <ConfigurationPage />;
             case 'Auditoría':
                 return <AuditPage />;
+            
+            // CASOS DE SEGUIMIENTO
+            case 'Seguimiento y Control': // AÑADIDO: El nuevo caso
+                return <PlanningMonitoringPage />;
             case 'Seguimiento Planificación':
                 return <PlanningMonitoringPage />;
             case 'Seguimiento Inversión':
@@ -53,6 +57,7 @@ export default function DashboardLayout({ user, onLogout }) {
                 return <WorksMonitoringPage />;
             case 'Seguimiento Cierre':
                 return <ClosureMonitoringPage />;
+            
             default:
                 return <DashboardPage />;
         }
