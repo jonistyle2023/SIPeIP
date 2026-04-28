@@ -22,6 +22,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
     serializer_class = ObjectiveSerializer
     permission_classes = [IsAuthenticated]
 
+# Integrar la auditoria con el módulo audit
 class TrackingActivityViewSet(viewsets.ModelViewSet):
     queryset = TrackingActivity.objects.all()  # Añadido para que el router pueda inferir basename
     serializer_class = TrackingActivitySerializer

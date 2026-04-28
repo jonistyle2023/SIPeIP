@@ -9,13 +9,16 @@
 > [!NOTE]
 >
 > **Primera Versión del Proyecto**
-> - **Nombre del Proyecto:** Nuevo Sistema Integral de Planificación e Inversión Pública - **SIPeIP 2.0**
+> - **Nombre del Proyecto:** Nuevo sistema Integral de Planificación e Inversión Pública - **SIPeIP 2.0**
 > - **Versión del Software:** v1 (Finalizado en Julio del 2025).
 > - **Tiempo de planificación y desarrollo:** 4 meses.
 > - **Desarrollado por:** Jonathan David Panchana Rodríguez.
 > 
-> **Versión Final:**
-> - Finalización de los módulos de Reporteria y Auditoria.
+> **Segunda Versión del Proyecto:**
+> - Finalización de los módulos de Reportería y Auditoria.
+> - **Versión del Software:** V2 (Finalizado en enero del 2026).
+> - **Tiempo de dearrollo:** 6 meses.
+> - **Desarrollado por:** Jonathan David Panchana Rodríguez.
 
 ---
 

@@ -10,6 +10,7 @@ from apps.tracking.models import TrackingActivity
 from apps.investment_projects.models import ProyectoInversion
 from apps.strategic_objectives.models import Alineacion
 
+# Funcionalidad de reportes dentro de la aplicación
 class TrackingActivityReportView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -37,6 +37,7 @@ export const trackingApi = {
     getObjectives: () => api.get('/tracking/objectives/'),
     
     // Recursos para formularios (Trazabilidad)
-    getProjects: () => api.get('/investment-projects/'), 
-    getStrategicObjectives: () => api.get('/strategic-objectives/'),
+    getProjects: () => api.get('/investment-projects/projects-for-list/'),
+    // CORREGIDO: Apunta a la ruta correcta del ViewSet de OEI
+    getStrategicObjectives: () => api.get('/strategic-objectives/oei/'),
 };

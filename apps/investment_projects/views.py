@@ -4,6 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView # Importar ListAPIView
 from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 from .models import (
     ProyectoInversion, MarcoLogico, Componente, Actividad, Indicador, Meta,
@@ -11,7 +12,7 @@ from .models import (
     PuntuacionProyecto
 )
 from .serializers import (
-    ProyectoInversionSerializer,
+    ProyectoInversionSerializer, ProyectoInversionListSerializer, # Importar el nuevo serializador
     ArrastreInversionSerializer, CronogramaValoradoSerializer, DictamenPrioridadSerializer, MarcoLogicoSerializer,
     ComponenteSerializer, ActividadSerializer, IndicadorSerializer, MetaSerializer, CriterioPriorizacionSerializer,
     PuntuacionProyectoSerializer
@@ -27,6 +28,12 @@ def convert_decimals(obj):
     elif isinstance(obj, decimal.Decimal):
         return float(obj)
     return obj
+
+# NUEVO: Vista simplificada para listar proyectos
+class ProyectoInversionListView(ListAPIView):
+    queryset = ProyectoInversion.objects.all()
+    serializer_class = ProyectoInversionListSerializer
+    permission_classes = [IsAuthenticated] # O el permiso que consideres adecuado para listar proyectos
 
 class ProyectoInversionViewSet(viewsets.ModelViewSet):
     """

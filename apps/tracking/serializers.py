@@ -17,6 +17,7 @@ class ObjectiveSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ('status',) # El status se debe manejar internamente, no por el usuario
 
+# Reglas de Negocio
 class TrackingActivitySerializer(serializers.ModelSerializer):
     project_name = serializers.CharField(source='project.nombre', read_only=True)
     responsible_name = serializers.CharField(source='responsible.get_full_name', read_only=True)
@@ -35,6 +36,7 @@ class TrackingActivitySerializer(serializers.ModelSerializer):
             'created_by', 'updated_by', 'is_active'
         )
 
+    # Validaciones (V-01, V-02)
     def validate(self, data):
         # ... (la lógica de validación no cambia)
         planned_start = data.get('planned_start_date', getattr(self.instance, 'planned_start_date', None))

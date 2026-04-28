@@ -17,4 +17,6 @@ router.register(r'puntuaciones', views.PuntuacionProyectoViewSet, basename='punt
 
 urlpatterns = [
     path('', include(router.urls)),
+    # CORREGIDO: Ruta para la lista simplificada de proyectos para evitar conflicto con el router
+    path('projects-for-list/', views.ProyectoInversionListView.as_view(), name='proyecto-list-simplified'),
 ]

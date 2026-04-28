@@ -29,6 +29,7 @@ class IsAuditorOrPlanning(BasePermission):
             return is_in_group(request.user, 'Auditoría') or is_in_group(request.user, 'Planificación Institucional')
         return False
 
+# Permisos por rol
 class TrackingActivityPermission(BasePermission):
     """
     Permisos a nivel de vista para el ViewSet de Actividades de Seguimiento.

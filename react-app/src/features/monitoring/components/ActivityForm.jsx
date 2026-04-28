@@ -63,7 +63,7 @@ const ActivityForm = ({ activity, onSave, onClose, onError }) => {
     if (loading) return <div>Cargando formulario...</div>;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm flex justify-center items-center z-80">
             <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-xl w-full max-w-2xl">
                 <h2 className="text-xl font-bold mb-4">{activity ? 'Editar' : 'Crear'} Actividad</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>

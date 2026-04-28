@@ -8,12 +8,19 @@ from .models import (
 )
 from apps.strategic_objectives.serializers import GenericRelatedObjectSerializer
 
+# --- NUEVO: Serializer simplificado para listas ---
+class ProyectoInversionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProyectoInversion
+        fields = ['proyecto_id', 'nombre']
+
 # --- Marco Lógico ---
 class MetaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meta
         fields = ['linea_base', 'valor_meta', 'periodo_anualizado']
 
+# ... (el resto del archivo no cambia)
 class IndicadorSerializer(serializers.ModelSerializer):
     meta = MetaSerializer()
     content_type_id = serializers.IntegerField(write_only=True, required=False)

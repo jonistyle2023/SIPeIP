@@ -21,11 +21,15 @@ class Objective(models.Model):
     def __str__(self):
         return f"{self.name} (Tracking para OEI: {self.strategic_objective.codigo if self.strategic_objective else 'N/A'})"
 
+# Permite Registrar los datos solicitados
 class TrackingActivity(models.Model):
     STATUS_CHOICES = (('PLANIFICADA', 'Planificada'), ('EN_PROGRESO', 'En Progreso'), ('COMPLETADA', 'Completada'), ('EN_RIESGO', 'En Riesgo'))
     PRIORITY_CHOICES = [(i, str(i)) for i in range(1, 6)]
 
+    # Asociación con Objetivos estrategicos
     project = models.ForeignKey(ProyectoInversion, on_delete=models.CASCADE, related_name='tracking_activities')
+
+    # Asociación Actividad - objetivo
     objectives = models.ManyToManyField(Objective, related_name='tracking_activities')
     
     activity_code = models.CharField(max_length=20, editable=False, null=True, blank=True) # Permitir null para facilitar la migración
@@ -42,6 +46,8 @@ class TrackingActivity(models.Model):
     planned_duration_days = models.IntegerField(editable=False)
     
     reported_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PLANIFICADA')
+
+    # Asegura que las eliminaciones sean lógicas.
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
