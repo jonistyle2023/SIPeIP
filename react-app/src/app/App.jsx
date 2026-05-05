@@ -10,9 +10,19 @@ export default function App() {
     useEffect(() => {
         const token = localStorage.getItem('authToken');
         const usuario = localStorage.getItem('usuario');
-        if (token && usuario) {
-            setUser(JSON.parse(usuario));
-            setIsAuthenticated(true);
+        
+        if (token && usuario && usuario !== 'undefined') {
+            try {
+                setUser(JSON.parse(usuario));
+                setIsAuthenticated(true);
+            } catch (error) {
+                console.error("Error parsing user from localStorage:", error);
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('usuario');
+            }
+        } else if (usuario === 'undefined') {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('usuario');
         }
     }, []);
 
