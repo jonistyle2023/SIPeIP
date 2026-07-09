@@ -52,7 +52,7 @@ class Command(BaseCommand):
                         )
                     except ObjetivoDesarrolloSostenible.DoesNotExist:
                         self.stdout.write(self.style.WARNING(
-                            f"ODS con número {goal_num} no encontrado para la meta {row['target']}."))
+                            f"ODS con número {goal_num} no encontrado para la meta {row['id']}."))
             self.stdout.write(self.style.SUCCESS(f'Se importaron {MetaODS.objects.count()} metas de ODS.'))
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR(f'No se encontró el archivo: {targets_file}'))

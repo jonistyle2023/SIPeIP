@@ -28,8 +28,8 @@ export default function App() {
 
     const handleLoginSuccess = (userData) => {
         localStorage.setItem('authToken', userData.token);
-        localStorage.setItem('usuario', JSON.stringify(userData.usuario));
-        setUser(userData.usuario);
+        localStorage.setItem('usuario', JSON.stringify(userData.user));
+        setUser(userData.user);
         setIsAuthenticated(true);
     };
 

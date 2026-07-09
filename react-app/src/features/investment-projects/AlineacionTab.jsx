@@ -22,7 +22,7 @@ export default function AlineacionTab({project, onDataChange}) {
                 // 1. Obtener el programa para ver sus OEI alineados
                 const programaData = await api.get(`/strategic-planning/programas/${project.programa_institucional}/`);
                 if (programaData.oei_alineados && programaData.oei_alineados.length > 0) {
-                    const oeiId = programaData.oei_alineados[0]; // Tomamos el primer OEI vinculado
+                    const oeiId = programaData.oei_alineados[0].oei_id; // Tomamos el primer OEI vinculado
                     // 2. Usar el OEI para obtener la alineación con el PND
                     const alignmentData = await api.get(`/strategic-planning/alineaciones/?oei_id=${oeiId}`);
                     setAlignmentChain(alignmentData.length > 0 ? alignmentData[0] : null);

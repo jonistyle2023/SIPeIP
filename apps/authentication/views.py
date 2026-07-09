@@ -4,14 +4,15 @@ from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import ValidationError
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from datetime import timedelta
-from . import serializers
 from .models import Usuario, RegistroAuditoria, Rol
 from .serializers import UsuarioSerializer, RegistroAuditoriaSerializer, RolSerializer
+from .permissions import IsAdmin, IsAuditor
 
 class RolViewSet(viewsets.ModelViewSet):
     """
@@ -19,7 +20,7 @@ class RolViewSet(viewsets.ModelViewSet):
     """
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
-    permission_classes = [AllowAny] # Cambiar a [IsAuthenticated, IsAdminUser] en producción
+    permission_classes = [IsAuthenticated, IsAdmin]
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     """
@@ -27,10 +28,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     """
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [AllowAny] # Cambiar a permisos más restrictivos
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     @action(detail=True, methods=['patch'], url_path='desactivar')
-    def desactivar_usuario(self, request):
+    def desactivar_usuario(self, request, pk=None):
         usuario = self.get_object()
         if not usuario.is_active:
             return Response({"mensaje": "El usuario ya está desactivado."}, status=status.HTTP_400_BAD_REQUEST)
@@ -40,7 +41,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         return Response({"mensaje": "Usuario desactivado correctamente."}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['patch'], url_path='activar')
-    def activar_usuario(self, request):
+    def activar_usuario(self, request, pk=None):
         usuario = self.get_object()
         if usuario.is_active:
             return Response({"mensaje": "El usuario ya está activo."}, status=status.HTTP_400_BAD_REQUEST)
@@ -50,7 +51,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         return Response({"mensaje": "Usuario activado correctamente."}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'], url_path='ultimo-acceso')
-    def obtener_ultimo_acceso(self, request):
+    def obtener_ultimo_acceso(self, request, pk=None):
         usuario = self.get_object()
         return Response({"nombre_usuario": usuario.nombre_usuario, "ultimo_acceso": usuario.ultimo_acceso})
     def perform_create(self, serializer):
@@ -134,7 +135,7 @@ class CambioClaveView(APIView):
         serializer = UsuarioSerializer()
         try:
             serializer.validate_password(nueva_clave)
-        except serializers.ValidationError as e:
+        except ValidationError as e:
             return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
 
         usuario.set_password(nueva_clave)
@@ -148,7 +149,7 @@ class RegistroAuditoriaViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = RegistroAuditoria.objects.all().order_by('-timestamp')
     serializer_class = RegistroAuditoriaSerializer
-    permission_classes = [IsAuthenticated] # Proteger en producción
+    permission_classes = [IsAuthenticated, (IsAdmin | IsAuditor)]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['usuario__nombre_usuario', 'accion', 'modulo']
     search_fields = ['detalles', 'accion']

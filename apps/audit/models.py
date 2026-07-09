@@ -34,8 +34,8 @@ class AuditEvent(models.Model):
 
     class Meta:
         verbose_name = "Evento de Auditoría"
-    verbose_name_plural = "Eventos de Auditoría"
-    ordering = ['-timestamp']
+        verbose_name_plural = "Eventos de Auditoría"
+        ordering = ['-timestamp']
 
     def __str__(self):
         return f'{self.event_type} por {self.user} en {self.timestamp.strftime("%Y-%m-%d %H:%M")}'

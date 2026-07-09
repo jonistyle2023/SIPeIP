@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { reportsApi } from '../../../shared/api/api';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -39,12 +39,6 @@ const TrackingDashboard = () => {
         return acc;
     }, []);
 
-    // 2. Datos para el gráfico de % de avance por actividad
-    const progressData = reportData.map(activity => ({
-        name: activity['Código'],
-        avance: activity['Avance Real (%)']
-    }));
-
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
             {/* Gráfico 1: Actividades por Estado */}
@@ -63,21 +57,6 @@ const TrackingDashboard = () => {
                 </ResponsiveContainer>
             </div>
 
-            {/* Gráfico 2: % Avance por Actividad */}
-            <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow">
-                <h3 className="font-bold mb-4">% Avance por Actividad</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={progressData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="avance" fill="#82ca9d" name="Avance Real (%)" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-            
             {/* Placeholder para el Gráfico 3: Indicadores Cumplidos */}
             <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow lg:col-span-2">
                  <h3 className="font-bold mb-4">Cumplimiento de Indicadores por Objetivo</h3>

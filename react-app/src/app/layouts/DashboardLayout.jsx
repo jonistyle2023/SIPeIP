@@ -39,10 +39,11 @@ export default function DashboardLayout({ user, onLogout }) {
             case 'Usuarios':
                 return <UsersContentPage />;
             case 'Institucional':
+                return <ConfigurationPage initialTab="Institucional" setActivePage={setActivePage} />;
             case 'Priorización':
-                return <ConfigurationPage />;
+                return <ConfigurationPage initialTab="Criterios" setActivePage={setActivePage} />;
             case 'Configuración':
-                return <ConfigurationPage />;
+                return <ConfigurationPage setActivePage={setActivePage} />;
             case 'Auditoría':
                 return <AuditPage />;
             

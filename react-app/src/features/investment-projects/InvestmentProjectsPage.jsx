@@ -56,7 +56,7 @@ export default function InvestmentProjectsPage() {
         try {
             await api.delete(`/investment-projects/proyectos/${project.proyecto_id}/`);
 
-            setRefreshTrigger(prev => prev + 1);a
+            setRefreshTrigger(prev => prev + 1);
             if (selectedProject && selectedProject.proyecto_id === project.proyecto_id) {
                 handleReturnToList();
             }

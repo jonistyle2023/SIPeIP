@@ -1,5 +1,6 @@
 import decimal
 
+from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -17,9 +18,6 @@ from .serializers import (
     ComponenteSerializer, ActividadSerializer, IndicadorSerializer, MetaSerializer, CriterioPriorizacionSerializer,
     PuntuacionProyectoSerializer
 )
-from ..institutional_config.models import Catalogo
-from ..institutional_config.serializers import CatalogoSerializer
-
 def convert_decimals(obj):
     if isinstance(obj, list):
         return [convert_decimals(i) for i in obj]
@@ -40,7 +38,7 @@ class ProyectoInversionViewSet(viewsets.ModelViewSet):
     ViewSet para los Proyectos de Inversión.
     """
     serializer_class = ProyectoInversionSerializer
-    # permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
     queryset = ProyectoInversion.objects.select_related(
         'programa_institucional'
     ).prefetch_related(
@@ -87,10 +85,12 @@ class ProyectoInversionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     # Lógica de versionamiento
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         data = self.get_serializer(instance).data
         data = convert_decimals(data)  # <-- Conversión aquí
+        response = super().update(request, *args, **kwargs)
         ProyectoInversionVersion.objects.create(
             proyecto=instance,
             numero_version=instance.version_actual,
@@ -99,18 +99,18 @@ class ProyectoInversionViewSet(viewsets.ModelViewSet):
         )
         instance.version_actual += 1
         instance.save(update_fields=['version_actual'])
-        return super().update(request, *args, **kwargs)
+        return response
 
     # Acción personalizada para generar el CUP
     @action(detail=True, methods=['post'], url_path='generar-cup')
-    def generar_cup(self, request):
+    def generar_cup(self, request, pk=None):
         proyecto = self.get_object()
         if proyecto.cup:
             return Response({'error': 'Este proyecto ya tiene un CUP asignado.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Aquí iría la lógica de validación:
-        if not proyecto.marco_logico or not proyecto.marco_logico.componentes.exists():
-             return Response({'error': 'Falta información de Marco Lógico para generar el CUP.'})
+        if not hasattr(proyecto, 'marco_logico') or not proyecto.marco_logico.componentes.exists():
+             return Response({'error': 'Falta información de Marco Lógico para generar el CUP.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Lógica de generación de CUP (ejemplo simple)
         nuevo_cup = f"CUP-{proyecto.entidad_ejecutora.codigo_unico}-{proyecto.proyecto_id}"
@@ -166,6 +166,7 @@ class MarcoLogicoViewSet(viewsets.ModelViewSet):
     ViewSet para el Marco Lógico.
     """
     serializer_class = MarcoLogicoSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
     queryset = MarcoLogico.objects.all().prefetch_related(
         'componentes__actividades',
         'componentes__indicadores__meta',
@@ -184,30 +185,37 @@ class MarcoLogicoViewSet(viewsets.ModelViewSet):
 class ComponenteViewSet(viewsets.ModelViewSet):
     queryset = Componente.objects.all()
     serializer_class = ComponenteSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class ActividadViewSet(viewsets.ModelViewSet):
     queryset = Actividad.objects.all()
     serializer_class = ActividadSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class IndicadorViewSet(viewsets.ModelViewSet):
     queryset = Indicador.objects.all()
     serializer_class = IndicadorSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class MetaViewSet(viewsets.ModelViewSet):
     queryset = Meta.objects.all()
     serializer_class = MetaSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class ArrastreInversionViewSet(viewsets.ModelViewSet):
     queryset = ArrastreInversion.objects.all()
     serializer_class = ArrastreInversionSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class CronogramaValoradoViewSet(viewsets.ModelViewSet):
     queryset = CronogramaValorado.objects.all()
     serializer_class = CronogramaValoradoSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class DictamenPrioridadViewSet(viewsets.ModelViewSet):
     queryset = DictamenPrioridad.objects.all()
     serializer_class = DictamenPrioridadSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
     @action(detail=True, methods=['post'], url_path='aprobar')
     def aprobar(self, request, pk=None):
@@ -225,24 +233,13 @@ class DictamenPrioridadViewSet(viewsets.ModelViewSet):
         dictamen.save()
         return Response({'status': 'Dictamen rechazado'})
 
-class CatalogoViewSet(viewsets.ModelViewSet):
-    queryset = Catalogo.objects.all()
-    serializer_class = CatalogoSerializer
-
-    def list(self, request, *args, **kwargs):
-        codigo = request.query_params.get('codigo')
-        if codigo:
-            catalogos = Catalogo.objects.filter(codigo=codigo)
-        else:
-            catalogos = Catalogo.objects.all()
-        serializer = self.get_serializer(catalogos, many=True)
-        return Response(serializer.data)
-
 class CriterioPriorizacionViewSet(viewsets.ModelViewSet):
     queryset = CriterioPriorizacion.objects.all()
     serializer_class = CriterioPriorizacionSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class PuntuacionProyectoViewSet(viewsets.ModelViewSet):
     queryset = PuntuacionProyecto.objects.all()
     serializer_class = PuntuacionProyectoSerializer
     filterset_fields = ['proyecto', 'criterio']
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]

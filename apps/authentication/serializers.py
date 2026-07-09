@@ -58,10 +58,3 @@ class RegistroAuditoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistroAuditoria
         fields = '__all__'
-
-
-class ValidationError:
-    def __init__(self):
-        self.detail = None
-
-    pass

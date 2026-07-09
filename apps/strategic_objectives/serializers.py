@@ -31,7 +31,7 @@ class PoliticaPNDSerializer(serializers.ModelSerializer):
     class Meta:
         model = PoliticaPND
         fields = [
-            'politica_id', 'objetivo', 'codigo', 'descripcion', 'activo', 'metas'
+            'politica_pnd_id', 'objetivo_pnd', 'codigo', 'descripcion', 'metas'
         ]
 
 class ObjetivoPNDSerializer(serializers.ModelSerializer):
@@ -108,13 +108,6 @@ class PlanInstitucionalSerializer(serializers.ModelSerializer):
             'creador', 'objetivos_estrategicos'
         ]
 
-class PlanSectorialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PlanSectorial
-        fields = [
-            'plan_sectorial_id', 'nombre', 'sector', 'periodo', 'estado', 'fecha_creacion'
-        ]
-
 # Representar un objeto genérico de forma legible
 class GenericRelatedObjectSerializer(serializers.Field):
     def to_representation(self, value):
@@ -155,8 +148,8 @@ class PlanInstitucionalVersionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlanInstitucionalVersion
         fields = [
-            'version_id', 'plan_institucional', 'numero_version', 'fecha_version', 'usuario_version',
-            'cambios_realizados'
+            'version_id', 'plan_institucional', 'numero_version', 'fecha_version', 'usuario_responsable',
+            'datos'
         ]
 
 class ObjetivoSectorialSerializer(serializers.ModelSerializer):

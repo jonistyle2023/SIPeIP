@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import sipeipLogo from '../../app/assets/images/sipeip-logo.png';
 import {
     LayoutDashboard,
     FileText,
@@ -80,7 +81,7 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed top-0 left-0 h-screen overflow-y-auto`}
             >
                 <div className="p-4 flex items-center">
-                    <img src="./src/app/assets/images/sipeip-logo.png" alt="Logo SIPeIP"
+                    <img src={sipeipLogo} alt="Logo SIPeIP"
                          className="w-10 h-10 rounded-full mr-3 object-cover"/>
                     <div>
                         <h1 className="text-xl font-bold text-gray-800 dark:text-white">SIPeIP</h1>

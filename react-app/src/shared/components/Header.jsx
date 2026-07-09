@@ -56,7 +56,7 @@ const Header = ({user, onLogout, pageTitle, onOpenSidebar, sidebarOpen}) => {
                 <div className="flex items-center space-x-2">
                     <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
                     <div>
-                        <p className="font-semibold text-sm text-gray-800 dark:text-white">{user?.nombre_usuario || 'Usuario'}</p>
+                        <p className="font-semibold text-sm text-gray-800 dark:text-white">{user?.username || 'Usuario'}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">{user?.roles?.join(', ') || 'Rol'}</p>
                     </div>
                     <LogOut size={20}
@@ -78,7 +78,7 @@ const Header = ({user, onLogout, pageTitle, onOpenSidebar, sidebarOpen}) => {
                     <div className="flex items-center space-x-2">
                         <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
                         <div>
-                            <p className="font-semibold text-sm text-gray-800 dark:text-white">{user?.nombre_usuario || 'Usuario'}</p>
+                            <p className="font-semibold text-sm text-gray-800 dark:text-white">{user?.username || 'Usuario'}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">{user?.roles?.join(', ') || 'Rol'}</p>
                         </div>
                         <LogOut size={20} className="text-gray-600 dark:text-gray-300 cursor-pointer"

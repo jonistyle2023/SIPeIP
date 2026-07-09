@@ -1,8 +1,10 @@
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.contenttypes.models import ContentType
+from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 from .models import (
     PlanNacionalDesarrollo, ObjetivoPND, PoliticaPND, MetaPND, IndicadorPND,
     ObjetivoDesarrolloSostenible, MetaODS, IndicadorODS,
@@ -22,22 +24,27 @@ from .serializers import (
 class PlanNacionalDesarrolloViewSet(viewsets.ModelViewSet):
     queryset = PlanNacionalDesarrollo.objects.all().prefetch_related('objetivos__politicas__metas__indicadores')
     serializer_class = PlanNacionalDesarrolloSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class ObjetivoPNDViewSet(viewsets.ModelViewSet):
     queryset = ObjetivoPND.objects.all().prefetch_related('politicas__metas__indicadores')
     serializer_class = ObjetivoPNDSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class PoliticaPNDViewSet(viewsets.ModelViewSet):
     queryset = PoliticaPND.objects.all().prefetch_related('metas__indicadores')
     serializer_class = PoliticaPNDSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class MetaPNDViewSet(viewsets.ModelViewSet):
     queryset = MetaPND.objects.all().prefetch_related('indicadores')
     serializer_class = MetaPNDSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class IndicadorPNDViewSet(viewsets.ModelViewSet):
     queryset = IndicadorPND.objects.all()
     serializer_class = IndicadorPNDSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 # --- ODS ---
 class ObjetivoDesarrolloSostenibleViewSet(viewsets.ModelViewSet):
@@ -75,21 +82,25 @@ class IndicadorODSViewSet(viewsets.ModelViewSet):
 class PlanInstitucionalViewSet(viewsets.ModelViewSet):
     queryset = PlanInstitucional.objects.all().prefetch_related('objetivos_estrategicos')
     serializer_class = PlanInstitucionalSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         current_data_serializer = self.get_serializer(instance)
+        snapshot = current_data_serializer.data
+        response = super().update(request, *args, **kwargs)
 
         PlanInstitucionalVersion.objects.create(
             plan_institucional=instance,
             numero_version=instance.version_actual,
             usuario_responsable=request.user if request.user.is_authenticated else None,
-            datos=current_data_serializer.data
+            datos=snapshot
         )
 
         instance.version_actual += 1
         instance.save(update_fields=['version_actual'])
-        return super().update(request, *args, **kwargs)
+        return response
 
 class PlanInstitucionalVersionViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -108,16 +119,17 @@ class ObjetivoEstrategicoInstitucionalViewSet(viewsets.ModelViewSet):
     """
     queryset = ObjetivoEstrategicoInstitucional.objects.all()
     serializer_class = ObjetivoEstrategicoInstitucionalSerializer
-    # permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class PlanSectorialViewSet(viewsets.ModelViewSet):
     queryset = PlanSectorial.objects.all().prefetch_related('objetivos')
     serializer_class = PlanSectorialSerializer
-    # permission_classes = [IsAuthenticated, ...]
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 class AlineacionViewSet(viewsets.ModelViewSet):
     queryset = Alineacion.objects.all().select_related('instrumento_origen_tipo', 'instrumento_destino_tipo')
     serializer_class = AlineacionSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
     def perform_create(self, serializer):
         instance = serializer.save()
@@ -134,7 +146,7 @@ class AlineacionViewSet(viewsets.ModelViewSet):
 class ObjetivoSectorialViewSet(viewsets.ModelViewSet):
     queryset = ObjetivoSectorial.objects.all()
     serializer_class = ObjetivoSectorialSerializer
-    # permission_classes = [IsAuthenticated, ...] # Añadir permisos según sea necesario
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
 # Ayuda a obtener los modelos que se pueden alinear
 class AlignableContentTypesListView(APIView):
@@ -148,7 +160,7 @@ class AlignableContentTypesListView(APIView):
         # Define aquí los modelos que quieres exponer para alineación
         models = [
             'objetivoestrategicoinstitucional', 'objetivopnd',
-            'objetivosectorial', 'Objetivo Sectorial',
+            'objetivosectorial',
             'politicapnd', 'metapnd', 'metaods', 'plansectorial'
         ]
         content_types = ContentType.objects.filter(model__in=models)
@@ -168,3 +180,4 @@ class ProgramaInstitucionalViewSet(viewsets.ModelViewSet):
     """
     queryset = ProgramaInstitucional.objects.all()
     serializer_class = ProgramaInstitucionalSerializer
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]

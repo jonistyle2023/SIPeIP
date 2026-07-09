@@ -47,8 +47,12 @@ class IndicadorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         meta_datos = validated_data.pop('meta')
-        content_type_id = validated_data.pop('content_type_id')
-        id_del_objeto_padre = validated_data.pop('object_id')
+        content_type_id = validated_data.pop('content_type_id', None)
+        id_del_objeto_padre = validated_data.pop('object_id', None)
+        if not content_type_id or not id_del_objeto_padre:
+            raise serializers.ValidationError(
+                "content_type_id y object_id son obligatorios para crear un indicador."
+            )
         descripcion_indicador = validated_data.pop('descripcion')
         formula_indicador = validated_data.pop('formula', None)
         unidad_medida_indicador = validated_data.pop('unidad_medida')
@@ -211,6 +215,9 @@ class ProyectoInversionSerializer(serializers.ModelSerializer):
             'programa_institucional', 'contribucion_programa', 'programa_institucional_nombre',
             'monto_total_programado', 'ultimas_observaciones', 'puntaje_priorizacion_total'
         ]
+        # 'estado' solo se cambia a través de las acciones dedicadas (postular/priorizar/devolver),
+        # nunca por una actualización genérica del proyecto.
+        read_only_fields = ['estado']
 
     def get_monto_total_programado(self, obj):
         if not hasattr(obj, 'marco_logico') or obj.marco_logico is None:

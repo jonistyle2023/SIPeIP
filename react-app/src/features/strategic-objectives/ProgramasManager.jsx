@@ -6,7 +6,9 @@ import {Edit, Layers, Link2, Plus, Trash2} from 'lucide-react';
 const ProgramaFormModal = ({programa, onClose, onSave}) => {
     const [nombre, setNombre] = useState(programa?.nombre || '');
     const [entidad, setEntidad] = useState(programa?.entidad || '');
-    const [oeiAlineados, setOeiAlineados] = useState(programa?.oei_alineados || []);
+    const [oeiAlineados, setOeiAlineados] = useState(
+        (programa?.oei_alineados || []).map(oei => oei.oei_id)
+    );
     const [entidadesList, setEntidadesList] = useState([]);
     const [oeiList, setOeiList] = useState([]);
     const [error, setError] = useState('');

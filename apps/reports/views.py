@@ -9,10 +9,11 @@ import datetime
 from apps.tracking.models import TrackingActivity
 from apps.investment_projects.models import ProyectoInversion
 from apps.strategic_objectives.models import Alineacion
+from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 
 # Funcionalidad de reportes dentro de la aplicación
 class TrackingActivityReportView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
 
     def get(self, request, *args, **kwargs):
         report_format = request.query_params.get('format', 'json').lower()
@@ -29,7 +30,6 @@ class TrackingActivityReportView(APIView):
                 'Responsable': activity.responsible.get_full_name() if activity.responsible else 'N/A',
                 'Fecha Inicio Plan.': activity.planned_start_date,
                 'Fecha Fin Plan.': activity.planned_end_date,
-                'Avance Real (%)': activity.real_progress,
             })
         
         df = pd.DataFrame(data)

@@ -36,7 +36,7 @@ class CatalogoSerializer(serializers.ModelSerializer):
 
 # Entidad
 class EntidadSerializer(serializers.ModelSerializer):
-    nivel_gobierno_nombre = serializers.CharField(source='nivel_gobierno.nombre', read_only=True)
+    nivel_gobierno_nombre = serializers.CharField(source='nivel_gobierno.nombre', read_only=True, allow_null=True)
     subsector_nombre = serializers.CharField(source='subsector.nombre', read_only=True, allow_null=True)
 
     class Meta:

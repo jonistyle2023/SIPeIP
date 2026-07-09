@@ -125,6 +125,13 @@ class PeriodoPlanificacion(models.Model):
     def __str__(self):
         return f"{self.nombre} ({self.fecha_inicio.year}-{self.fecha_fin.year})"
 
+    def save(self, *args, **kwargs):
+        if self.es_activo_para_carga:
+            PeriodoPlanificacion.objects.filter(
+                es_activo_para_carga=True
+            ).exclude(pk=self.pk).update(es_activo_para_carga=False)
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = "Período de Planificación"
         verbose_name_plural = "Períodos de Planificación"

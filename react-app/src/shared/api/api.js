@@ -38,6 +38,11 @@ export const trackingApi = {
     
     // Recursos para formularios (Trazabilidad)
     getProjects: () => api.get('/investment-projects/projects-for-list/'),
-    // CORREGIDO: Apunta a la ruta correcta del ViewSet de OEI
-    getStrategicObjectives: () => api.get('/strategic-objectives/oei/'),
+    // El módulo de objetivos estratégicos está montado bajo /strategic-planning/
+    getStrategicObjectives: () => api.get('/strategic-planning/oei/'),
+};
+
+// --- API Específica para Reportería ---
+export const reportsApi = {
+    getTrackingActivitiesReport: (format = 'json') => api.get(`/reports/tracking-activities/?format=${format}`),
 };

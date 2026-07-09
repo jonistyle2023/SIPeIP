@@ -20,7 +20,12 @@ class ProyectoInversion(models.Model):
                                            limit_choices_to={'catalogo__codigo': 'TIPOLOGIA_PROYECTO'})
     sector = models.ForeignKey(ItemCatalogo, on_delete=models.PROTECT, related_name='proyectos_por_sector',
                                limit_choices_to={'catalogo__codigo': 'MACROSECTOR'})
-    estado = models.CharField(max_length=50,
+    ESTADO_CHOICES = [
+        ('EN_FORMULACION', 'En Formulación'),
+        ('POSTULADO', 'Postulado'),
+        ('PRIORIZADO', 'Priorizado'),
+    ]
+    estado = models.CharField(max_length=50, choices=ESTADO_CHOICES,
                               default='EN_FORMULACION')
     # Versionamiento
     version_actual = models.PositiveIntegerField(default=1)

@@ -5,9 +5,21 @@ from .serializers import (
     PeriodoPlanificacionSerializer
 )
 from apps.audit.utils import log_event
+from apps.authentication.permissions import IsAdmin
+
+WRITE_ACTIONS = ('create', 'update', 'partial_update', 'destroy')
 
 
-class CatalogoViewSet(viewsets.ModelViewSet):
+class AdminWriteMixin:
+    """Lectura para cualquier usuario autenticado; escritura restringida a Administradores."""
+
+    def get_permissions(self):
+        if self.action in WRITE_ACTIONS:
+            return [permissions.IsAuthenticated(), IsAdmin()]
+        return [permissions.IsAuthenticated()]
+
+
+class CatalogoViewSet(AdminWriteMixin, viewsets.ModelViewSet):
     queryset = Catalogo.objects.all().prefetch_related('items')
     serializer_class = CatalogoSerializer
 
@@ -17,9 +29,8 @@ class CatalogoViewSet(viewsets.ModelViewSet):
         if codigo:
             queryset = queryset.filter(codigo=codigo)
         return queryset
-        # permission_classes = [permissions.IsAdminUser] # RESTRICCIÓN
 
-class ItemCatalogoViewSet(viewsets.ModelViewSet):
+class ItemCatalogoViewSet(AdminWriteMixin, viewsets.ModelViewSet):
     """
     API endpoint para los Ítems de un Catálogo. Ahora devuelve una estructura jerárquica.
     """
@@ -32,15 +43,13 @@ class ItemCatalogoViewSet(viewsets.ModelViewSet):
         if catalogo_id:
             queryset = queryset.filter(catalogo_id=catalogo_id, padre__isnull=True)
         return queryset
-    # permission_classes = [permissions.IsAdminUser] # Igualmente, restringir a administradores
 
-class EntidadViewSet(viewsets.ModelViewSet):
+class EntidadViewSet(AdminWriteMixin, viewsets.ModelViewSet):
     """
     API endpoint para la gestión de Entidades del Estado.
     """
     queryset = Entidad.objects.select_related('nivel_gobierno', 'subsector').all()
     serializer_class = EntidadSerializer
-    # permission_classes = [permissions.IsAdminUser]
 
     def perform_update(self, serializer):
         # 1. Obtenemos el estado del objeto ANTES de guardarlo
@@ -84,7 +93,7 @@ class EntidadViewSet(viewsets.ModelViewSet):
         )
 
 
-class UnidadOrganizacionalViewSet(viewsets.ModelViewSet):
+class UnidadOrganizacionalViewSet(AdminWriteMixin, viewsets.ModelViewSet):
     queryset = UnidadOrganizacional.objects.select_related('entidad', 'padre').all()
     serializer_class = UnidadOrganizacionalSerializer
     """
@@ -96,12 +105,10 @@ class UnidadOrganizacionalViewSet(viewsets.ModelViewSet):
         if entidad_id:
             queryset = queryset.filter(entidad_id=entidad_id, padre__isnull=True)
         return queryset
-    # permission_classes = [permissions.IsAdminUser]
 
-class PeriodoPlanificacionViewSet(viewsets.ModelViewSet):
+class PeriodoPlanificacionViewSet(AdminWriteMixin, viewsets.ModelViewSet):
     """
     API endpoint para la gestión de los Períodos de Planificación.
     """
     queryset = PeriodoPlanificacion.objects.all()
     serializer_class = PeriodoPlanificacionSerializer
-    # permission_classes = [permissions.IsAdminUser]

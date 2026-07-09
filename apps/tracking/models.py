@@ -1,5 +1,6 @@
-from django.db import models
+from django.db import models, transaction
 from django.conf import settings
+from django.utils import timezone
 from apps.investment_projects.models import ProyectoInversion
 from apps.strategic_objectives.models import ObjetivoEstrategicoInstitucional
 
@@ -58,22 +59,46 @@ class TrackingActivity(models.Model):
     class Meta:
         unique_together = ('project', 'activity_code')
 
-    def save(self, *args, **kwargs):
-        # Generar código de actividad si no existe
-        if not self.activity_code:
-            last_activity = TrackingActivity.objects.filter(project=self.project).order_by('id').last()
-            if last_activity and last_activity.activity_code:
-                try:
-                    last_code = int(last_activity.activity_code.replace('ACT', ''))
-                    self.activity_code = f'ACT{last_code + 1:03d}'
-                except (ValueError, TypeError):
-                    self.activity_code = 'ACT001' # Fallback
+    def update_reported_status(self):
+        """Recalcula reported_status a partir de las fechas planificadas/reales."""
+        today = timezone.now().date()
+        if self.real_end_date:
+            self.reported_status = 'COMPLETADA'
+        elif self.real_start_date:
+            if self.planned_end_date and today > self.planned_end_date:
+                self.reported_status = 'EN_RIESGO'
             else:
-                self.activity_code = 'ACT001'
-        
+                self.reported_status = 'EN_PROGRESO'
+        else:
+            if self.planned_start_date and today > self.planned_start_date:
+                self.reported_status = 'EN_RIESGO'
+            else:
+                self.reported_status = 'PLANIFICADA'
+
+    def save(self, *args, **kwargs):
         self.planned_duration_days = (self.planned_end_date - self.planned_start_date).days
         self.update_reported_status()
-        super().save(*args, **kwargs)
+
+        if self.activity_code:
+            super().save(*args, **kwargs)
+            return
+
+        # Generar código de actividad de forma atómica para evitar colisiones
+        # cuando se crean varias actividades del mismo proyecto en paralelo.
+        with transaction.atomic():
+            ProyectoInversion.objects.select_for_update().get(pk=self.project_id)
+            existing_codes = TrackingActivity.objects.select_for_update().filter(
+                project=self.project, activity_code__isnull=False
+            ).values_list('activity_code', flat=True)
+
+            max_code = 0
+            for code in existing_codes:
+                try:
+                    max_code = max(max_code, int(code.replace('ACT', '')))
+                except (ValueError, TypeError):
+                    continue
+            self.activity_code = f'ACT{max_code + 1:03d}'
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.activity_code} - {self.name}"
