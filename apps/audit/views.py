@@ -16,7 +16,17 @@ class AuditEventViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditEvent.objects.all()
     serializer_class = AuditEventSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['content_type', 'object_id']
+    filterset_fields = ['content_type', 'object_id', 'user', 'event_type']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        fecha_desde = self.request.query_params.get('fecha_desde')
+        fecha_hasta = self.request.query_params.get('fecha_hasta')
+        if fecha_desde:
+            queryset = queryset.filter(timestamp__date__gte=fecha_desde)
+        if fecha_hasta:
+            queryset = queryset.filter(timestamp__date__lte=fecha_hasta)
+        return queryset
 
 class ContentTypeView(views.APIView):
     """

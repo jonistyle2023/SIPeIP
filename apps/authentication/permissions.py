@@ -11,7 +11,7 @@ class IsAdmin(BasePermission):
             return False
 
         # Verificamos si el usuario tiene alguno de los roles de administrador
-        roles_admin = ["Administrador (Admin)", "Super Administrador"]
+        roles_admin = ["Administrador (Admin)", "Super Administrador", "Administrador del Sistema de la SNP"]
         return request.user.roles.filter(nombre__in=roles_admin).exists()
 
 class IsAuditor(BasePermission):
@@ -43,7 +43,8 @@ class IsEditor(BasePermission):
             "Revisor Institucional (SNP)",
             "Autoridad Validante (SNP/Externa)",
             "Usuario Externo (Entidad Pública)",
-            "Consultor/Formulador de Proyectos"
+            "Consultor/Formulador de Proyectos",
+            "Editor Institucional"
         ]
         return request.user.roles.filter(nombre__in=roles_editor).exists()
 
@@ -60,5 +61,6 @@ class IsOwnerOfPlan(BasePermission):
         # El creador del objeto puede editarlo
         is_owner = obj.creador == request.user
         # Un admin también puede editarlo
-        is_admin = request.user.roles.filter(nombre="Administrador (Admin)").exists()
+        roles_admin = ["Administrador (Admin)", "Super Administrador", "Administrador del Sistema de la SNP"]
+        is_admin = request.user.roles.filter(nombre__in=roles_admin).exists()
         return is_owner or is_admin

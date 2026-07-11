@@ -1,3 +1,4 @@
+from django.db.models import Sum, Count, Q
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -7,8 +8,11 @@ from weasyprint import HTML
 import datetime
 
 from apps.tracking.models import TrackingActivity
-from apps.investment_projects.models import ProyectoInversion
-from apps.strategic_objectives.models import Alineacion
+from apps.investment_projects.models import ProyectoInversion, CronogramaValorado, ArrastreInversion
+from apps.institutional_config.models import Entidad
+from apps.strategic_objectives.models import (
+    Alineacion, ObjetivoDesarrolloSostenible, PlanNacionalDesarrollo, PlanSectorial
+)
 from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 
 # Funcionalidad de reportes dentro de la aplicación
@@ -67,5 +71,122 @@ class ExportReportView(APIView):
     pass
 
 class DashboardStatsView(APIView):
-    # ...
-    pass
+    """
+    Estadísticas agregadas reales (sin datos simulados) usadas tanto por el
+    Dashboard principal como por el módulo de Reportes.
+    """
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
+
+    def get(self, request, *args, **kwargs):
+        # --- Avance físico por proyecto: % de actividades COMPLETADA sobre el total activo ---
+        progreso_por_proyecto = {}
+        for row in TrackingActivity.objects.filter(is_active=True).values('project').annotate(
+            total=Count('id'), completadas=Count('id', filter=Q(reported_status='COMPLETADA'))
+        ):
+            progreso_por_proyecto[row['project']] = (
+                round(row['completadas'] / row['total'] * 100, 2) if row['total'] else 0
+            )
+
+        proyectos = list(ProyectoInversion.objects.select_related('sector', 'entidad_ejecutora').all())
+
+        # --- KPIs ---
+        avances = list(progreso_por_proyecto.values())
+        kpis = {
+            'proyectos_activos': len(proyectos),
+            'inversion_total': CronogramaValorado.objects.aggregate(total=Sum('valor_programado'))['total'] or 0,
+            'avance_promedio': round(sum(avances) / len(avances), 2) if avances else 0,
+            'alertas_activas': TrackingActivity.objects.filter(is_active=True, reported_status='EN_RIESGO').count(),
+        }
+
+        # --- Indicadores / avance por sector ---
+        sector_stats = {}
+        for p in proyectos:
+            sector_nombre = p.sector.nombre if p.sector else 'Sin Sector'
+            entry = sector_stats.setdefault(sector_nombre, {'sector': sector_nombre, 'projects': 0, '_avances': []})
+            entry['projects'] += 1
+            if p.proyecto_id in progreso_por_proyecto:
+                entry['_avances'].append(progreso_por_proyecto[p.proyecto_id])
+        indicadores_sector = []
+        for entry in sector_stats.values():
+            avances_sector = entry.pop('_avances')
+            entry['avance'] = round(sum(avances_sector) / len(avances_sector), 2) if avances_sector else 0
+            indicadores_sector.append(entry)
+
+        # --- Alertas: actividades activas EN_RIESGO más próximas a vencer ---
+        alertas = [
+            {'actividad': a.name, 'proyecto': a.project.nombre, 'fecha_limite': a.planned_end_date}
+            for a in TrackingActivity.objects.filter(is_active=True, reported_status='EN_RIESGO')
+            .select_related('project').order_by('planned_end_date')[:5]
+        ]
+
+        # --- Instrumentos de planificación ---
+        pnd = PlanNacionalDesarrollo.objects.order_by('-fecha_publicacion').first()
+        instrumentos_planificacion = {
+            'ods_count': ObjetivoDesarrolloSostenible.objects.count(),
+            'pnd_nombre': pnd.nombre if pnd else None,
+            'pnd_objetivos': (
+                [{'codigo': o.codigo, 'descripcion': o.descripcion} for o in pnd.objetivos.all()] if pnd else []
+            ),
+            'sectoriales_count': PlanSectorial.objects.count(),
+            'entidades_count': Entidad.objects.filter(activo=True).count(),
+        }
+
+        # --- Inversión por período (CronogramaValorado.periodo, formato AAAA-MM) ---
+        inversion_por_periodo = list(
+            CronogramaValorado.objects.values('periodo').annotate(total=Sum('valor_programado')).order_by('periodo')
+        )
+
+        # --- Inversión por sector (Reportes) ---
+        inversion_sector = [
+            {
+                'sector': row['actividad__componente__marco_logico__proyecto__sector__nombre'] or 'Sin Sector',
+                'total': row['total'] or 0,
+            }
+            for row in CronogramaValorado.objects.values(
+                'actividad__componente__marco_logico__proyecto__sector__nombre'
+            ).annotate(total=Sum('valor_programado'))
+        ]
+
+        # --- Avance por entidad: físico (actividades) + financiero (arrastres) ---
+        entidad_fisico = {}
+        for p in proyectos:
+            bucket = entidad_fisico.setdefault(p.entidad_ejecutora.nombre, [])
+            if p.proyecto_id in progreso_por_proyecto:
+                bucket.append(progreso_por_proyecto[p.proyecto_id])
+
+        entidad_financiero = {}
+        for row in ArrastreInversion.objects.values('proyecto__entidad_ejecutora__nombre').annotate(
+            devengado=Sum('monto_devengado'), por_devengar=Sum('monto_por_devengar')
+        ):
+            devengado = row['devengado'] or 0
+            por_devengar = row['por_devengar'] or 0
+            denom = devengado + por_devengar
+            entidad_financiero[row['proyecto__entidad_ejecutora__nombre']] = (
+                round(float(devengado) / float(denom) * 100, 2) if denom else 0
+            )
+
+        avance_entidad = [
+            {
+                'entidad_responsable': nombre,
+                'promedio_fisico': round(sum(avances_ent) / len(avances_ent), 2) if avances_ent else 0,
+                'promedio_financiero': entidad_financiero.get(nombre, 0),
+            }
+            for nombre, avances_ent in entidad_fisico.items()
+        ]
+
+        # --- Alineación con ODS (conteo directo de Alineacion.ods_vinculados) ---
+        alineacion_ods = list(
+            ObjetivoDesarrolloSostenible.objects.annotate(count=Count('alineaciones'))
+            .order_by('numero').values('numero', 'nombre', 'count')
+        )
+
+        return Response({
+            'kpis': kpis,
+            'indicadores_sector': indicadores_sector,
+            'alertas': alertas,
+            'instrumentos_planificacion': instrumentos_planificacion,
+            'inversion_por_periodo': inversion_por_periodo,
+            'inversion_sector': inversion_sector,
+            'avance_entidad': avance_entidad,
+            'alineacion_ods': alineacion_ods,
+        })

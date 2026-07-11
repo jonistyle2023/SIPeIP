@@ -1,92 +1,74 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-    ArrowUp,
-    ArrowDown,
     DollarSign,
     CheckCircle,
     AlertTriangle,
     TrendingUp,
-    TrendingDown,
     BookOpen,
     Flag,
     Target,
     Users,
-    BarChart
+    Loader2
 } from 'lucide-react';
 import {BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import {api} from '../../shared/api/api.js';
 
-const kpiData = [
-    {
-        title: 'Proyectos Activos',
-        value: '247',
-        change: '+12%',
-        changeType: 'increase',
-        icon: TrendingUp,
-        color: 'green'
-    },
-    {
-        title: 'Inversión Total',
-        value: '$2.4B',
-        change: '+8% vs trimestre anterior',
-        changeType: 'increase',
-        icon: DollarSign,
-        color: 'green'
-    },
-    {
-        title: 'Avance Promedio',
-        value: '90%',
-        change: 'sin cambios',
-        changeType: 'neutral',
-        icon: CheckCircle,
-        color: 'yellow'
-    },
-    {
-        title: 'Alertas Activas',
-        value: '18',
-        change: '+3 nuevas alertas',
-        changeType: 'decrease',
-        icon: AlertTriangle,
-        color: 'red'
-    },
-];
+const SECTOR_COLORS = ['#704e99', '#008882', '#2563eb', '#3e2e6d', '#f9b43e', '#dc2626', '#0891b2'];
 
-const indicatorData = [
-    {name: 'Eje Social', value: 85, projects: 34, color: '#704e99'},
-    {name: 'Eje Económico', value: 65, projects: 28, color: '#008882'},
-    {name: 'Eje de Infraestructura, Energía y Medio Ambiente', value: 45, projects: 19, color: '#2563eb'},
-    {name: 'Eje Institucional', value: 75, projects: 32, color: '#3e2e6d'},
-    {name: 'Eje de Gestión de Riesgos', value: 90, projects: 40, color: '#f9b43e'},
-];
-
-const alertData = [
-    {type: 'Retraso Crítico', project: 'Hospital Regional - 30 días de retraso', color: 'red'},
-    {type: 'Presupuesto', project: 'Escuela Primaria - 95% ejecutado', color: 'yellow'},
-    {type: 'Meta en Riesgo', project: 'Carretera Zonal - avance lento', color: 'yellow'},
-]
-
-const planningInstruments = [
-    {name: 'ODS', value: '17 objetivos alineados', icon: BookOpen, color: 'blue'},
-    {name: 'PND', value: 'Plan Nacional de Desarrollo', icon: Flag, color: 'green'},
-    {name: 'Sectoriales', value: '12 planes vinculados', icon: Target, color: 'purple'},
-    {name: 'Institucionales', value: '45 entidades participantes', icon: Users, color: 'orange'},
-]
-
-const alignmentData = [
-    {name: 'ODS 4: Educación de Calidad', projects: 156, progress: 67},
-    {name: 'ODS 3: Salud y Bienestar', projects: 89, progress: 78},
-    {name: 'ODS 9: Infraestructura', projects: 234, progress: 54},
-]
-
-const chartData = [
-    {name: 'Ene', Inversión: 400, Avance: 240},
-    {name: 'Feb', Inversión: 300, Avance: 139},
-    {name: 'Mar', Inversión: 200, Avance: 980},
-    {name: 'Abr', Inversión: 278, Avance: 390},
-    {name: 'May', Inversión: 189, Avance: 480},
-    {name: 'Jun', Inversión: 239, Avance: 380},
-];
+const currencyFormatter = new Intl.NumberFormat('es-EC', {style: 'currency', currency: 'USD', maximumFractionDigits: 0});
 
 const DashboardPage = () => {
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const loadStats = async () => {
+            setLoading(true);
+            setError('');
+            try {
+                const response = await api.get('/reports/dashboard-stats/');
+                setStats(response);
+            } catch (err) {
+                console.error('Error cargando estadísticas del dashboard:', err);
+                setError('No se pudieron cargar los datos del dashboard.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadStats();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-24 text-gray-500 dark:text-gray-400">
+                <Loader2 className="animate-spin mr-2" size={20}/> Cargando dashboard...
+            </div>
+        );
+    }
+
+    if (error || !stats) {
+        return (
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow text-center text-red-500">
+                {error || 'No hay datos disponibles.'}
+            </div>
+        );
+    }
+
+    const kpiData = [
+        {title: 'Proyectos Activos', value: stats.kpis.proyectos_activos, icon: TrendingUp, color: 'green'},
+        {title: 'Inversión Total Programada', value: currencyFormatter.format(stats.kpis.inversion_total), icon: DollarSign, color: 'blue'},
+        {title: 'Avance Promedio', value: `${stats.kpis.avance_promedio}%`, icon: CheckCircle, color: 'yellow'},
+        {title: 'Alertas Activas', value: stats.kpis.alertas_activas, icon: AlertTriangle, color: 'red'},
+    ];
+
+    const planningInstruments = [
+        {name: 'ODS', value: `${stats.instrumentos_planificacion.ods_count} objetivos registrados`, icon: BookOpen, color: 'blue'},
+        {name: 'PND', value: stats.instrumentos_planificacion.pnd_nombre || 'Sin PND registrado', icon: Flag, color: 'green'},
+        {name: 'Sectoriales', value: `${stats.instrumentos_planificacion.sectoriales_count} planes vinculados`, icon: Target, color: 'purple'},
+        {name: 'Institucionales', value: `${stats.instrumentos_planificacion.entidades_count} entidades participantes`, icon: Users, color: 'orange'},
+    ];
+
     return (
         <div className="space-y-6">
             {/* KPI Cards */}
@@ -96,12 +78,6 @@ const DashboardPage = () => {
                         <div>
                             <p className="text-sm text-gray-500 dark:text-gray-400">{kpi.title}</p>
                             <p className="text-3xl font-bold text-gray-800 dark:text-white mt-1">{kpi.value}</p>
-                            <p className={`text-xs mt-2 flex items-center ${kpi.changeType === 'increase' ? 'text-green-500' : kpi.changeType === 'decrease' ? 'text-red-500' : 'text-gray-500'}`}>
-                                {kpi.changeType === 'increase' ?
-                                    <ArrowUp size={14} className="mr-1"/> : kpi.changeType === 'decrease' ?
-                                        <ArrowDown size={14} className="mr-1"/> : null}
-                                {kpi.change}
-                            </p>
                         </div>
                         <div className={`p-3 rounded-full bg-${kpi.color}-100 dark:bg-${kpi.color}-900/30`}>
                             <kpi.icon size={24} className={`text-${kpi.color}-500`}/>
@@ -113,19 +89,22 @@ const DashboardPage = () => {
             {/* Consola de Indicadores y Alertas */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow transition-colors">
-                    <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Indicadores de Avance</h3>
+                    <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Indicadores de Avance por Sector</h3>
                     <div className="space-y-4">
-                        {indicatorData.map(indicator => (
-                            <div key={indicator.name}>
+                        {stats.indicadores_sector.length === 0 && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">No hay proyectos registrados aún.</p>
+                        )}
+                        {stats.indicadores_sector.map((indicator, idx) => (
+                            <div key={indicator.sector}>
                                 <div className="flex justify-between items-center mb-1">
-                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{indicator.name} <span
+                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{indicator.sector} <span
                                         className="text-xs text-gray-500 dark:text-gray-400">({indicator.projects} proyectos)</span></p>
-                                    <p className="text-sm font-bold text-gray-800 dark:text-white">{indicator.value}%</p>
+                                    <p className="text-sm font-bold text-gray-800 dark:text-white">{indicator.avance}%</p>
                                 </div>
                                 <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5">
                                     <div className="h-2.5 rounded-full" style={{
-                                        width: `${indicator.value}%`,
-                                        backgroundColor: indicator.color
+                                        width: `${indicator.avance}%`,
+                                        backgroundColor: SECTOR_COLORS[idx % SECTOR_COLORS.length]
                                     }}></div>
                                 </div>
                             </div>
@@ -135,11 +114,14 @@ const DashboardPage = () => {
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow transition-colors">
                     <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Alertas Tempranas</h3>
                     <div className="space-y-3">
-                        {alertData.map(alert => (
-                            <div key={alert.project}
-                                 className={`p-3 rounded-lg bg-${alert.color}-50 dark:bg-${alert.color}-900/20 border-l-4 border-${alert.color}-400 dark:border-${alert.color}-500`}>
-                                <p className="font-semibold text-sm text-gray-800 dark:text-gray-200">{alert.type}</p>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">{alert.project}</p>
+                        {stats.alertas.length === 0 && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">No hay actividades en riesgo.</p>
+                        )}
+                        {stats.alertas.map((alert, idx) => (
+                            <div key={idx}
+                                 className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-500">
+                                <p className="font-semibold text-sm text-gray-800 dark:text-gray-200">{alert.actividad}</p>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">{alert.proyecto} · vence {alert.fecha_limite}</p>
                             </div>
                         ))}
                     </div>
@@ -149,30 +131,28 @@ const DashboardPage = () => {
             {/* Gráficos */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow transition-colors">
-                    <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Inversión por Período</h3>
+                    <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Inversión Programada por Período</h3>
                     <ResponsiveContainer width="100%" height={300}>
-                        <ReBarChart data={chartData}>
+                        <ReBarChart data={stats.inversion_por_periodo}>
                             <CartesianGrid strokeDasharray="3 3"/>
-                            <XAxis dataKey="name"/>
+                            <XAxis dataKey="periodo"/>
                             <YAxis/>
                             <Tooltip/>
                             <Legend/>
-                            <Bar dataKey="Inversión" fill="#8884d8"/>
-                            <Bar dataKey="Avance" fill="#82ca9d"/>
+                            <Bar dataKey="total" name="Inversión Programada" fill="#8884d8"/>
                         </ReBarChart>
                     </ResponsiveContainer>
                 </div>
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow transition-colors">
                     <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Avance por Sectores</h3>
                     <ResponsiveContainer width="100%" height={300}>
-                        <ReBarChart data={chartData}>
+                        <ReBarChart data={stats.indicadores_sector}>
                             <CartesianGrid strokeDasharray="3 3"/>
-                            <XAxis dataKey="name"/>
+                            <XAxis dataKey="sector"/>
                             <YAxis/>
                             <Tooltip/>
                             <Legend/>
-                            <Bar dataKey="Inversión" stackId="a" fill="#3b82f6"/>
-                            <Bar dataKey="Avance" stackId="a" fill="#84cc16"/>
+                            <Bar dataKey="avance" name="Avance (%)" fill="#84cc16"/>
                         </ReBarChart>
                     </ResponsiveContainer>
                 </div>
@@ -200,27 +180,29 @@ const DashboardPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Objetivos de Desarrollo Sostenible</h4>
-                        <div className="space-y-2">
-                            {alignmentData.map(item => (
-                                <div key={item.name}
+                        <div className="space-y-2 max-h-80 overflow-y-auto">
+                            {stats.alineacion_ods.map(item => (
+                                <div key={item.numero}
                                      className="flex justify-between items-center text-sm p-2 bg-gray-50 dark:bg-slate-700 rounded-md dark:text-gray-200">
-                                    <span>{item.name}</span>
-                                    <span className="font-semibold text-blue-600 dark:text-blue-400">{item.projects} proyectos</span>
+                                    <span>ODS {item.numero}: {item.nombre}</span>
+                                    <span className="font-semibold text-blue-600 dark:text-blue-400">{item.count} alineaciones</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                     <div>
-                        <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Plan Nacional de Desarrollo</h4>
-                        <div className="space-y-2">
-                            {alignmentData.map(item => (
-                                <div key={item.name}
-                                     className="flex justify-between items-center text-sm p-2 bg-gray-50 dark:bg-slate-700 rounded-md dark:text-gray-200">
-                                    <span>Pacto por la Equidad</span>
-                                    <div className="w-1/3 bg-gray-200 dark:bg-slate-600 rounded-full h-2.5">
-                                        <div className="bg-green-500 h-2.5 rounded-full"
-                                             style={{width: `${item.progress}%`}}></div>
-                                    </div>
+                        <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Objetivos del {stats.instrumentos_planificacion.pnd_nombre || 'Plan Nacional de Desarrollo'}
+                        </h4>
+                        <div className="space-y-2 max-h-80 overflow-y-auto">
+                            {stats.instrumentos_planificacion.pnd_objetivos.length === 0 && (
+                                <p className="text-sm text-gray-500 dark:text-gray-400">No hay objetivos PND registrados.</p>
+                            )}
+                            {stats.instrumentos_planificacion.pnd_objetivos.map((obj, idx) => (
+                                <div key={idx}
+                                     className="text-sm p-2 bg-gray-50 dark:bg-slate-700 rounded-md dark:text-gray-200">
+                                    <span className="font-semibold text-blue-600 dark:text-blue-400">{obj.codigo}</span>
+                                    <span className="text-gray-600 dark:text-gray-300"> — {obj.descripcion}</span>
                                 </div>
                             ))}
                         </div>

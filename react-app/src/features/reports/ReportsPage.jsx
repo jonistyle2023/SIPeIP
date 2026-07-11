@@ -66,34 +66,22 @@ export default function ReportsPage() {
         alineacion_ods: []
     });
     const [loadingStats, setLoadingStats] = useState(true);
+    const [statsError, setStatsError] = useState('');
 
     useEffect(() => {
         loadDashboardStats();
     }, []);
 
     const loadDashboardStats = async () => {
+        setLoadingStats(true);
+        setStatsError('');
         try {
-            // Usamos datos simulados si falla la API o mientras se desarrolla el backend real
-            // En producción, descomentar la llamada real:
             const response = await api.get('/reports/dashboard-stats/');
             setStats(response);
         } catch (error) {
-            console.error("Error cargando estadísticas, usando datos mock:", error);
-            // Datos Mock para visualización inmediata si no hay backend listo
-            setStats({
-                inversion_sector: [
-                    { sector: 'Infraestructura Vial', total: 125000000 },
-                    { sector: 'Salud Pública', total: 89000000 },
-                    { sector: 'Educación', total: 65000000 },
-                    { sector: 'Tecnología', total: 45000000 },
-                ],
-                avance_entidad: [
-                    { entidad_responsable: 'Ministerio de Obras', promedio_fisico: 78, promedio_financiero: 65 },
-                    { entidad_responsable: 'Ministerio de Salud', promedio_fisico: 45, promedio_financiero: 50 },
-                    { entidad_responsable: 'Secretaría de Educación', promedio_fisico: 92, promedio_financiero: 90 },
-                ],
-                alineacion_ods: []
-            });
+            console.error("Error cargando estadísticas:", error);
+            setStatsError('No se pudieron cargar las estadísticas del reporte.');
+            setStats({inversion_sector: [], avance_entidad: [], alineacion_ods: []});
         } finally {
             setLoadingStats(false);
         }
@@ -181,7 +169,11 @@ export default function ReportsPage() {
                     </div>
                     
                     <div className="space-y-4">
-                        {loadingStats ? <p>Cargando datos...</p> : (
+                        {loadingStats ? <p>Cargando datos...</p> : statsError ? (
+                            <p className="text-red-500 text-sm">{statsError}</p>
+                        ) : stats.inversion_sector.length === 0 ? (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">No hay datos de inversión registrados.</p>
+                        ) : (
                             stats.inversion_sector.map((item, index) => (
                                 <SectorBar 
                                     key={index} 
@@ -200,7 +192,11 @@ export default function ReportsPage() {
                         <TrendingUp className="w-5 h-5 text-blue-500 mr-2"/>
                         <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Avance Global</h2>
                     </div>
-                    {loadingStats ? <p>Cargando...</p> : stats.avance_entidad.map((entidad, idx) => (
+                    {loadingStats ? <p>Cargando...</p> : statsError ? (
+                        <p className="text-red-500 text-sm">{statsError}</p>
+                    ) : stats.avance_entidad.length === 0 ? (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">No hay datos de avance registrados.</p>
+                    ) : stats.avance_entidad.map((entidad, idx) => (
                         <div key={idx} className="mb-6 border-b border-gray-100 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
                             <p className="font-semibold text-sm mb-2 text-gray-800 dark:text-gray-200">{entidad.entidad_responsable}</p>
                             <ProgressBar label="Físico" value={entidad.promedio_fisico} color="bg-blue-500" />
