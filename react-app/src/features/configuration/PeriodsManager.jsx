@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Plus, Edit, Trash2} from 'lucide-react';
 import PeriodFormModal from './modals/PeriodFormModal.jsx';
+import {api} from '../../shared/api/api.js';
 
 const statusClasses = {
     'ABIERTO': 'bg-green-100 text-green-800',
@@ -17,13 +18,8 @@ export function PeriodsManager() {
 
     const fetchPeriods = async () => {
         setLoading(true);
-        const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/config/periodos/', {
-                headers: {'Authorization': `Token ${token}`}
-            });
-            if (!response.ok) throw new Error("Failed to fetch periods");
-            const data = await response.json();
+            const data = await api.get('/config/periodos/');
             setPeriods(data);
         } catch (error) {
             console.error("Error fetching periods:", error);
@@ -51,13 +47,8 @@ export function PeriodsManager() {
 
     const handleDelete = async (periodId) => {
         if (!window.confirm('¿Está seguro de eliminar este período? Esta acción no se puede deshacer.')) return;
-        const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/periodos/${periodId}/`, {
-                method: 'DELETE',
-                headers: {'Authorization': `Token ${token}`}
-            });
-            if (!response.ok) throw new Error("No se pudo eliminar el período");
+            await api.delete(`/config/periodos/${periodId}/`);
             fetchPeriods();
         } catch (error) {
             alert("Error al eliminar el período.");

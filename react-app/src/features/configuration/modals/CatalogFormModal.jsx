@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {X, Trash2} from 'lucide-react';
+import {api} from '../../../shared/api/api.js';
 
 export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDelete}) {
     const [formData, setFormData] = useState({
@@ -12,15 +13,12 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
     const [codigosExistentes, setCodigosExistentes] = useState([]);
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        fetch('http://127.0.0.1:8000/api/v1/config/catalogos/', {
-            headers: {'Authorization': `Token ${token}`}
-        })
-            .then(res => res.json())
+        api.get('/config/catalogos/')
             .then(data => {
                 const codigos = data.map(c => c.codigo).filter(Boolean);
                 setCodigosExistentes(codigos);
-            });
+            })
+            .catch(error => console.error('Error al cargar los códigos de catálogo:', error));
     }, []);
 
     useEffect(() => {
@@ -44,42 +42,25 @@ export default function CatalogFormModal({onClose, onSave, catalogToEdit, onDele
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('authToken');
         try {
-            const url = catalogToEdit
-                ? `http://127.0.0.1:8000/api/v1/config/catalogos/${catalogToEdit.id}/`
-                : 'http://127.0.0.1:8000/api/v1/config/catalogos/';
-            const method = catalogToEdit ? 'PUT' : 'POST';
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                setError(data?.detail || JSON.stringify(data) || 'Error al guardar catálogo');
-                return;
+            if (catalogToEdit) {
+                await api.put(`/config/catalogos/${catalogToEdit.id}/`, formData);
+            } else {
+                await api.post('/config/catalogos/', formData);
             }
             onSave();
         } catch (err) {
-            setError('Error de red');
+            setError(err.message || 'Error al guardar catálogo');
         }
     };
 
     const handleDelete = async () => {
         if (!window.confirm('¿Está seguro de eliminar este catálogo? Esta acción no se puede deshacer.')) return;
-        const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/catalogos/${catalogToEdit.id}/`, {
-                method: 'DELETE',
-                headers: {'Authorization': `Token ${token}`}
-            });
-            if (!response.ok) throw new Error("No se pudo eliminar el catálogo");
+            await api.delete(`/config/catalogos/${catalogToEdit.id}/`);
             if (onDelete) onDelete();
         } catch (error) {
+            console.error(error);
             setError('Error al eliminar catálogo');
         }
     };

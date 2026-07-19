@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ShieldCheck, Search, FileJson, Loader2} from 'lucide-react';
+import {ShieldCheck, Search, FileJson, Loader2, Download} from 'lucide-react';
 import {api} from '../../shared/api/api.js';
 
 const JsonViewer = ({data}) => (
@@ -16,6 +16,7 @@ export default function AuditPage() {
 
     const [filters, setFilters] = useState({user: '', event_type: '', fecha_desde: '', fecha_hasta: ''});
     const [appliedFilters, setAppliedFilters] = useState(filters);
+    const [exporting, setExporting] = useState(false);
 
     useEffect(() => {
         // Carga best-effort: solo un Admin puede listar usuarios; si falla, se oculta el dropdown.
@@ -53,6 +54,39 @@ export default function AuditPage() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setAppliedFilters(filters);
+    };
+
+    // Exporta a JSON (estilo AWS CloudTrail) los eventos que cumplen los filtros aplicados.
+    const handleExport = async () => {
+        setExporting(true);
+        try {
+            const token = localStorage.getItem('authToken');
+            const params = new URLSearchParams();
+            Object.entries(appliedFilters).forEach(([key, value]) => {
+                if (value) params.append(key, value);
+            });
+            const query = params.toString();
+            const response = await fetch(
+                `http://127.0.0.1:8000/api/v1/audit/events/export/${query ? `?${query}` : ''}`,
+                {headers: {'Authorization': `Token ${token}`}}
+            );
+            if (!response.ok) throw new Error('No se pudo generar la exportación.');
+
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', `audit_trail_${new Date().toISOString().slice(0, 10)}.json`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (err) {
+            console.error(err);
+            alert('No se pudo exportar el historial de auditoría.');
+        } finally {
+            setExporting(false);
+        }
     };
 
     return (
@@ -113,9 +147,22 @@ export default function AuditPage() {
                         />
                     </div>
                 </div>
-                <button type="submit" className="mt-4 flex items-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-md">
-                    <Search size={16} className="mr-2"/> Filtrar
-                </button>
+                <div className="mt-4 flex items-center gap-3">
+                    <button type="submit" className="flex items-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-md">
+                        <Search size={16} className="mr-2"/> Filtrar
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleExport}
+                        disabled={exporting}
+                        className="flex items-center bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white text-sm font-semibold px-4 py-2 rounded-md"
+                    >
+                        {exporting
+                            ? <Loader2 size={16} className="mr-2 animate-spin"/>
+                            : <Download size={16} className="mr-2"/>}
+                        Exportar JSON
+                    </button>
+                </div>
             </form>
 
             <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm transition-colors">

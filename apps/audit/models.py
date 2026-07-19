@@ -25,11 +25,16 @@ class AuditEvent(models.Model):
         blank=True,
         verbose_name="Dirección IP"
     )
+    user_agent = models.CharField(max_length=500, blank=True, default='', verbose_name="User-Agent")
+    request_method = models.CharField(max_length=10, blank=True, default='', verbose_name="Método HTTP")
+    request_path = models.CharField(max_length=255, blank=True, default='', verbose_name="Ruta")
+    success = models.BooleanField(default=True, verbose_name="Éxito")
     details = models.JSONField(verbose_name="Detalles del Evento")
 
-    # Campos para la relación genérica
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    # Campos para la relación genérica. Nulos para permitir eventos sin un
+    # objeto de dominio asociado (login, logout, intentos fallidos, etc.).
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:

@@ -12,9 +12,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from datetime import timedelta
 from .models import Usuario, RegistroAuditoria, Rol
 from .serializers import UsuarioSerializer, RegistroAuditoriaSerializer, RolSerializer
-from .permissions import IsAdmin, IsAuditor
+from .permissions import IsAdmin
+from apps.audit.mixins import AuditedModelViewSetMixin
+from apps.audit.utils import log_event
 
-class RolViewSet(viewsets.ModelViewSet):
+class RolViewSet(AuditedModelViewSetMixin, viewsets.ModelViewSet):
     """
     API endpoint para gestionar Roles.
     """
@@ -22,7 +24,7 @@ class RolViewSet(viewsets.ModelViewSet):
     serializer_class = RolSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
 
-class UsuarioViewSet(viewsets.ModelViewSet):
+class UsuarioViewSet(AuditedModelViewSetMixin, viewsets.ModelViewSet):
     """
     API endpoint para la gestión completa de Usuarios.
     """
@@ -37,7 +39,10 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             return Response({"mensaje": "El usuario ya está desactivado."}, status=status.HTTP_400_BAD_REQUEST)
         usuario.is_active = False
         usuario.save()
-        RegistroAuditoria.objects.create(usuario=usuario, accion='Desactivación', funcionalidad='Gestión de Usuarios')
+        log_event(
+            user=request.user, request=request, event_type='USUARIO_DESACTIVADO',
+            instance=usuario, details={'nombre_usuario': usuario.nombre_usuario}
+        )
         return Response({"mensaje": "Usuario desactivado correctamente."}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['patch'], url_path='activar')
@@ -47,22 +52,16 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             return Response({"mensaje": "El usuario ya está activo."}, status=status.HTTP_400_BAD_REQUEST)
         usuario.is_active = True
         usuario.save()
-        RegistroAuditoria.objects.create(usuario=usuario, accion='Activación', funcionalidad='Gestión de Usuarios')
+        log_event(
+            user=request.user, request=request, event_type='USUARIO_ACTIVADO',
+            instance=usuario, details={'nombre_usuario': usuario.nombre_usuario}
+        )
         return Response({"mensaje": "Usuario activado correctamente."}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['get'], url_path='ultimo-acceso')
     def obtener_ultimo_acceso(self, request, pk=None):
         usuario = self.get_object()
         return Response({"nombre_usuario": usuario.nombre_usuario, "ultimo_acceso": usuario.ultimo_acceso})
-    def perform_create(self, serializer):
-        usuario = serializer.save()
-        RegistroAuditoria.objects.create(usuario=usuario, accion='Crear', funcionalidad='Gestión de Usuarios', entidad_afectada_id=usuario.id)
-    def perform_update(self, serializer):
-        usuario = serializer.save()
-        RegistroAuditoria.objects.create(usuario=usuario, accion='Actualizar', funcionalidad='Gestión de Usuarios', entidad_afectada_id=usuario.id)
-    def perform_destroy(self, instance):
-        RegistroAuditoria.objects.create(usuario=instance, accion='Eliminar', funcionalidad='Gestión de Usuarios', entidad_afectada_id=instance.id)
-        super().perform_destroy(instance)
 
 class LoginView(APIView):
     """
@@ -78,12 +77,24 @@ class LoginView(APIView):
         try:
             usuario = Usuario.objects.get(nombre_usuario=username) # Buscar por nombre_usuario en el modelo
         except Usuario.DoesNotExist:
+            log_event(
+                user=None, request=request, event_type='LOGIN_FAILED',
+                details={'username': username, 'motivo': 'usuario_no_encontrado'}, success=False
+            )
             return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
         if not usuario.is_active:
+            log_event(
+                user=usuario, request=request, event_type='LOGIN_FAILED', instance=usuario,
+                details={'motivo': 'usuario_desactivado'}, success=False
+            )
             return Response({"error": "Usuario desactivado. Contacte con un administrador."}, status=status.HTTP_403_FORBIDDEN)
         if usuario.esta_bloqueado:
             tiempo_bloqueo = timezone.now() - usuario.fecha_bloqueo
             if tiempo_bloqueo < timedelta(minutes=self.BLOQUEO_MINUTOS):
+                log_event(
+                    user=usuario, request=request, event_type='LOGIN_FAILED', instance=usuario,
+                    details={'motivo': 'cuenta_bloqueada'}, success=False
+                )
                 return Response({"error": "Cuenta bloqueada. Intente nuevamente más tarde."}, status=status.HTTP_403_FORBIDDEN)
             else:
                 usuario.esta_bloqueado = False
@@ -97,6 +108,10 @@ class LoginView(APIView):
             usuario.ultimo_acceso = timezone.now()
             usuario.save()
             token, _ = Token.objects.get_or_create(user=usuario)
+            log_event(
+                user=usuario, request=request, event_type='LOGIN_SUCCESS', instance=usuario,
+                details={'username': usuario.nombre_usuario}
+            )
             return Response({
                 "mensaje": "Inicio de sesión exitoso",
                 "token": token.key,
@@ -104,10 +119,21 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
         else:
             usuario.intentos_fallidos += 1
+            bloqueado_ahora = False
             if usuario.intentos_fallidos >= self.MAX_INTENTOS:
                 usuario.esta_bloqueado = True
                 usuario.fecha_bloqueo = timezone.now()
+                bloqueado_ahora = True
             usuario.save()
+            log_event(
+                user=usuario, request=request, event_type='LOGIN_FAILED', instance=usuario,
+                details={
+                    'motivo': 'contrasena_incorrecta',
+                    'intentos_fallidos': usuario.intentos_fallidos,
+                    'bloqueado': bloqueado_ahora,
+                },
+                success=False
+            )
             return Response({"error": "Credenciales inválidas"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutView(APIView):
@@ -115,6 +141,7 @@ class LogoutView(APIView):
     @staticmethod
     def post(request):
         Token.objects.filter(user=request.user).delete()
+        log_event(user=request.user, request=request, event_type='LOGOUT', instance=request.user, details={})
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CambioClaveView(APIView):
@@ -140,16 +167,19 @@ class CambioClaveView(APIView):
 
         usuario.set_password(nueva_clave)
         usuario.save()
-        RegistroAuditoria.objects.create(usuario=usuario, accion='Cambio de Clave', funcionalidad='Seguridad')
+        log_event(user=usuario, request=request, event_type='USUARIO_CAMBIO_CLAVE', instance=usuario, details={})
         return Response({"mensaje": "Contraseña actualizada con éxito."}, status=status.HTTP_200_OK)
 
 class RegistroAuditoriaViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Endpoint de solo lectura para consultar los registros de auditoría.
+    Endpoint de solo lectura para consultar los registros de auditoría heredados
+    (mecanismo legado, ya no recibe escrituras: todo evento nuevo se registra en
+    apps.audit.AuditEvent). Se conserva solo para no perder el historial previo.
+    Acceso restringido a Administradores, igual que el resto del módulo de auditoría.
     """
     queryset = RegistroAuditoria.objects.all().order_by('-timestamp')
     serializer_class = RegistroAuditoriaSerializer
-    permission_classes = [IsAuthenticated, (IsAdmin | IsAuditor)]
+    permission_classes = [IsAuthenticated, IsAdmin]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['usuario__nombre_usuario', 'accion', 'modulo']
     search_fields = ['detalles', 'accion']

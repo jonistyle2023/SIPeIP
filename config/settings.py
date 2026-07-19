@@ -20,12 +20,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dja%3o!+2fepo#o^poa1h2_!_z3pp3*bls6jmnym0#4)a@e^*m'
+# El valor por defecto solo aplica si SECRET_KEY no está en .env (dev local
+# existente); en cualquier despliegue real debe definirse en el entorno.
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-dja%3o!+2fepo#o^poa1h2_!_z3pp3*bls6jmnym0#4)a@e^*m')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+# Solo activar detrás de un reverse proxy/balanceador propio que sanee el
+# header X-Forwarded-For; si no hay proxy, cualquier cliente podría
+# falsificarlo. Usado por apps.audit.utils.get_client_ip.
+TRUST_PROXY_HEADERS = config('TRUST_PROXY_HEADERS', default=False, cast=bool)
 
 # Application definition
 

@@ -1,4 +1,3 @@
-from django.db.models import Sum
 from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
 from .models import (
@@ -7,6 +6,7 @@ from .models import (
     DictamenPrioridad, CriterioPriorizacion, PuntuacionProyecto
 )
 from apps.strategic_objectives.serializers import GenericRelatedObjectSerializer
+from apps.authentication.permissions import tiene_alcance_nacional
 
 # --- NUEVO: Serializer simplificado para listas ---
 class ProyectoInversionListSerializer(serializers.ModelSerializer):
@@ -135,6 +135,16 @@ class ActividadSerializer(serializers.ModelSerializer):
         model = Actividad
         fields = ['actividad_id', 'componente', 'descripcion', 'fecha_inicio', 'fecha_fin', 'cronograma']
 
+    def validate(self, data):
+        fecha_inicio = data.get('fecha_inicio', getattr(self.instance, 'fecha_inicio', None))
+        fecha_fin = data.get('fecha_fin', getattr(self.instance, 'fecha_fin', None))
+
+        if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
+            raise serializers.ValidationError(
+                {"fecha_fin": "La fecha de fin no puede ser anterior a la fecha de inicio."}
+            )
+        return data
+
 class ComponenteSerializer(serializers.ModelSerializer):
     actividades = ActividadSerializer(many=True, read_only=True)
     indicadores = serializers.SerializerMethodField()
@@ -219,17 +229,39 @@ class ProyectoInversionSerializer(serializers.ModelSerializer):
         # nunca por una actualización genérica del proyecto.
         read_only_fields = ['estado']
 
+    def validate_entidad_ejecutora(self, value):
+        # Evita que un usuario restringido a su propia entidad "cambie de dueño"
+        # un proyecto reasignándolo a otra entidad en un PATCH/PUT.
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user and not tiene_alcance_nacional(user):
+            if value.codigo_unico != user.entidad_codigo:
+                raise serializers.ValidationError(
+                    "No puede asignar este proyecto a una entidad distinta de la suya."
+                )
+        return value
+
     def get_monto_total_programado(self, obj):
+        # Suma en Python sobre las relaciones ya prefetched por el ViewSet
+        # (marco_logico__componentes__actividades__cronograma) en vez de un
+        # .aggregate(), que ignora la caché de prefetch y dispara una query
+        # nueva por cada proyecto listado.
         if not hasattr(obj, 'marco_logico') or obj.marco_logico is None:
             return 0.00
-        total = obj.marco_logico.componentes.all() \
-            .aggregate(total=Sum('actividades__cronograma__valor_programado'))['total']
-        return total if total is not None else 0.00
+        total = 0
+        for componente in obj.marco_logico.componentes.all():
+            for actividad in componente.actividades.all():
+                for item in actividad.cronograma.all():
+                    total += item.valor_programado
+        return total
 
     def get_puntaje_priorizacion_total(self, obj):
-        puntuaciones = obj.puntuaciones.filter(criterio__activo=True)
+        # obj.puntuaciones debe venir prefetched (con criterio activo y
+        # select_related('criterio')) desde el ViewSet; usar .all() en vez
+        # de .filter() para aprovechar esa caché en vez de disparar una
+        # query nueva por proyecto.
         total_ponderado = 0
-        for p in puntuaciones:
+        for p in obj.puntuaciones.all():
             total_ponderado += (p.puntuacion_asignada * (p.criterio.ponderacion / 100))
         return round(total_ponderado, 2)
 

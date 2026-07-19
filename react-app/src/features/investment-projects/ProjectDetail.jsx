@@ -12,6 +12,7 @@ import ArrastresTab from './ArrastresTab.jsx';
 import AlineacionTab from './AlineacionTab.jsx';
 import PriorizacionTab from './PriorizacionTab';
 import { Star } from 'lucide-react';
+import {isAdmin} from '../../shared/utils/roles.js';
 
 const TabButton = ({label, icon: Icon, isActive, onClick}) => (
     <button onClick={onClick}
@@ -35,8 +36,9 @@ const PlaceholderContent = ({tabName, onAction}) => (
     </div>
 );
 
-export default function ProjectDetail({project, onReturnToList}) {
+export default function ProjectDetail({project, onReturnToList, user}) {
     const [activeTab, setActiveTab] = useState('marco_logico');
+    const userIsAdmin = isAdmin(user);
     const [marcoLogico, setMarcoLogico] = useState(null);
     const [loading, setLoading] = useState(true);
     const [projectDetails, setProjectDetails] = useState(project);
@@ -258,12 +260,13 @@ export default function ProjectDetail({project, onReturnToList}) {
             case 'priorizacion':
                 return <PriorizacionTab project={projectDetails} />;
             case 'auditoria':
-                return (
-                    <AuditTrail 
+                // El módulo de auditoría es exclusivo de Admin (el backend también lo exige).
+                return userIsAdmin ? (
+                    <AuditTrail
                         modelName="proyecto_inversion"
-                        objectId={projectDetails.proyecto_id} 
+                        objectId={projectDetails.proyecto_id}
                     />
-                );
+                ) : null;
             default:
                 return null;
         }
@@ -354,8 +357,10 @@ export default function ProjectDetail({project, onReturnToList}) {
                            onClick={() => setActiveTab('documentos')}/>
                 <TabButton label="Priorización" icon={Star} isActive={activeTab === 'priorizacion'}
                            onClick={() => setActiveTab('priorizacion')}/>
-                <TabButton label="Historial" icon={History} isActive={activeTab === 'auditoria'}
-                           onClick={() => setActiveTab('auditoria')}/>
+                {userIsAdmin && (
+                    <TabButton label="Historial" icon={History} isActive={activeTab === 'auditoria'}
+                               onClick={() => setActiveTab('auditoria')}/>
+                )}
             </div>
 
             <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm min-h-[300px] transition-colors">

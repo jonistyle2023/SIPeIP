@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {HiEye, HiEyeOff} from 'react-icons/hi';
 import logoEcuador from '../../app/assets/images/logo-ecuador.png';
 import backgroundLogin from '../../app/assets/images/background-login.png';
+import {api} from '../../shared/api/api.js';
 
 const EcuadorLogo = () => (
     <img src={logoEcuador} alt="Logo Ecuador" width={250}/>
@@ -26,13 +27,7 @@ export default function LoginPage({onLoginSuccess}) {
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/auth/login/', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username: username, password: password}),
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Error al iniciar sesión.');
+            const data = await api.post('/auth/login/', {username, password});
             onLoginSuccess(data);
         } catch (err) {
             setError(err.message);

@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Plus} from 'lucide-react';
 import ProjectList from './ProjectList.jsx';
 import ProjectDetail from './ProjectDetail.jsx';
 import ProjectFormModal from './modals/ProjectFormModal.jsx';
 import DictamenManager from '../dictamenes/DictamenManager.jsx';
 import { api } from '../../shared/api/api.js'; // <-- Nuevo: usar cliente api compartido
+import {canWriteProjects} from '../../shared/utils/roles.js';
 
 const StatsCard = ({title, value, color}) => (
     <div className={`p-4 rounded-lg shadow-sm text-white ${color}`}>
@@ -13,13 +14,34 @@ const StatsCard = ({title, value, color}) => (
     </div>
 );
 
-export default function InvestmentProjectsPage() {
+const currencyFormatter = new Intl.NumberFormat('es-EC', {style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1});
+
+export default function InvestmentProjectsPage({user}) {
     const [view, setView] = useState('list');
     const [selectedProject, setSelectedProject] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProject, setEditingProject] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [activeTab, setActiveTab] = useState('pipeline');
+    const [stats, setStats] = useState({activos: 0, enFormulacion: 0, conDictamen: 0, inversionTotal: 0});
+    const userCanWrite = canWriteProjects(user);
+
+    useEffect(() => {
+        const loadStats = async () => {
+            try {
+                const proyectos = await api.get('/investment-projects/proyectos/');
+                setStats({
+                    activos: proyectos.length,
+                    enFormulacion: proyectos.filter(p => p.estado === 'EN_FORMULACION').length,
+                    conDictamen: proyectos.filter(p => (p.dictamenes || []).length > 0).length,
+                    inversionTotal: proyectos.reduce((sum, p) => sum + Number(p.monto_total_programado || 0), 0),
+                });
+            } catch (err) {
+                console.error('Error cargando estadísticas de proyectos:', err);
+            }
+        };
+        loadStats();
+    }, [refreshTrigger]);
 
     const handleSave = () => {
         setIsModalOpen(false);
@@ -77,20 +99,22 @@ export default function InvestmentProjectsPage() {
                             Inversión</h2>
                         <p className="text-blue-100 text-sm mt-1">Formulación, registro y postulación de proyectos</p>
                     </div>
-                    <button onClick={() => {
-                        setEditingProject(null);
-                        setIsModalOpen(true);
-                    }}
-                            className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-white dark:bg-slate-200 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition-colors">
-                        <Plus size={20} className="mr-2"/>
-                        Nuevo Proyecto
-                    </button>
+                    {userCanWrite && (
+                        <button onClick={() => {
+                            setEditingProject(null);
+                            setIsModalOpen(true);
+                        }}
+                                className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-white dark:bg-slate-200 text-blue-600 font-semibold rounded-lg hover:bg-blue-100 transition-colors">
+                            <Plus size={20} className="mr-2"/>
+                            Nuevo Proyecto
+                        </button>
+                    )}
                 </div>
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatsCard title="Proyectos Activos" value="247" color="bg-blue-500"/>
-                    <StatsCard title="En Formulación" value="89" color="bg-blue-500"/>
-                    <StatsCard title="Con Dictamen" value="156" color="bg-blue-500"/>
-                    <StatsCard title="Inversión Total" value="$2.4B" color="bg-green-500"/>
+                    <StatsCard title="Proyectos Activos" value={stats.activos} color="bg-blue-500"/>
+                    <StatsCard title="En Formulación" value={stats.enFormulacion} color="bg-blue-500"/>
+                    <StatsCard title="Con Dictamen" value={stats.conDictamen} color="bg-blue-500"/>
+                    <StatsCard title="Inversión Total" value={currencyFormatter.format(stats.inversionTotal)} color="bg-green-500"/>
                 </div>
             </div>
 
@@ -121,11 +145,12 @@ export default function InvestmentProjectsPage() {
                                 onViewDetail={handleViewDetail}
                                 onDelete={handleDelete}
                                 viewButtonLabel="Ver detalles"
+                                canWrite={userCanWrite}
                             />
                         </>
                     )}
                     {view === 'detail' && selectedProject && (
-                        <ProjectDetail project={selectedProject} onReturnToList={handleReturnToList}/>
+                        <ProjectDetail project={selectedProject} onReturnToList={handleReturnToList} user={user}/>
                     )}
                     {isModalOpen && <ProjectFormModal project={editingProject} onClose={() => setIsModalOpen(false)}
                                                       onSave={handleSave}/>}

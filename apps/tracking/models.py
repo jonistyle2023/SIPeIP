@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.conf import settings
 from django.utils import timezone
@@ -33,7 +34,8 @@ class TrackingActivity(models.Model):
     # Asociación Actividad - objetivo
     objectives = models.ManyToManyField(Objective, related_name='tracking_activities')
     
-    activity_code = models.CharField(max_length=20, editable=False, null=True, blank=True) # Permitir null para facilitar la migración
+    # save() genera este código automáticamente para toda fila nueva (ver más abajo), así que nunca queda vacío en la práctica.
+    activity_code = models.CharField(max_length=20, editable=False, blank=True, default='')
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     responsible = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='responsible_activities')
@@ -43,7 +45,11 @@ class TrackingActivity(models.Model):
     planned_end_date = models.DateField()
     real_start_date = models.DateField(null=True, blank=True)
     real_end_date = models.DateField(null=True, blank=True)
-    
+    real_progress = models.IntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Porcentaje de avance real reportado (0-100)."
+    )
+
     planned_duration_days = models.IntegerField(editable=False)
     
     reported_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PLANIFICADA')

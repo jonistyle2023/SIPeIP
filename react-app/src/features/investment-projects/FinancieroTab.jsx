@@ -1,18 +1,38 @@
 import React, {useMemo, useState} from 'react';
-import {PlusCircle} from 'lucide-react';
+import {PlusCircle, Edit, Trash2} from 'lucide-react';
+import {api} from '../../shared/api/api.js';
 import CronogramaFormModal from './modals/CronogramaFormModal.jsx';
 
 export default function FinancieroTab({marcoLogico, onDataChange}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedActivity, setSelectedActivity] = useState(null);
+    const [editingItem, setEditingItem] = useState(null);
 
     const handleOpenModal = (actividad) => {
         setSelectedActivity(actividad);
+        setEditingItem(null);
         setIsModalOpen(true);
+    };
+
+    const handleEditItem = (actividad, item) => {
+        setSelectedActivity(actividad);
+        setEditingItem(item);
+        setIsModalOpen(true);
+    };
+
+    const handleDeleteItem = async (item) => {
+        if (!window.confirm(`¿Eliminar la programación de ${item.periodo}?`)) return;
+        try {
+            await api.delete(`/investment-projects/cronogramas/${item.cronograma_id}/`);
+            onDataChange();
+        } catch (err) {
+            alert('Error al eliminar la programación: ' + (err.message || ''));
+        }
     };
 
     const handleSave = () => {
         setIsModalOpen(false);
+        setEditingItem(null);
         onDataChange(); // Recarga los datos del proyecto para ver los cambios
     };
 
@@ -30,8 +50,17 @@ export default function FinancieroTab({marcoLogico, onDataChange}) {
 
     return (
         <div className="space-y-4">
-            {isModalOpen && <CronogramaFormModal actividad={selectedActivity} onClose={() => setIsModalOpen(false)}
-                                                 onSave={handleSave}/>}
+            {isModalOpen && (
+                <CronogramaFormModal
+                    actividad={selectedActivity}
+                    item={editingItem}
+                    onClose={() => {
+                        setIsModalOpen(false);
+                        setEditingItem(null);
+                    }}
+                    onSave={handleSave}
+                />
+            )}
 
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex justify-between items-center transition-colors">
                 <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300">Costo Total Programado del Proyecto</h3>
@@ -58,8 +87,16 @@ export default function FinancieroTab({marcoLogico, onDataChange}) {
                                 <div className="flex flex-wrap gap-2">
                                     {act.cronograma.length > 0 ? act.cronograma.map(item => (
                                         <span key={item.cronograma_id}
-                                              className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-semibold px-2 py-1 rounded-full">
+                                              className="flex items-center bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-semibold pl-2 pr-1 py-1 rounded-full">
                                                 {item.periodo}: $ {parseFloat(item.valor_programado).toLocaleString('es-US')}
+                                                <button onClick={() => handleEditItem(act, item)}
+                                                        className="ml-1.5 text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-100">
+                                                    <Edit size={12}/>
+                                                </button>
+                                                <button onClick={() => handleDeleteItem(item)}
+                                                        className="ml-1 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200">
+                                                    <Trash2 size={12}/>
+                                                </button>
                                             </span>
                                     )) : <span className="text-xs text-gray-500 dark:text-gray-400 italic">Sin programación</span>}
                                 </div>

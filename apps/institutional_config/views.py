@@ -4,7 +4,7 @@ from .serializers import (
     CatalogoSerializer, ItemCatalogoSerializer, EntidadSerializer, UnidadOrganizacionalSerializer, \
     PeriodoPlanificacionSerializer
 )
-from apps.audit.utils import log_event
+from apps.audit.mixins import AuditedModelViewSetMixin
 from apps.authentication.permissions import IsAdmin
 
 WRITE_ACTIONS = ('create', 'update', 'partial_update', 'destroy')
@@ -19,7 +19,7 @@ class AdminWriteMixin:
         return [permissions.IsAuthenticated()]
 
 
-class CatalogoViewSet(AdminWriteMixin, viewsets.ModelViewSet):
+class CatalogoViewSet(AuditedModelViewSetMixin, AdminWriteMixin, viewsets.ModelViewSet):
     queryset = Catalogo.objects.all().prefetch_related('items')
     serializer_class = CatalogoSerializer
 
@@ -30,7 +30,7 @@ class CatalogoViewSet(AdminWriteMixin, viewsets.ModelViewSet):
             queryset = queryset.filter(codigo=codigo)
         return queryset
 
-class ItemCatalogoViewSet(AdminWriteMixin, viewsets.ModelViewSet):
+class ItemCatalogoViewSet(AuditedModelViewSetMixin, AdminWriteMixin, viewsets.ModelViewSet):
     """
     API endpoint para los Ítems de un Catálogo. Ahora devuelve una estructura jerárquica.
     """
@@ -44,56 +44,15 @@ class ItemCatalogoViewSet(AdminWriteMixin, viewsets.ModelViewSet):
             queryset = queryset.filter(catalogo_id=catalogo_id, padre__isnull=True)
         return queryset
 
-class EntidadViewSet(AdminWriteMixin, viewsets.ModelViewSet):
+class EntidadViewSet(AuditedModelViewSetMixin, AdminWriteMixin, viewsets.ModelViewSet):
     """
     API endpoint para la gestión de Entidades del Estado.
     """
     queryset = Entidad.objects.select_related('nivel_gobierno', 'subsector').all()
     serializer_class = EntidadSerializer
 
-    def perform_update(self, serializer):
-        # 1. Obtenemos el estado del objeto ANTES de guardarlo
-        old_instance = self.get_object()
-        old_data = EntidadSerializer(old_instance).data
 
-        # 2. Guardamos el objeto con los nuevos datos
-        new_instance = serializer.save()
-
-        # 3. Construimos el JSON de detalles
-        details = {
-            "eventVersion": "1.0",
-            "userIdentity": {
-                "id": self.request.user.id,
-                "username": self.request.user.nombre_usuario
-            },
-            "changedFields": {
-                "nombre": {
-                    "old": old_data.get('nombre'),
-                    "new": new_instance.nombre
-                },
-                "codigo_unico": {
-                    "old": old_data.get('codigo_unico'),
-                    "new": new_instance.codigo_unico
-                },
-                "activo": {
-                    "old": old_data.get('activo'),
-                    "new": new_instance.activo
-                }
-                # Puedes añadir más campos aquí
-            }
-        }
-
-        # 4. Registramos el evento de auditoría
-        log_event(
-            user=self.request.user,
-            request=self.request,
-            event_type='ENTITY_UPDATED',
-            instance=new_instance,
-            details=details
-        )
-
-
-class UnidadOrganizacionalViewSet(AdminWriteMixin, viewsets.ModelViewSet):
+class UnidadOrganizacionalViewSet(AuditedModelViewSetMixin, AdminWriteMixin, viewsets.ModelViewSet):
     queryset = UnidadOrganizacional.objects.select_related('entidad', 'padre').all()
     serializer_class = UnidadOrganizacionalSerializer
     """
@@ -106,7 +65,7 @@ class UnidadOrganizacionalViewSet(AdminWriteMixin, viewsets.ModelViewSet):
             queryset = queryset.filter(entidad_id=entidad_id, padre__isnull=True)
         return queryset
 
-class PeriodoPlanificacionViewSet(AdminWriteMixin, viewsets.ModelViewSet):
+class PeriodoPlanificacionViewSet(AuditedModelViewSetMixin, AdminWriteMixin, viewsets.ModelViewSet):
     """
     API endpoint para la gestión de los Períodos de Planificación.
     """

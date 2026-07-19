@@ -2,11 +2,12 @@ import React, {useState} from 'react';
 import {api} from '../../../shared/api/api.js';
 import {X} from 'lucide-react';
 
-export default function ArrastreFormModal({projectId, onClose, onSave}) {
+export default function ArrastreFormModal({projectId, arrastre, onClose, onSave}) {
+    const isEditing = Boolean(arrastre);
     const [formData, setFormData] = useState({
-        contrato_info: '',
-        monto_devengado: '',
-        monto_por_devengar: '',
+        contrato_info: arrastre?.contrato_info || '',
+        monto_devengado: arrastre?.monto_devengado ?? '',
+        monto_por_devengar: arrastre?.monto_por_devengar ?? '',
     });
     const [error, setError] = useState('');
 
@@ -18,11 +19,11 @@ export default function ArrastreFormModal({projectId, onClose, onSave}) {
         e.preventDefault();
         setError('');
         try {
-            const payload = {
-                ...formData,
-                proyecto: projectId,
-            };
-            await api.post('/investment-projects/arrastres/', payload);
+            if (isEditing) {
+                await api.patch(`/investment-projects/arrastres/${arrastre.arrastre_id}/`, formData);
+            } else {
+                await api.post('/investment-projects/arrastres/', {...formData, proyecto: projectId});
+            }
             onSave();
         } catch (err) {
             setError(err.message || 'Error al guardar el arrastre.');
@@ -33,7 +34,7 @@ export default function ArrastreFormModal({projectId, onClose, onSave}) {
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-lg border dark:border-slate-700">
                 <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
-                    <h3 className="text-lg font-semibold dark:text-white">Nuevo Arrastre de Inversión</h3>
+                    <h3 className="text-lg font-semibold dark:text-white">{isEditing ? 'Editar' : 'Nuevo'} Arrastre de Inversión</h3>
                     <button onClick={onClose} className="dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full p-1"><X/></button>
                 </div>
                 <form onSubmit={handleSubmit}>

@@ -7,6 +7,7 @@ import EntityFormModal from './modals/EntityFormModal.jsx';
 import CatalogManager from './CatalogManager.jsx';
 import {PeriodsManager} from './PeriodsManager.jsx';
 import UnitManager from './UnitManager.jsx';
+import {api} from '../../shared/api/api.js';
 
 // --- Sub-componentes para la UI ---
 const InfoCard = ({icon: Icon, title, subtitle, items}) => (<div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm h-full transition-colors">
@@ -34,18 +35,8 @@ const EntityTable = ({onEdit, refreshKey}) => {
 
     const handleDelete = async (entityId) => {
         if (!window.confirm('¿Está seguro de eliminar la entidad? Esta acción no se puede deshacer.')) return;
-        const token = localStorage.getItem('authToken');
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/config/entidades/${entityId}/`, {
-                method: 'DELETE',
-                headers: {'Authorization': `Token ${token}`}
-            });
-            if (!response.ok) {
-                // Manejo explícito en lugar de lanzar excepción
-                alert("No se pudo eliminar la entidad.");
-                console.error("Failed to delete entity", response);
-                return;
-            }
+            await api.delete(`/config/entidades/${entityId}/`);
             setEntities(prev => prev.filter(e => e.id !== entityId));
         } catch (error) {
             alert("Error al eliminar la entidad.");
@@ -56,18 +47,12 @@ const EntityTable = ({onEdit, refreshKey}) => {
     useEffect(() => {
         const fetchEntities = async () => {
             setLoading(true);
-            const token = localStorage.getItem('authToken');
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/v1/config/entidades/', {headers: {'Authorization': `Token ${token}`}});
-                if (!response.ok) {
-                    console.error("Failed to fetch entities", response);
-                    setEntities([]);
-                    return;
-                }
-                const data = await response.json();
+                const data = await api.get('/config/entidades/');
                 setEntities(data);
             } catch (error) {
                 console.error("Error fetching entities:", error);
+                setEntities([]);
             } finally {
                 setLoading(false);
             }

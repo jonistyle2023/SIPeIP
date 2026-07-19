@@ -4,19 +4,31 @@ import { api } from '../../shared/api/api';
 export default function PriorizacionTab({ project }) {
     const [criterios, setCriterios] = useState([]);
     const [puntuaciones, setPuntuaciones] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
-            const critData = await api.get('/investment-projects/criterios-priorizacion/?activo=true');
-            const puntData = await api.get(`/investment-projects/puntuaciones/?proyecto=${project.proyecto_id}`);
-            setCriterios(critData);
+            setLoading(true);
+            setError('');
+            try {
+                const critData = await api.get('/investment-projects/criterios-priorizacion/?activo=true');
+                const puntData = await api.get(`/investment-projects/puntuaciones/?proyecto=${project.proyecto_id}`);
+                setCriterios(critData);
 
-            // Mapea las puntuaciones existentes para un fácil acceso
-            const puntMap = puntData.reduce((acc, p) => {
-                acc[p.criterio] = { id: p.puntuacion_id, score: p.puntuacion_asignada };
-                return acc;
-            }, {});
-            setPuntuaciones(puntMap);
+                // Mapea las puntuaciones existentes para un fácil acceso
+                const puntMap = puntData.reduce((acc, p) => {
+                    acc[p.criterio] = { id: p.puntuacion_id, score: p.puntuacion_asignada };
+                    return acc;
+                }, {});
+                setPuntuaciones(puntMap);
+            } catch (err) {
+                console.error('Error al cargar los criterios de priorización:', err);
+                setError('No se pudieron cargar los criterios de priorización.');
+            } finally {
+                setLoading(false);
+            }
         };
         fetchData();
     }, [project.proyecto_id]);
@@ -26,24 +38,35 @@ export default function PriorizacionTab({ project }) {
     };
 
     const handleSave = async () => {
-        for (const criterioId in puntuaciones) {
-            const punt = puntuaciones[criterioId];
-            if (punt.id) { // Es una puntuación existente, usamos PUT
-                await api.put(`/investment-projects/puntuaciones/${punt.id}/`, {
-                    proyecto: project.proyecto_id,
-                    criterio: criterioId,
-                    puntuacion_asignada: punt.score,
-                });
-            } else { // Es nueva, usamos POST
-                await api.post('/investment-projects/puntuaciones/', {
-                    proyecto: project.proyecto_id,
-                    criterio: criterioId,
-                    puntuacion_asignada: punt.score,
-                });
+        setSaving(true);
+        try {
+            for (const criterioId in puntuaciones) {
+                const punt = puntuaciones[criterioId];
+                if (punt.id) { // Es una puntuación existente, usamos PUT
+                    await api.put(`/investment-projects/puntuaciones/${punt.id}/`, {
+                        proyecto: project.proyecto_id,
+                        criterio: criterioId,
+                        puntuacion_asignada: punt.score,
+                    });
+                } else { // Es nueva, usamos POST
+                    await api.post('/investment-projects/puntuaciones/', {
+                        proyecto: project.proyecto_id,
+                        criterio: criterioId,
+                        puntuacion_asignada: punt.score,
+                    });
+                }
             }
+            alert('Puntuaciones guardadas.');
+        } catch (err) {
+            console.error('Error al guardar las puntuaciones:', err);
+            alert('No se pudieron guardar las puntuaciones. Intente nuevamente.');
+        } finally {
+            setSaving(false);
         }
-        alert('Puntuaciones guardadas.');
     };
+
+    if (loading) return <div className="text-center py-10 text-gray-500 dark:text-gray-400">Cargando criterios de priorización...</div>;
+    if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
 
     return (
         <div className="space-y-4">
@@ -68,7 +91,10 @@ export default function PriorizacionTab({ project }) {
                 </div>
             )))}
             <div className="flex justify-end">
-                <button onClick={handleSave} className="px-4 py-2 bg-blue-600 text-white rounded-lg">Guardar Puntuaciones</button>
+                <button onClick={handleSave} disabled={saving}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                    {saving ? 'Guardando...' : 'Guardar Puntuaciones'}
+                </button>
             </div>
         </div>
     );

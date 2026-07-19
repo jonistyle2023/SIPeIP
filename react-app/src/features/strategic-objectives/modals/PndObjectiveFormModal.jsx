@@ -16,7 +16,6 @@ export default function PndObjectiveFormModal({pndId, objetivo, onClose, onSave}
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('pndId:', pndId); // Debe mostrar un número
         setIsSaving(true);
         setError('');
         try {

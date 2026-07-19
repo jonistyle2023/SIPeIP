@@ -15,6 +15,35 @@ from apps.strategic_objectives.models import (
 )
 from apps.authentication.permissions import IsAdmin, IsEditor, IsAuditor
 
+def _build_export_response(df, report_format, base_filename, titulo):
+    """Genera la respuesta HTTP de exportación (PDF/CSV/Excel/JSON) para un
+    DataFrame ya armado, siguiendo el mismo patrón usado en toda la app."""
+    if report_format == 'pdf':
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{base_filename}_{datetime.date.today()}.pdf"'
+        html_string = f"""
+        <html>
+            <head><style>@page {{ size: A4 landscape; }} body {{ font-family: sans-serif; }} h1 {{ text-align: center; }} table {{ width: 100%; border-collapse: collapse; }} th, td {{ border: 1px solid #ddd; padding: 8px; font-size: 10px; }} th {{ background-color: #f2f2f2; }}</style></head>
+            <body><h1>{titulo}</h1><p>Generado el: {datetime.date.today().strftime('%d/%m/%Y')}</p>{df.to_html(index=False)}</body>
+        </html>
+        """
+        HTML(string=html_string).write_pdf(response)
+        return response
+
+    if report_format == 'csv':
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="{base_filename}_{datetime.date.today()}.csv"'
+        df.to_csv(response, index=False, encoding='utf-8')
+        return response
+
+    if report_format == 'excel':
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="{base_filename}_{datetime.date.today()}.xlsx"'
+        df.to_excel(response, index=False)
+        return response
+
+    return Response(df.to_dict(orient='records'))
+
 # Funcionalidad de reportes dentro de la aplicación
 class TrackingActivityReportView(APIView):
     permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
@@ -37,38 +66,38 @@ class TrackingActivityReportView(APIView):
             })
         
         df = pd.DataFrame(data)
+        return _build_export_response(df, report_format, 'reporte_actividades', 'Reporte de Actividades de Seguimiento')
 
-        if report_format == 'pdf':
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="reporte_actividades_{datetime.date.today()}.pdf"'
-            html_string = f"""
-            <html>
-                <head><style>@page {{ size: A4 landscape; }} body {{ font-family: sans-serif; }} h1 {{ text-align: center; }} table {{ width: 100%; border-collapse: collapse; }} th, td {{ border: 1px solid #ddd; padding: 8px; font-size: 10px; }} th {{ background-color: #f2f2f2; }}</style></head>
-                <body><h1>Reporte de Actividades de Seguimiento</h1><p>Generado el: {datetime.date.today().strftime('%d/%m/%Y')}</p>{df.to_html(index=False)}</body>
-            </html>
-            """
-            HTML(string=html_string).write_pdf(response)
-            return response
-
-        elif report_format == 'csv':
-            response = HttpResponse(content_type='text/csv; charset=utf-8')
-            response['Content-Disposition'] = f'attachment; filename="reporte_actividades_{datetime.date.today()}.csv"'
-            df.to_csv(response, index=False, encoding='utf-8')
-            return response
-
-        elif report_format == 'excel':
-            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            response['Content-Disposition'] = f'attachment; filename="reporte_actividades_{datetime.date.today()}.xlsx"'
-            df.to_excel(response, index=False)
-            return response
-
-        else: # JSON
-            return Response(df.to_dict(orient='records'))
-
-# ... (Las otras vistas de reporte permanecen igual)
 class ExportReportView(APIView):
-    # ...
-    pass
+    """
+    Exporta el reporte de Alineación (vínculos OEI/PND/ODS-Instrumento) en
+    PDF, CSV, Excel o JSON, con el mismo mecanismo de TrackingActivityReportView.
+    """
+    permission_classes = [IsAuthenticated, (IsAdmin | IsEditor | IsAuditor)]
+
+    def get(self, request, *args, **kwargs):
+        report_format = request.query_params.get('format', 'json').lower()
+        queryset = Alineacion.objects.select_related(
+            'instrumento_origen_tipo', 'instrumento_destino_tipo'
+        ).prefetch_related('ods_vinculados', 'usuario_creacion')
+
+        data = []
+        for alineacion in queryset:
+            ods_desc = ', '.join(
+                f'ODS {ods.numero}: {ods.nombre}' for ods in alineacion.ods_vinculados.all()
+            ) or 'N/A'
+            data.append({
+                'Instrumento Origen': str(alineacion.instrumento_origen) if alineacion.instrumento_origen else 'N/A',
+                'Instrumento Destino': str(alineacion.instrumento_destino) if alineacion.instrumento_destino else 'N/A',
+                'ODS Vinculados': ods_desc,
+                'Contribución (%)': alineacion.contribucion_porcentaje,
+                # Excel no soporta datetimes con timezone (Alineacion.fecha_creacion es tz-aware); se exporta como texto.
+                'Fecha Creación': alineacion.fecha_creacion.strftime('%Y-%m-%d %H:%M') if alineacion.fecha_creacion else 'N/A',
+                'Usuario': alineacion.usuario_creacion.nombre_usuario if alineacion.usuario_creacion else 'N/A',
+            })
+
+        df = pd.DataFrame(data)
+        return _build_export_response(df, report_format, 'reporte_alineaciones', 'Reporte de Alineación de Instrumentos')
 
 class DashboardStatsView(APIView):
     """

@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
-import {AlertCircle, BarChart, BookOpen, FilePlus, History, Layers, Link2, Settings} from 'lucide-react';
+import React, {useEffect, useState} from 'react';
+import {BarChart, BookOpen, FilePlus, History, Layers, Link2} from 'lucide-react';
 import MasterData from './MasterData.jsx';
 import InstitutionalPlans from './InstitutionalPlans.jsx';
 import AlignmentMatrix from './AlignmentMatrix.jsx';
 import SectoralPlansPage from './SectoralPlansPage.jsx';
 import ProgramasManager from './ProgramasManager.jsx';
+import {api} from '../../shared/api/api.js';
 
 // Tarjeta para acciones rápidas
 const ActionCard = ({title, subtitle, icon: Icon, onClick}) => (
@@ -49,6 +50,23 @@ const StatsCard = ({title, value, icon: Icon, color}) => {
 
 export default function StrategicObjectivesPage() {
     const [activeTab, setActiveTab] = useState('planes');
+    const [stats, setStats] = useState({oei: 0, alineaciones: 0, sectoriales: 0});
+
+    useEffect(() => {
+        const loadStats = async () => {
+            try {
+                const [oei, alineaciones, sectoriales] = await Promise.all([
+                    api.get('/strategic-planning/oei/'),
+                    api.get('/strategic-planning/alineaciones/'),
+                    api.get('/strategic-planning/planes-sectoriales/'),
+                ]);
+                setStats({oei: oei.length, alineaciones: alineaciones.length, sectoriales: sectoriales.length});
+            } catch (err) {
+                console.error('Error cargando estadísticas de objetivos estratégicos:', err);
+            }
+        };
+        loadStats();
+    }, []);
 
     const renderActiveTab = () => {
         switch (activeTab) {
@@ -77,19 +95,17 @@ export default function StrategicObjectivesPage() {
                         <p className="text-blue-100 text-sm mt-1">Administra y alinea los objetivos estratégicos institucionales con el PND y los ODS.</p>
                     </div>
 
-                    <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <StatsCard title="OEI Activos" value="24" icon={BookOpen} color="bg-blue-500"/>
-                        <StatsCard title="Alineaciones" value="18" icon={Link2} color="bg-blue-500"/>
-                        <StatsCard title="Planes Sectoriales" value="12" icon={Layers} color="bg-blue-500"/>
-                        <StatsCard title="Alertas Activas" value="6" icon={AlertCircle} color="bg-red-500"/>
+                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <StatsCard title="OEI Activos" value={stats.oei} icon={BookOpen} color="bg-blue-500"/>
+                        <StatsCard title="Alineaciones" value={stats.alineaciones} icon={Link2} color="bg-blue-500"/>
+                        <StatsCard title="Planes Sectoriales" value={stats.sectoriales} icon={Layers} color="bg-blue-500"/>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
                 <ActionCard title="Matriz Alineación" subtitle="Vincular OEI-PND-ODS" icon={Link2}
                             onClick={() => setActiveTab('alineacion')}/>
-                <ActionCard title="Configuración" subtitle="Parámetros y alertas" icon={Settings}/>
             </div>
 
             <div className="space-y-6">

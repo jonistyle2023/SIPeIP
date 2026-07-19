@@ -3,7 +3,6 @@ import sipeipLogo from '../../app/assets/images/sipeip-logo.png';
 import {
     LayoutDashboard,
     FileText,
-    DollarSign,
     BarChart2,
     Settings,
     Shield,
@@ -12,19 +11,16 @@ import {
     Dot,
     CheckSquare,
     Target,
-    ClipboardList,
-    HardHat,
-    Archive,
     ShieldCheck,
     FolderKanban,
     BookOpen,
-    CalendarCheck,
-    ActivitySquare // Importar el nuevo ícono
+    CalendarCheck
 } from 'lucide-react';
+import {isAdmin} from '../utils/roles.js';
 
 // ... (Componentes NavItem y CollapsibleNavItem no cambian)
 
-export default function Sidebar({activePage, setActivePage, sidebarOpen, setSidebarOpen}) {
+export default function Sidebar({activePage, setActivePage, sidebarOpen, setSidebarOpen, user}) {
     const [openSubmenus, setOpenSubmenus] = useState({});
 
     const toggleSubmenu = (menu) => {
@@ -40,20 +36,11 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
         {name: 'Proyectos', icon: FolderKanban},
         {name: 'Priorización PAI', icon: CheckSquare},
         {name: 'Reportería', icon: BookOpen},
-        {
-            name: 'Seguimiento',
-            icon: Target,
-            subItems: [
-                // AÑADIDO: El nuevo requerimiento
-                {name: 'Seguimiento y Control', icon: ActivitySquare}, 
-                {name: 'Seguimiento Planificación', icon: ClipboardList},
-                {name: 'Seguimiento Inversión', icon: DollarSign},
-                {name: 'Seguimiento Obras', icon: HardHat},
-                {name: 'Seguimiento Cierre', icon: Archive}
-            ]
-        },
-        {name: 'Configuración', icon: Settings},
-        {name: 'Auditoría', icon: ShieldCheck},
+        {name: 'Seguimiento y Control', icon: Target},
+        // Configuración y Auditoría: el backend restringe la escritura/lectura a
+        // Administradores, así que ocultamos ambas entradas para otros roles.
+        ...(isAdmin(user) ? [{name: 'Configuración', icon: Settings}] : []),
+        ...(isAdmin(user) ? [{name: 'Auditoría', icon: ShieldCheck}] : []),
     ];
 
     // ... (El resto del componente no cambia)
@@ -90,9 +77,8 @@ export default function Sidebar({activePage, setActivePage, sidebarOpen, setSide
                 </div>
                 <nav className="flex-1 p-4 space-y-2">
                     {menuItems.map((item) => {
-                        const isParentActive = 
-                            (item.name === 'Configuración' && (activePage === 'Usuarios' || activePage === 'Institucional' || activePage === 'Priorización')) ||
-                            (item.name === 'Seguimiento' && (activePage === 'Seguimiento y Control' || activePage === 'Seguimiento Planificación' || activePage === 'Seguimiento Inversión' || activePage === 'Seguimiento Obras' || activePage === 'Seguimiento Cierre'));
+                        const isParentActive =
+                            item.name === 'Configuración' && (activePage === 'Usuarios' || activePage === 'Institucional' || activePage === 'Priorización');
 
                         return (
                             <div key={item.name}>

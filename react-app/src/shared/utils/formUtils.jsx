@@ -1,17 +1,16 @@
+import {api} from '../api/api.js';
+
 export const handleFormChange = (e, setFormData) => {
     const {name, value, type, checked} = e.target;
     setFormData(prev => ({...prev, [name]: type === 'checkbox' ? checked : value}));
 };
 
-export const handleFormSubmit = async ({url, method, formData, token, onSave, setError}) => {
+// endpoint: ruta relativa a la API (ej. '/config/periodos/' o '/config/periodos/5/'),
+// method: 'POST' | 'PUT' | 'PATCH'. Usa el cliente api compartido en vez de fetch
+// directo, así siempre respeta la URL base y el token configurados en un solo lugar.
+export const handleFormSubmit = async ({endpoint, method, formData, onSave, setError}) => {
     try {
-        const response = await fetch(url, {
-            method,
-            headers: {'Content-Type': 'application/json', 'Authorization': `Token ${token}`},
-            body: JSON.stringify(formData),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(JSON.stringify(data));
+        await api[method.toLowerCase()](endpoint, formData);
         onSave();
     } catch (err) {
         setError(err.message);

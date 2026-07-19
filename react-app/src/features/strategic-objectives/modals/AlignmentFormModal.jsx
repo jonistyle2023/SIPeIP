@@ -72,7 +72,6 @@ export default function AlignmentFormModal({onClose, onSave, initialData, isEdit
         setError('');
 
         const types = await api.get('/strategic-planning/list-alignable-types/');
-        console.log('Tipos disponibles:', types); // Verifica la estructura aquí
 
         let originTypeId = null;
         if (selectedOriginType === 'oei') {

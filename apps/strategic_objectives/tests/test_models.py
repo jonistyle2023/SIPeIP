@@ -5,7 +5,9 @@ from apps.institutional_config.models import Entidad, PeriodoPlanificacion
 class ObjetivoEstrategicoInstitucionalModelTests(TestCase):
     def setUp(self):
         self.entidad = Entidad.objects.create(nombre="Entidad Test", codigo_unico="ENT_TEST")
-        self.periodo = PeriodoPlanificacion.objects.create(nombre="2023-2027")
+        self.periodo = PeriodoPlanificacion.objects.create(
+            nombre="2023-2027", fecha_inicio="2023-01-01", fecha_fin="2027-12-31"
+        )
         self.plan_institucional = PlanInstitucional.objects.create(
             nombre="Plan Institucional Test",
             entidad=self.entidad,

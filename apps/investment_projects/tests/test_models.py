@@ -1,13 +1,15 @@
 # Archivo: tests/test_models.py
 from django.test import TestCase
 from apps.investment_projects.models import ProyectoInversion, Entidad, ItemCatalogo
+from apps.institutional_config.models import Catalogo
 
 class ProyectoInversionModelTests(TestCase):
     def setUp(self):
         self.entidad = Entidad.objects.create(nombre="Entidad Test", codigo_unico="ENT_TEST")
-        self.tipo_proyecto = ItemCatalogo.objects.create(nombre="Tipo Test", catalogo_id=1)
-        self.tipologia_proyecto = ItemCatalogo.objects.create(nombre="Tipología Test", catalogo_id=2)
-        self.sector = ItemCatalogo.objects.create(nombre="Sector Test", catalogo_id=3)
+        catalogo = Catalogo.objects.create(nombre="Catalogo Test", codigo="CAT_TEST")
+        self.tipo_proyecto = ItemCatalogo.objects.create(nombre="Tipo Test", catalogo=catalogo)
+        self.tipologia_proyecto = ItemCatalogo.objects.create(nombre="Tipología Test", catalogo=catalogo)
+        self.sector = ItemCatalogo.objects.create(nombre="Sector Test", catalogo=catalogo)
 
         self.proyecto = ProyectoInversion.objects.create(
             nombre="Proyecto Test",

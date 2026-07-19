@@ -3,14 +3,17 @@ import {FileText, BarChart3, Bell, History, FileJson, FileSpreadsheet, FileType,
 import { api } from '../../shared/api/api.js';
 
 // Pequeño componente para las tarjetas de capacidad de exportación
-const ExportCard = ({icon: Icon, title, format, onExport}) => (
+const ExportCard = ({icon: Icon, title, format, onExport, isExporting}) => (
     <button
         onClick={() => onExport(format)}
-        className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg flex flex-col items-center justify-center text-center hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:shadow-md transition-all duration-300"
+        disabled={isExporting}
+        className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg flex flex-col items-center justify-center text-center hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
     >
         <Icon className="w-10 h-10 text-blue-600 mb-2"/>
         <h4 className="font-semibold text-gray-800 dark:text-white">{title}</h4>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Exportar datos en formato .{format}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {isExporting ? 'Generando...' : `Exportar datos en formato .${format}`}
+        </p>
     </button>
 );
 
@@ -67,6 +70,7 @@ export default function ReportsPage() {
     });
     const [loadingStats, setLoadingStats] = useState(true);
     const [statsError, setStatsError] = useState('');
+    const [exportingFormat, setExportingFormat] = useState(null);
 
     useEffect(() => {
         loadDashboardStats();
@@ -94,6 +98,7 @@ export default function ReportsPage() {
             console.error('Token no encontrado en localStorage');
         }
         const url = `http://127.0.0.1:8000/api/v1/reports/export/?format=${format}`;
+        setExportingFormat(format);
 
         try {
             const response = await fetch(url, {
@@ -125,7 +130,9 @@ export default function ReportsPage() {
 
         } catch (error) {
             console.error('Hubo un error al exportar el reporte:', error);
-            // Aquí podrías mostrar una notificación de error al usuario
+            alert('No se pudo exportar el reporte. Intente nuevamente.');
+        } finally {
+            setExportingFormat(null);
         }
     };
 
@@ -152,10 +159,10 @@ export default function ReportsPage() {
             <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow transition-colors">
                 <h2 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300">Capacidades de Exportación</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <ExportCard icon={FileType} title="PDF" format="pdf" onExport={handleExport}/>
-                    <ExportCard icon={FileSpreadsheet} title="Excel" format="excel" onExport={handleExport}/>
-                    <ExportCard icon={FileJson} title="JSON" format="json" onExport={handleExport}/>
-                    <ExportCard icon={FileType} title="CSV" format="csv" onExport={handleExport}/>
+                    <ExportCard icon={FileType} title="PDF" format="pdf" onExport={handleExport} isExporting={exportingFormat === 'pdf'}/>
+                    <ExportCard icon={FileSpreadsheet} title="Excel" format="excel" onExport={handleExport} isExporting={exportingFormat === 'excel'}/>
+                    <ExportCard icon={FileJson} title="JSON" format="json" onExport={handleExport} isExporting={exportingFormat === 'json'}/>
+                    <ExportCard icon={FileType} title="CSV" format="csv" onExport={handleExport} isExporting={exportingFormat === 'csv'}/>
                 </div>
             </div>
 

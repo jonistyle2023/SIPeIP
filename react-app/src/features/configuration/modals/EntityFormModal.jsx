@@ -49,18 +49,15 @@ export default function EntityFormModal({entity, onClose, onSave}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('authToken');
         const payload = {
             ...formData,
             subsector: formData.subsector || null
         };
 
-        const url = entity
-            ? `http://127.0.0.1:8000/api/v1/config/entidades/${entity.id}/`
-            : 'http://127.0.0.1:8000/api/v1/config/entidades/';
+        const endpoint = entity ? `/config/entidades/${entity.id}/` : '/config/entidades/';
         const method = entity ? 'PUT' : 'POST';
 
-        await handleFormSubmit({url, method, formData: payload, token, onSave, setError});
+        await handleFormSubmit({endpoint, method, formData: payload, onSave, setError});
     };
 
     return (

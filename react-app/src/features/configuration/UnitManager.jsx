@@ -14,21 +14,13 @@ export default function UnitManager() {
     const [sectores, setSectores] = useState([]);
 
     useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            setUnits([]);
-            setLoading(false);
-        }, 500);
-    }, []);
-
-    useEffect(() => {
         const fetchEntities = async () => {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch('http://127.0.0.1:8000/api/v1/config/entidades/', {
-                headers: {'Authorization': `Token ${token}`}
-            });
-            const data = await response.json();
-            setEntities(data);
+            try {
+                const data = await api.get('/config/entidades/');
+                setEntities(data);
+            } catch (error) {
+                console.error('Error al cargar las entidades:', error);
+            }
         };
         fetchEntities();
     }, []);

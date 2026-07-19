@@ -28,7 +28,7 @@ class TrackingActivitySerializer(serializers.ModelSerializer):
             'id', 'project', 'project_name', 'activity_code', 'objectives', 'name', 'description',
             'responsible', 'responsible_name', 'priority',
             'planned_start_date', 'planned_end_date', 'real_start_date', 'real_end_date',
-            'planned_duration_days', 'reported_status', 'is_active',
+            'real_progress', 'planned_duration_days', 'reported_status', 'is_active',
             'created_at', 'updated_at', 'created_by', 'updated_by'
         ]
         read_only_fields = (

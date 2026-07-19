@@ -2,10 +2,11 @@ import React, {useState} from 'react';
 import {api} from '../../../shared/api/api.js';
 import {X} from 'lucide-react';
 
-export default function CronogramaFormModal({actividad, onClose, onSave}) {
+export default function CronogramaFormModal({actividad, item, onClose, onSave}) {
+    const isEditing = Boolean(item);
     const [formData, setFormData] = useState({
-        periodo: '', // Formato AAAA-MM
-        valor_programado: '',
+        periodo: item?.periodo || '', // Formato AAAA-MM
+        valor_programado: item?.valor_programado ?? '',
     });
     const [error, setError] = useState('');
 
@@ -17,11 +18,11 @@ export default function CronogramaFormModal({actividad, onClose, onSave}) {
         e.preventDefault();
         setError('');
         try {
-            const payload = {
-                ...formData,
-                actividad: actividad.actividad_id,
-            };
-            await api.post('/investment-projects/cronogramas/', payload);
+            if (isEditing) {
+                await api.patch(`/investment-projects/cronogramas/${item.cronograma_id}/`, formData);
+            } else {
+                await api.post('/investment-projects/cronogramas/', {...formData, actividad: actividad.actividad_id});
+            }
             onSave();
         } catch (err) {
             setError(err.message || 'Error al guardar la programación.');
@@ -32,7 +33,7 @@ export default function CronogramaFormModal({actividad, onClose, onSave}) {
         <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50 p-4">
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-lg border dark:border-slate-700">
                 <div className="p-4 border-b dark:border-slate-700 flex justify-between items-center">
-                    <h3 className="text-lg font-semibold dark:text-white">Programar Valor para Actividad</h3>
+                    <h3 className="text-lg font-semibold dark:text-white">{isEditing ? 'Editar' : 'Programar'} Valor para Actividad</h3>
                     <button onClick={onClose} className="dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full p-1"><X/></button>
                 </div>
                 <form onSubmit={handleSubmit}>

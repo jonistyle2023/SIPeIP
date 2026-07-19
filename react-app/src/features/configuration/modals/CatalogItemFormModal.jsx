@@ -28,13 +28,10 @@ export default function CatalogItemFormModal({item, catalogId, parentItem, allIt
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('authToken');
-        const url = item
-            ? `http://127.0.0.1:8000/api/v1/config/items-catalogo/${item.id}/`
-            : 'http://127.0.0.1:8000/api/v1/config/items-catalogo/';
+        const endpoint = item ? `/config/items-catalogo/${item.id}/` : '/config/items-catalogo/';
         const method = item ? 'PUT' : 'POST';
 
-        await handleFormSubmit({url, method, formData, token, onSave, setError});
+        await handleFormSubmit({endpoint, method, formData, onSave, setError});
     };
 
     return (

@@ -7,6 +7,7 @@ from .models import (
     PlanInstitucionalVersion, ProgramaInstitucional,
 )
 from apps.institutional_config.models import PeriodoPlanificacion, Entidad
+from apps.authentication.permissions import tiene_alcance_nacional
 
 # --- Plan Nacional de Desarrollo (PND) ---
 class IndicadorPNDSerializer(serializers.ModelSerializer):
@@ -107,6 +108,18 @@ class PlanInstitucionalSerializer(serializers.ModelSerializer):
             'version_actual', 'fecha_creacion', 'fecha_ultima_actualizacion',
             'creador', 'objetivos_estrategicos'
         ]
+
+    def validate_entidad(self, value):
+        # Evita que un usuario restringido a su propia entidad reasigne un
+        # plan institucional a otra entidad en un PATCH/PUT.
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user and not tiene_alcance_nacional(user):
+            if value.codigo_unico != user.entidad_codigo:
+                raise serializers.ValidationError(
+                    "No puede asignar este plan a una entidad distinta de la suya."
+                )
+        return value
 
 # Representar un objeto genérico de forma legible
 class GenericRelatedObjectSerializer(serializers.Field):

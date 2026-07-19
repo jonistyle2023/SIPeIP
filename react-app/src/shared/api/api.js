@@ -11,7 +11,7 @@ const request = async (endpoint, options = {}) => {
     const response = await fetch(`${BASE_URL}${endpoint}`, {...options, headers});
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({detail: 'Error desconocido'}));
-        throw new Error(errorData.detail || JSON.stringify(errorData));
+        throw new Error(errorData.detail || errorData.error || JSON.stringify(errorData));
     }
     return response.status === 204 ? null : response.json();
 };

@@ -57,46 +57,6 @@ class ProyectoInversion(models.Model):
         help_text="Observaciones de la última revisión del proyecto."
     )
 
-    # Nuevo: asegurar eliminación de dependencias ligadas por GenericForeignKey/GenericRelation
-    def delete(self, *args, **kwargs):
-        """
-        Elimina indicadores/metas ligados al marco lógico y componentes asociados
-        antes de realizar el borrado del proyecto. También limpia colecciones relacionadas
-        que podrían quedar huérfanas. Finalmente llama a super().delete() para
-        que se aplique el borrado en cascada normal del ORM.
-        """
-        try:
-            ml = getattr(self, 'marco_logico', None)
-            if ml:
-                # Indicadores directamente asociados al marco lógico
-                for ind in ml.indicadores.all():
-                    ind.delete()  # eliminará también Meta por on_delete CASCADE en Meta.indicador
-
-                # Componentes y sus indicadores
-                for comp in ml.componentes.all():
-                    for ind in comp.indicadores.all():
-                        ind.delete()
-                    # eliminar componente (esto cascada eliminará actividades y cronogramas)
-                    comp.delete()
-
-                # eliminar el marco lógico
-                ml.delete()
-        except Exception:
-            # No detener el flujo de eliminación si algo falla aquí; registrar si se desea.
-            pass
-
-        # Limpieza explícita de otras relaciones por seguridad (aunque muchas usan CASCADE)
-        try:
-            self.arrastres.all().delete()
-            self.dictamenes.all().delete()
-            self.puntuaciones.all().delete()
-            self.versiones.all().delete()
-        except Exception:
-            pass
-
-        # Finalmente, borrar el propio proyecto
-        super().delete(*args, **kwargs)
-
 class ProyectoInversionVersion(models.Model):
     ESTADO_CHOICES = [
         ('EN_FORMULACION', 'En Formulación'),

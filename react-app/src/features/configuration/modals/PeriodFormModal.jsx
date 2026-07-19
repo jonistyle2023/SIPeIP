@@ -28,11 +28,10 @@ export default function PeriodFormModal({period, onClose, onSave}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('authToken');
-        const url = period ? `http://127.0.0.1:8000/api/v1/config/periodos/${period.id}/` : 'http://127.0.0.1:8000/api/v1/config/periodos/';
+        const endpoint = period ? `/config/periodos/${period.id}/` : '/config/periodos/';
         const method = period ? 'PUT' : 'POST';
 
-        await handleFormSubmit({url, method, formData, token, onSave, setError});
+        await handleFormSubmit({endpoint, method, formData, onSave, setError});
     };
 
     return (
